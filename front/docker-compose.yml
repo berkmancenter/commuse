@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  app:
+    build: .
+    ports:
+      - '5175:5175'
+    volumes:
+      - '.:/app'
