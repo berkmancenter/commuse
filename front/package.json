@@ -11,11 +11,15 @@
   "dependencies": {
     "animejs": "^3.2.1",
     "bulma": "^0.9.4",
+    "pace-js": "^1.2.4",
     "vanilla-lazyload": "^17.8.3",
-    "vue": "^3.2.45"
+    "vue": "^3.2.45",
+    "vue-router": "^4.2.2",
+    "vue-sidebar-menu": "^5.2.8"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.0.0",
+    "@rollup/plugin-inject": "^5.0.3",
+    "@vitejs/plugin-vue": "^4.2.3",
     "sass": "^1.58.3",
     "vite": "^4.1.0"
   }

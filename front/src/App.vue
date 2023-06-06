@@ -1,19 +1,32 @@
 <template>
   <div>
-    <home></home>
+    <sidebar-menu
+      :menu="menu"
+      v-model:collapsed="menuCollapsed"
+    ></sidebar-menu>
+    <div class="commuse-content" :class="[{ menuCollapsed: menuCollapsed }]">
+      <router-view v-cloak></router-view>
+    </div>
   </div>
 </template>
 
 <script>
-import Home from './components/Home.vue'
-
 export default {
   name: 'CommUse',
-  components: {
-    Home,
-  },
   data() {
-    return {}
+    return {
+      menuCollapsed: false,
+      menu: [
+        {
+          href: '/',
+          title: 'Home',
+        },
+        {
+          href: '/people',
+          title: 'People',
+        },
+      ],
+    }
   },
 }
 </script>
@@ -111,5 +124,14 @@ export default {
 
   body, button, input, optgroup, select, textarea {
     font-family: 'Roboto Slab', serif !important;
+  }
+
+  .commuse-content {
+    padding-left: 290px;
+    transition: 0.3s ease;
+
+    &.menuCollapsed {
+      padding-left: 65px;
+    }
   }
 </style>

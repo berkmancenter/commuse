@@ -4,8 +4,10 @@ namespace App\Controllers;
 
 class Home extends BaseController
 {
-    public function index()
-    {
-        return '';
-    }
+  public function index()
+  {
+    var_dump($_SERVER);
+
+    return '';
+  }
 }
