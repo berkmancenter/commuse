@@ -15,7 +15,8 @@
     "vanilla-lazyload": "^17.8.3",
     "vue": "^3.2.45",
     "vue-router": "^4.2.2",
-    "vue-sidebar-menu": "^5.2.8"
+    "vue-sidebar-menu": "^5.2.8",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@rollup/plugin-inject": "^5.0.3",
