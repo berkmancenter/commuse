@@ -1,21 +1,50 @@
 <template>
   <div>
-    <sidebar-menu
-      :menu="menu"
-      v-model:collapsed="menuCollapsed"
-    ></sidebar-menu>
+    <swit-menu button-id="side-menu-toggler">
+      <ul>
+        <li v-for="(link) in menu">
+          <router-link :to="link.href">
+            <h3 class="is-size-5">{{ link.title }}</h3>
+          </router-link>
+        </li>
+      </ul>
+    </swit-menu>
+
     <div class="commuse-content" :class="[{ menuCollapsed: menuCollapsed }]">
-      <router-view v-cloak></router-view>
+      <nav class="top-nav">
+        <div class="top-nav-brand">
+          <a id="side-menu-toggler">
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs></defs><title/><g data-name="70-Menu" id="_70-Menu"><rect class="cls-1" height="6" width="6" x="1" y="1"/><rect class="cls-1" height="6" width="6" x="25" y="1"/><rect class="cls-1" height="6" width="6" x="13" y="1"/><rect class="cls-1" height="6" width="6" x="1" y="13"/><rect class="cls-1" height="6" width="6" x="1" y="25"/><rect class="cls-1" height="6" width="6" x="25" y="25"/><rect class="cls-1" height="6" width="6" x="25" y="13"/><rect class="cls-1" height="6" width="6" x="13" y="13"/><rect class="cls-1" height="6" width="6" x="13" y="25"/></g></svg>
+          </a>
+
+          <router-link :to="'/'">
+            <h3 class="top-bar-name is-size-4">{{ appTitle }}</h3>
+          </router-link>
+        </div>
+
+        <div class="top-nav-end">
+          <div class="username">peterh@cyber.harvard.edu</div>
+        </div>
+      </nav>
+
+      <div class="container is-fluid mt-4">
+        <router-view v-cloak></router-view>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import SwitMenu from '@/components/Shared/SwitMenu.vue'
+
 export default {
   name: 'CommUse',
+  components: {
+    SwitMenu,
+  },
   data() {
     return {
-      menuCollapsed: false,
+      appTitle: import.meta.env.VITE_APP_TITLE,
       menu: [
         {
           href: '/',
@@ -32,106 +61,9 @@ export default {
 </script>
 
 <style lang="scss">
-  /*  latin  */
-  @font-face {
-    font-family: 'Roboto Slab';
-    font-style: normal;
-    font-weight: 100;
-    font-display: swap;
-    src: url('@/fonts/robotoslab-latin-normal-100.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-
-  /*  latin  */
-  @font-face {
-    font-family: 'Roboto Slab';
-    font-style: normal;
-    font-weight: 200;
-    font-display: swap;
-    src: url('@/fonts/robotoslab-latin-normal-200.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-
-  /*  latin  */
-  @font-face {
-    font-family: 'Roboto Slab';
-    font-style: normal;
-    font-weight: 300;
-    font-display: swap;
-    src: url('@/fonts/robotoslab-latin-normal-300.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-
-  /*  latin  */
-  @font-face {
-    font-family: 'Roboto Slab';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('@/fonts/robotoslab-latin-normal-400.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-
-  /*  latin  */
-  @font-face {
-    font-family: 'Roboto Slab';
-    font-style: normal;
-    font-weight: 500;
-    font-display: swap;
-    src: url('@/fonts/robotoslab-latin-normal-500.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-
-  /*  latin  */
-  @font-face {
-    font-family: 'Roboto Slab';
-    font-style: normal;
-    font-weight: 600;
-    font-display: swap;
-    src: url('@/fonts/robotoslab-latin-normal-600.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-
-  /*  latin  */
-  @font-face {
-    font-family: 'Roboto Slab';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('@/fonts/robotoslab-latin-normal-700.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-
-  /*  latin  */
-  @font-face {
-    font-family: 'Roboto Slab';
-    font-style: normal;
-    font-weight: 800;
-    font-display: swap;
-    src: url('@/fonts/robotoslab-latin-normal-800.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-
-  /*  latin  */
-  @font-face {
-    font-family: 'Roboto Slab';
-    font-style: normal;
-    font-weight: 900;
-    font-display: swap;
-    src: url('@/fonts/robotoslab-latin-normal-900.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-
-  body, button, input, optgroup, select, textarea {
-    font-family: 'Roboto Slab', serif !important;
-  }
-
-  .commuse-content {
-    padding-left: 290px;
-    transition: 0.3s ease;
-
-    &.menuCollapsed {
-      padding-left: 65px;
-    }
-  }
+  @import '@/assets/scss/fonts/fonts.scss';
+  @import '@/assets/scss/variables.scss';
+  @import '@/assets/scss/pace_theme.scss';
+  @import '@/assets/scss/global.scss';
+  @import '@/assets/scss/layout.scss';
 </style>

@@ -6,8 +6,6 @@ class Home extends BaseController
 {
   public function index()
   {
-    var_dump($_SERVER);
-
     return '';
   }
 }

@@ -16,6 +16,7 @@ class Filters extends BaseConfig
      * make reading things nicer and simpler.
      */
     public array $aliases = [
+        'cors'          => \App\Filters\CorsFilter::class,
         'csrf'          => CSRF::class,
         'toolbar'       => DebugToolbar::class,
         'honeypot'      => Honeypot::class,
@@ -29,11 +30,12 @@ class Filters extends BaseConfig
      */
     public array $globals = [
         'before' => [
-            // 'honeypot',
+            'cors',
             // 'csrf',
             // 'invalidchars',
         ],
         'after' => [
+            'cors',
             'toolbar',
             // 'honeypot',
             // 'secureheaders',

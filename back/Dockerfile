@@ -11,6 +11,7 @@ RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-av
 RUN sed -ri -e "s!/var/www!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 RUN sed -ri -e "s/www-data/$USERNAME/g" /etc/apache2/envvars
 RUN cd /etc/apache2/mods-enabled && ln -s ../mods-available/headers.load
+RUN cd /etc/apache2/mods-enabled && ln -s ../mods-available/rewrite.load
 
 WORKDIR /root
 
@@ -21,7 +22,7 @@ RUN curl -sSLf \
         -o /usr/local/bin/install-php-extensions \
         https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions \
     && chmod +x /usr/local/bin/install-php-extensions \
-    && install-php-extensions gd mysqli pdo_mysql intl zip
+    && install-php-extensions gd mysqli pdo_mysql intl zip pgsql
 
 RUN mkdir /usr/local/nvm
 ENV NVM_DIR /usr/local/nvm

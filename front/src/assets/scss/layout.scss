@@ -1,0 +1,38 @@
+.top-nav {
+  border-bottom: 5px solid var(--main-color);
+  display: flex;
+  padding: 1rem 32px;
+
+  .top-nav-brand {
+    display: flex;
+    align-items: center;
+
+    a {
+      background-color: var(--main-color);
+      color: #ffffff;
+      padding: 0.5rem 1rem;
+      margin-right: 0.5rem;
+    }
+  }
+
+  .top-nav-end {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+}
+
+#side-menu-toggler {
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  margin-right: 2rem;
+  background-color: #ffffff;
+
+  svg .cls-1 {
+    fill: none;
+    stroke: var(--main-color);
+    stroke-linejoin: round;
+    stroke-width: 2px;
+  }
+}

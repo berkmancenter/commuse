@@ -1,15 +1,16 @@
 {
-    "name": "commuse",
+    "name": "berkmancenter/commuse",
     "type": "project",
     "description": "An open-source social media portal that integrates.",
     "homepage": "https://cyber.harvard.edu",
     "license": "MIT",
     "require": {
         "php": "^7.4 || ^8.0",
+        "agungsugiarto/codeigniter4-cors": "^3.0",
         "codeigniter4/framework": "^4.0"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.9",
+        "fakerphp/faker": "^1.22",
         "mikey179/vfsstream": "^1.6",
         "phpunit/phpunit": "^9.1"
     },

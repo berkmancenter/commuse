@@ -1,7 +1,6 @@
 // Additional libs
 import './plugins/bulma'
 import './plugins/pace'
-import sidebarMenu from './plugins/sidebar-menu'
 
 import { createApp } from 'vue'
 import router from './router/index'
@@ -14,7 +13,6 @@ app.config.globalProperties = {
 }
 app.use(router)
 app.use(store)
-app.use(sidebarMenu)
 app.mount('#app')
 
 const globals = app.config.globalProperties
