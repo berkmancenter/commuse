@@ -1,39 +1,60 @@
 <template>
   <div class="switmenu-menu" :class="{ 'switmenu-menu-active': open }">
-    <a class="switmenu-menu-closer" @click="toggleMenu">
-      x
-    </a>
     <slot></slot>
   </div>
 </template>
 
 <script>
   export default {
-    name: 'switmenu-index',
-    props: ['buttonId', 'menuId'],
+    name: 'SwitMenuIndex',
+    props: {
+      buttonSelector: {
+        type: String,
+        required: true,
+      },
+      contentSelector: {
+        type: String,
+        required: true,
+      },
+    },
     data () {
       return {
-        button: false,
-        open: false
+        button: null,
+        body: null,
+        open: false,
       }
     },
     mounted () {
-      this.button = document.querySelector('#' + this.buttonId)
-      if (!this.button) {
+      this.button = document.querySelector('' + this.buttonSelector)
+      this.content = document.querySelector('' + this.contentSelector)
+      this.body = document.querySelector('body')
+
+      if (!this.button || !this.contentSelector) {
         return
       }
+
+      this.content.classList.add('switmenu-content')
 
       this.button.onclick = this.toggleMenu
       document.querySelector('.switmenu-menu a').onclick = this.closeMenu
     },
     methods: {
-      toggleMenu () {
+      toggleMenu() {
         this.open = !this.open
+        this.toggleBodyClass(this.open)
       },
-      closeMenu () {
+      closeMenu() {
         this.open = false
+        this.toggleBodyClass(false)
       },
-    }
+      toggleBodyClass(status) {
+        if (status) {
+          this.body.classList.add('switmenu-body-open')
+        } else {
+          this.body.classList.remove('switmenu-body-open')
+        }
+      },
+    },
   }
 </script>
 
