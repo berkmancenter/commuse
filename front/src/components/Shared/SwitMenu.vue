@@ -36,7 +36,13 @@
       this.content.classList.add('switmenu-content')
 
       this.button.onclick = this.toggleMenu
-      document.querySelector('.switmenu-menu a').onclick = this.closeMenu
+
+      const that = this
+      document.querySelectorAll('.switmenu-menu a').forEach(function(element) {
+        element.onclick = function() {
+          that.closeMenu()
+        }
+      })
     },
     methods: {
       toggleMenu() {
