@@ -47,8 +47,12 @@
 <style lang="scss">
   .news-section {
     .card {
-      .media-left {
-        max-width: 30%;
+      .media {
+        margin-bottom: 0;
+
+        .media-left {
+          max-width: 30%;
+        }
       }
 
       margin-bottom: 2rem;

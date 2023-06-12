@@ -1,7 +1,8 @@
 .top-nav {
+  height: 4.5rem;
   border-bottom: 5px solid var(--main-color);
   display: flex;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   position: fixed;
   top: 0;
   left: 0;
@@ -57,13 +58,13 @@
 }
 
 .commuse-content {
-  margin-top: 6rem;
+  margin-top: 5rem;
 }
 
 .switmenu-menu {
   z-index: 1;
   padding: 0;
-  padding-top: 6rem;
+  padding-top: 4.5rem;
   border-right: 2px solid #F5F5F6;
 
   ul {
