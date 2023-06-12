@@ -1,6 +1,7 @@
 // Additional libs
 import './plugins/bulma'
 import './plugins/pace'
+import './plugins/hover_css'
 
 import { createApp } from 'vue'
 import router from './router/index'

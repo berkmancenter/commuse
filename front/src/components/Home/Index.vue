@@ -53,5 +53,23 @@
 
       margin-bottom: 2rem;
     }
+
+    @media (max-width: 575px) {
+      .card {
+        .media {
+          flex-direction: column;
+
+          .media-left {
+            max-width: 100%;
+            width: 100%;
+            margin-bottom: 1rem;
+          }
+
+          .title {
+            margin-bottom: 0.5rem;
+          }
+        }
+      }
+    }
   }
 </style>

@@ -1,17 +1,51 @@
 .top-nav {
   border-bottom: 5px solid var(--main-color);
   display: flex;
-  padding: 1rem 32px;
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  background-color: #ffffff;
 
   .top-nav-brand {
     display: flex;
     align-items: center;
+    flex-grow: 1;
 
-    a.top-nav-name-link {
+    .top-nav-name-link {
       background-color: var(--main-color);
       color: #ffffff;
       padding: 0.5rem 1rem;
-      margin-right: 0.5rem;
+      margin: 0 auto;
+
+      > h3 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        @media screen and (max-width: 599px) {
+          max-width: 200px;
+        }
+
+        @media screen and (min-width: 600px) and (max-width: 959px) {
+          max-width: 400px;
+        }
+      }
+    }
+  }
+
+  .top-nav-user-menu {
+    display: flex;
+
+    svg {
+      height: 3rem;
+      width: 3rem;
+
+      path {
+        fill: var(--main-color);
+      }
     }
   }
 
@@ -20,4 +54,29 @@
     display: flex;
     align-items: center;
   }
+}
+
+.commuse-content {
+  margin-top: 6rem;
+}
+
+.switmenu-menu {
+  z-index: 1;
+  padding: 0;
+  padding-top: 6rem;
+  border-right: 2px solid #F5F5F6;
+
+  ul {
+    a {
+      display: flex;
+      background-color: var(--main-color-lighter);
+      padding: 0.5rem 1rem;
+      color: #000000;
+      border-bottom: 1px solid #F5F5F6;
+    }
+  }
+}
+
+.container.is-fluid {
+  padding: 0 1rem;
 }
