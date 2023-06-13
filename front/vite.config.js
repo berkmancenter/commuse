@@ -15,5 +15,6 @@ export default defineConfig({
   },
   build: {
     emptyOutDir: false,
+    assetsDir: 'front_assets',
   },
 })

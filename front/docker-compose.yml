@@ -7,3 +7,4 @@ services:
       - '5175:5175'
     volumes:
       - '.:/app'
+      - '../back:/back'
