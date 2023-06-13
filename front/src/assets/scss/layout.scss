@@ -66,13 +66,14 @@
   padding: 0;
   padding-top: 4.5rem;
   border-right: 2px solid #F5F5F6;
+  background-color: var(--super-light-color);
 
   ul {
     a {
       display: flex;
-      background-color: var(--main-color-lighter);
+      background-color: var(--secondary-color);
       padding: 0.5rem 1rem;
-      color: #000000;
+      color: #FFFFFF;
       border-bottom: 1px solid #F5F5F6;
       align-items: center;
 
