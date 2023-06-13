@@ -52,8 +52,8 @@ class Cors extends \Fluent\Cors\Config\Cors
     public function __construct() {
       parent::__construct();
 
-      $this->allowedHeaders = (explode(',', $_ENV['cors.allowed_headers'] ?: ''));
-      $this->allowedMethods = (explode(',', $_ENV['cors.allowed_methods'] ?: ''));
-      $this->allowedOrigins = (explode(',', $_ENV['cors.allowed_origins'] ?: ''));
+      $this->allowedHeaders = (explode(',', $_ENV['cors.allowed_headers'] ?? ''));
+      $this->allowedMethods = (explode(',', $_ENV['cors.allowed_methods'] ?? ''));
+      $this->allowedOrigins = (explode(',', $_ENV['cors.allowed_origins'] ?? ''));
     }
 }
