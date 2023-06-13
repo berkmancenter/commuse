@@ -74,6 +74,13 @@
       padding: 0.5rem 1rem;
       color: #000000;
       border-bottom: 1px solid #F5F5F6;
+      align-items: center;
+
+      img {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+      }
     }
   }
 }

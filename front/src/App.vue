@@ -7,6 +7,7 @@
       <ul>
         <li v-for="(link) in menu">
           <router-link :to="link.href" class="hvr-fade">
+            <img class="side-menu-icon" :src="link.icon">
             {{ link.title }}
           </router-link>
         </li>
@@ -41,6 +42,8 @@
 
 <script>
 import SwitMenu from '@/components/Shared/SwitMenu.vue'
+import homeMenuIcon from '@/assets/images/home_menu.svg'
+import peopleMenuIcon from '@/assets/images/people_menu.svg'
 
 export default {
   name: 'CommUse',
@@ -54,10 +57,12 @@ export default {
         {
           href: '/',
           title: 'Home',
+          icon: homeMenuIcon,
         },
         {
           href: '/people',
           title: 'People',
+          icon: peopleMenuIcon,
         },
       ],
     }

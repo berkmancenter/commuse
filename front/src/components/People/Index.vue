@@ -1,11 +1,11 @@
 <template>
   <div class="people-section">
-    <h3 class="is-size-3">People</h3>
+    <h3 class="is-size-2 mb-4">People</h3>
 
     <input
       type="text"
       v-model="searchTerm"
-      placeholder="Search"
+      placeholder="Filter"
       class="input mb-4 people-section-search-input"
     >
 
@@ -14,7 +14,7 @@
             v-for="(person, index) in filteredPeople"
             :key="person.id"
             :ref="'personRef_' + index">
-          <div class="is-size-4 mb-2">
+          <div class="is-size-4 mb-2 people-section-person-full-name">
             <div>{{ person.first_name }}</div>
             <div>{{ person.last_name }}</div>
           </div>
@@ -49,7 +49,7 @@
             </div>
           </div>
 
-          <div class="is-size-6 mt-2">
+          <div class="is-size-6 mt-2 people-section-bio">
             {{ person.bio }}
           </div>
         </div>
@@ -144,11 +144,36 @@
       }
     }
 
-    .person-section-social {
-      img {
-        display: block;
-        width: 2rem;
-        height: 2rem;
+    .people-section-person {
+      overflow: hidden;
+
+      .person-section-social {
+        img {
+          display: block;
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+
+      .people-section-person-full-name {
+        > div {
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+      }
+
+      .people-section-avatar {
+        img {
+          max-width: 200px;
+        }
+      }
+
+      .people-section-bio {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
       }
     }
 
