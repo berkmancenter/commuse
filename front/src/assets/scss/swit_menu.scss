@@ -6,10 +6,8 @@
   top: 0;
   left: 0;
   z-index: 7777;
-  transition: transform 0.5s cubic-bezier(0.86, 0, 0.07, 1);
   transform: translateX(-100%);
   background-color: #ffffff;
-  box-shadow: inset 40px 0px 85px -50px rgba(0,0,0,0.2);
 
   @media all and (max-width: 1300px) {
     width: 25%;
@@ -28,11 +26,9 @@
   }
 }
 
-.switmenu-content {
-  transition: transform 0.5s cubic-bezier(0.86, 0, 0.07, 1);
-}
-
 .switmenu-body-open {
+  overflow: hidden;
+
   .switmenu-content {
     transform: translateX(20%);
 
