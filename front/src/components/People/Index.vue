@@ -31,6 +31,15 @@
             >
           </div>
 
+          <div class="mt-2 people-section-topics">
+            <span
+              class="tag"
+              v-for="(topic) in person.topics"
+            >
+              {{ topic }}
+            </span>
+          </div>
+
           <div class="mt-2 person-section-social is-flex">
             <div v-if="person.bio" class="mr-2">
               <a :href="person.twitter" target="_blank">
@@ -179,6 +188,17 @@
 
     .people-section-search-input {
       width: 200px;
+    }
+
+    .people-section-topics {
+      display: flex;
+      flex-wrap: wrap;
+
+      > span {
+        padding: .2rem .3rem;
+        margin: .4rem .4rem .4rem 0;
+        border: .1rem solid #000000;
+      }
     }
   }
 </style>

@@ -13,8 +13,15 @@ class People extends BaseController
     $peopleModel = model('PeopleModel');
 
     $people = $peopleModel
+      ->select(['id', 'first_name', 'last_name', 'bio', 'image_url', 'topics'])
       ->orderBy('id', 'desc')
       ->findAll();
+
+    $people = array_map(function ($person) {
+      $person['topics'] = json_decode($person['topics']);
+
+      return $person;
+    }, $people);
 
     return $this->respond($people);
   }
