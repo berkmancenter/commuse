@@ -2,66 +2,70 @@
   <div class="people-section">
     <h3 class="is-size-2 mb-4">People</h3>
 
-    <input
-      type="text"
-      v-model="searchTerm"
-      placeholder="Filter"
-      class="input mb-4 people-section-search-input"
-    >
+    <div class="people-section-filters mb-4">
+      <div>
+        <input
+          type="text"
+          v-model="searchTerm"
+          placeholder="Filter"
+          class="input mb-4"
+        >
+      </div>
+    </div>
 
     <div class="content people-section-content">
-        <div class="people-section-person"
-            v-for="(person, index) in filteredPeople"
-            :key="person.id"
-            :ref="'personRef_' + index">
-          <div class="is-size-4 mb-2 people-section-person-full-name">
-            <div>{{ person.first_name }}</div>
-            <div>{{ person.last_name }}</div>
-          </div>
+      <div class="people-section-person"
+          v-for="(person, index) in filteredPeople"
+          :key="person.id"
+          :ref="'personRef_' + index">
+        <div class="is-size-4 mb-2 people-section-person-full-name">
+          <div>{{ person.first_name }}</div>
+          <div>{{ person.last_name }}</div>
+        </div>
 
-          <div class="is-size-5 mb-4">
-            <div class="is-flex is-justify-content-center is-align-items-center" v-if="person.organization">
-              {{ person.organization }}
-            </div>
-          </div>
-
-          <div class="people-section-avatar">
-            <img class="lazy"
-                :data-src="person.image_url"
-            >
-          </div>
-
-          <div class="mt-2 people-section-topics">
-            <span
-              class="tag"
-              v-for="(topic) in person.topics"
-            >
-              {{ topic }}
-            </span>
-          </div>
-
-          <div class="mt-2 person-section-social is-flex">
-            <div v-if="person.bio" class="mr-2">
-              <a :href="person.twitter" target="_blank">
-                <img src="@/assets/images/twitter.svg">
-              </a>
-            </div>
-            <div v-if="person.bio" class="mr-2">
-              <a :href="person.linkedin" target="_blank">
-                <img src="@/assets/images/linkedin.svg">
-              </a>
-            </div>
-            <div v-if="person.bio" class="mr-2">
-              <a :href="person.mastodon" target="_blank">
-                <img src="@/assets/images/mastodon.svg">
-              </a>
-            </div>
-          </div>
-
-          <div class="is-size-6 mt-2 people-section-bio">
-            {{ person.bio }}
+        <div class="is-size-5 mb-4">
+          <div class="is-flex is-justify-content-center is-align-items-center" v-if="person.organization">
+            {{ person.organization }}
           </div>
         </div>
+
+        <div class="people-section-avatar">
+          <img class="lazy"
+              :data-src="person.image_url"
+          >
+        </div>
+
+        <div class="mt-2 people-section-topics">
+          <span
+            class="tag"
+            v-for="(topic) in person.topics"
+          >
+            {{ topic }}
+          </span>
+        </div>
+
+        <div class="mt-2 person-section-social is-flex">
+          <div v-if="person.bio" class="mr-2">
+            <a :href="person.twitter" target="_blank">
+              <img src="@/assets/images/twitter.svg">
+            </a>
+          </div>
+          <div v-if="person.bio" class="mr-2">
+            <a :href="person.linkedin" target="_blank">
+              <img src="@/assets/images/linkedin.svg">
+            </a>
+          </div>
+          <div v-if="person.bio" class="mr-2">
+            <a :href="person.mastodon" target="_blank">
+              <img src="@/assets/images/mastodon.svg">
+            </a>
+          </div>
+        </div>
+
+        <div class="is-size-6 mt-2 people-section-bio">
+          {{ person.bio }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -71,6 +75,7 @@
 
   export default {
     name: 'PeopleIndex',
+    components: {},
     data() {
       return {
         lazyLoadInstance: null,
@@ -82,7 +87,7 @@
         const searchTerm = this.searchTerm.toLowerCase();
 
         return this.$store.state.app.people.filter((person) => {
-          const searchText = `${person.first_name} ${person.last_name} ${person.bio}`.toLowerCase();
+          const searchText = `${person.first_name} ${person.last_name} ${person.bio} ${person.topics.join(' ')}`.toLowerCase();
 
           return searchText.includes(searchTerm);
         });
@@ -198,6 +203,14 @@
         padding: .2rem .3rem;
         margin: .4rem .4rem .4rem 0;
         border: .1rem solid #000000;
+      }
+    }
+
+    .people-section-filters {
+      display: flex;
+
+      > div {
+        margin-right: 1rem;
       }
     }
   }
