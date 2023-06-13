@@ -45,8 +45,13 @@ $includeClasses: true !default;
 // Importing just what we currently use from the library
 @import "hover.css/scss/mixins";
 @import "hover.css/scss/hacks";
-@import "hover.css/scss/effects/background-transitions/fade";
 
+@import "hover.css/scss/effects/background-transitions/fade";
 .#{$nameSpace}-fade {
   @include fade();
+}
+
+@import "hover.css/scss/effects/2d-transitions/grow";
+.#{$nameSpace}-grow {
+  @include grow();
 }

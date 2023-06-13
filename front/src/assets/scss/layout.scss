@@ -61,6 +61,12 @@
   margin-top: 5rem;
 }
 
+.side-menu-toggler {
+  padding: .5rem;
+  height: 3rem;
+  width: 3rem;
+}
+
 .switmenu-menu {
   z-index: 1;
   padding: 0;
@@ -80,7 +86,7 @@
       img {
         width: 1rem;
         height: 1rem;
-        margin-right: 0.5rem;
+        margin-right: .5rem;
       }
     }
   }
