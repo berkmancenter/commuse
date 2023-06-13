@@ -29,11 +29,12 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', function() {
+$routes->get('api/news', 'News::index');
+$routes->get('api/people', 'People::index');
+
+$routes->get('(.*?)', function() {
   return view('front_end.html');
 });
-$routes->get('news', 'News::index');
-$routes->get('people', 'People::index');
 
 service('auth')->routes($routes);
 

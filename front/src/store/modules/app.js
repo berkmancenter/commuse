@@ -18,13 +18,13 @@ const mutations = {
 
 const actions = {
   async fetchNews(context) {
-    const response = await fetchIt(`${apiUrl}/news`)
+    const response = await fetchIt(`${apiUrl}/api/news`)
     const data = await response.json()
 
     return data
   },
   async fetchPeople(context) {
-    const response = await fetchIt(`${apiUrl}/people`)
+    const response = await fetchIt(`${apiUrl}/api/people`)
     const data = await response.json()
 
     return data
