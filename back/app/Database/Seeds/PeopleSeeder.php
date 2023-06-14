@@ -33,7 +33,7 @@ class PeopleSeeder extends Seeder
                 'first_name'        => $faker->firstName,
                 'last_name'         => $faker->lastName,
                 'image_url'         => $_ENV['app.baseURL'] . '/seeds/people/' . $i . '.jpg',
-                'bio'               => $faker->paragraphs(2, true),
+                'short_bio'         => $faker->paragraphs(2, true),
                 'topics'            => json_encode($randomTopics),
                 'created_at'        => date('Y-m-d H:i:s'),
                 'updated_at'        => date('Y-m-d H:i:s'),

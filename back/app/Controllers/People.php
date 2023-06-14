@@ -13,7 +13,7 @@ class People extends BaseController
     $peopleModel = model('PeopleModel');
 
     $people = $peopleModel
-      ->select(['id', 'first_name', 'last_name', 'bio', 'image_url', 'topics'])
+      ->select(['id', 'first_name', 'last_name', 'short_bio', 'image_url', 'topics'])
       ->orderBy('id', 'desc')
       ->findAll();
 

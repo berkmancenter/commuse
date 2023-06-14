@@ -63,7 +63,7 @@
         </div>
 
         <div class="is-size-6 mt-2 people-section-bio">
-          {{ person.bio }}
+          {{ person.short_bio }}
         </div>
       </div>
     </div>
@@ -87,7 +87,7 @@
         const searchTerm = this.searchTerm.toLowerCase();
 
         return this.$store.state.app.people.filter((person) => {
-          const searchText = `${person.first_name} ${person.last_name} ${person.bio} ${person.topics.join(' ')}`.toLowerCase();
+          const searchText = `${person.first_name} ${person.last_name} ${person.short_bio} ${person.topics.join(' ')}`.toLowerCase();
 
           return searchText.includes(searchTerm);
         });

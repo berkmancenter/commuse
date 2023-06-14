@@ -30,8 +30,31 @@ class CreatePeopleTable extends Migration
                 'constraint' => '1000',
                 'default'    => '',
             ],
+            'social_media' => [
+                'type' => 'JSONB',
+                'default'    => '{}',
+            ],
+            'short_bio' => [
+                'type' => 'TEXT',
+                'default'    => '',
+            ],
             'bio' => [
                 'type' => 'TEXT',
+                'default'    => '',
+            ],
+            'area' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '100',
+                'default'    => '',
+            ],
+            'country' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '100',
+                'default'    => '',
+            ],
+            'city' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '100',
                 'default'    => '',
             ],
             'topics' => [
@@ -39,8 +62,8 @@ class CreatePeopleTable extends Migration
                 'default'    => '[]',
             ],
             'user_id' => [
-              'type' => 'INT',
-              'default'    => null,
+                'type' => 'INT',
+                'default'    => null,
             ],
             'created_at' => [
                 'type' => 'datetime',
