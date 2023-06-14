@@ -64,4 +64,12 @@ class Filters extends BaseConfig
      * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
      */
     public array $filters = [];
+
+    public function __construct() {
+        parent::__construct();
+
+        if (isset($_ENV['auth.skip'])) {
+          unset($this->globals['before']['session']);
+        }
+    }
 }
