@@ -15,6 +15,11 @@ const router = createRouter({
       component: () => import('@/components/People/Index.vue'),
       name: 'people.index',
     },
+    {
+      path: '/profile',
+      component: () => import('@/components/User/Profile.vue'),
+      name: 'user-profile.index',
+    },
   ]
 })
 
