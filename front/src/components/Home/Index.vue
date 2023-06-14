@@ -7,7 +7,7 @@
         <div class="media">
           <div class="media-left">
             <figure class="image">
-              <img :src="news.image_url">
+              <img class="lazy" :data-src="news.image_url">
             </figure>
           </div>
           <div class="media-content">
@@ -25,21 +25,39 @@
 </template>
 
 <script>
+  import LazyLoad from 'vanilla-lazyload'
+
   export default {
     name: 'HomeIndex',
     data() {
-      return {}
+      return {
+        lazyLoadInstance: null,
+      }
     },
     computed: {},
     created() {
       this.initialDataLoad()
+      this.initLazyLoad()
     },
     mounted() {},
     methods: {
       async initialDataLoad() {
         const news = await this.$store.dispatch('app/fetchNews')
         this.$store.dispatch('app/setNews', news)
-      }
+        this.$nextTick(() => {
+          this.lazyLoadInstance.update()
+        })
+      },
+      initLazyLoad() {
+        this.lazyLoadInstance = new LazyLoad({
+          callback_error: (img) => {
+            img.setAttribute('src', '')
+          },
+          unobserve_entered: true,
+          unobserve_completed: true,
+        })
+        this.lazyLoadInstance.update()
+      },
     },
   }
 </script>

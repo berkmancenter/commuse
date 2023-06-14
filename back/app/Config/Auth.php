@@ -474,7 +474,7 @@ class Auth extends ShieldAuth
         parent::__construct();
 
         $this->actions = [
-            'register' => isset($_ENV['auth.email_activation']) ? \CodeIgniter\Shield\Authentication\Actions\EmailActivator::class : null,
+            'register' => isset($_ENV['auth.emailActivation']) ? \CodeIgniter\Shield\Authentication\Actions\EmailActivator::class : null,
             'login'    => null,
         ];
     }

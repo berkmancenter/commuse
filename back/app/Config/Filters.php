@@ -32,14 +32,14 @@ class Filters extends BaseConfig
         'before' => [
             'cors',
             'session' => ['except' => ['login*', 'register', 'auth/a/*']],
-            // 'csrf',
-            // 'invalidchars',
+            'csrf',
+            'invalidchars',
         ],
         'after' => [
             'cors',
             'toolbar',
-            // 'honeypot',
-            // 'secureheaders',
+            'honeypot',
+            'secureheaders',
         ],
     ];
 
