@@ -31,6 +31,7 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 $routes->get('api/news', 'News::index');
 $routes->get('api/people', 'People::index');
+$routes->get('api/users/current', 'Users::current');
 
 $routes->get('/', function() {
   return view('front_end.html');

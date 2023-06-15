@@ -22,6 +22,7 @@ class Filters extends BaseConfig
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
+        'autologin'     => \App\Filters\AutoLogin::class,
     ];
 
     /**
@@ -30,6 +31,7 @@ class Filters extends BaseConfig
      */
     public array $globals = [
         'before' => [
+            'autologin',
             'cors',
             'session' => ['except' => ['login*', 'register', 'auth/a/*']],
             'csrf',
@@ -64,12 +66,4 @@ class Filters extends BaseConfig
      * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
      */
     public array $filters = [];
-
-    public function __construct() {
-        parent::__construct();
-
-        if (isset($_ENV['auth.skip'])) {
-          unset($this->globals['before']['session']);
-        }
-    }
 }
