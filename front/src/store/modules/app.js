@@ -1,10 +1,12 @@
 import fetchIt from '@/lib/fetch_it'
+import store2 from 'store2'
 
 const apiUrl = import.meta.env.VITE_API_URL
 
 const state = {
   news: [],
   people: [],
+  sideMenuStatus: true,
 }
 
 const mutations = {
@@ -13,6 +15,9 @@ const mutations = {
   },
   setPeople(state, people) {
     state.people = people
+  },
+  setSideMenuStatus(state, status) {
+    state.sideMenuStatus = status
   },
 }
 
@@ -35,9 +40,23 @@ const actions = {
   setPeople(context, people) {
     context.commit('setPeople', people)
   },
+  setSideMenuStatus(context, status) {
+    context.commit('setSideMenuStatus', status)
+    store2('commuse.side_menu_status', status)
+  },
 }
 
 const getters = {}
+
+function initLocalStorage() {
+  if (store2('commuse.side_menu_status') === null) {
+    store2('commuse.side_menu_status', true)
+  }
+
+  state.sideMenuStatus = store2('commuse.side_menu_status')
+}
+
+initLocalStorage()
 
 export default {
   namespaced: true,

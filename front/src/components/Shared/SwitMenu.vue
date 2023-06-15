@@ -1,5 +1,5 @@
 <template>
-  <div class="switmenu-menu" :class="{ 'switmenu-menu-active': open }">
+  <div class="switmenu-menu" :class="{ 'switmenu-menu-active': $store.state.app.sideMenuStatus }">
     <slot></slot>
   </div>
 </template>
@@ -16,18 +16,26 @@
         type: String,
         required: true,
       },
+      closeOnClick: {
+        type: Boolean,
+        required: false,
+        default: true,
+      },
     },
     data () {
       return {
         button: null,
         body: null,
-        open: false,
       }
     },
     mounted () {
+      this.mitt.on('closeSideMenu', () => that.closeMenu())
+
       this.button = document.querySelector('' + this.buttonSelector)
       this.content = document.querySelector('' + this.contentSelector)
       this.body = document.querySelector('body')
+
+      this.toggleBodyClass()
 
       if (!this.button || !this.contentSelector) {
         return
@@ -39,22 +47,25 @@
 
       const that = this
       document.querySelectorAll('.switmenu-menu a').forEach(function(element) {
-        element.onclick = function() {
-          that.closeMenu()
+        if (that.closeOnClick) {
+          element.onclick = function() {
+            that.closeMenu()
+          }
         }
       })
     },
     methods: {
       toggleMenu() {
-        this.open = !this.open
-        this.toggleBodyClass(this.open)
+        this.$store.dispatch('app/setSideMenuStatus', !this.$store.state.app.sideMenuStatus)
+        this.toggleBodyClass()
       },
       closeMenu() {
-        this.open = false
-        this.toggleBodyClass(false)
+        console.log(111)
+        this.$store.dispatch('app/setSideMenuStatus', false)
+        this.toggleBodyClass()
       },
-      toggleBodyClass(status) {
-        if (status) {
+      toggleBodyClass() {
+        if (this.$store.state.app.sideMenuStatus) {
           this.body.classList.add('switmenu-body-open')
         } else {
           this.body.classList.remove('switmenu-body-open')
