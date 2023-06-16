@@ -16,13 +16,11 @@ class Filters extends BaseConfig
      * make reading things nicer and simpler.
      */
     public array $aliases = [
-        'cors'          => \App\Filters\CorsFilter::class,
         'csrf'          => CSRF::class,
         'toolbar'       => DebugToolbar::class,
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
-        'autologin'     => \App\Filters\AutoLogin::class,
     ];
 
     /**
@@ -31,14 +29,11 @@ class Filters extends BaseConfig
      */
     public array $globals = [
         'before' => [
-            'autologin',
-            'cors',
             'session' => ['except' => ['login*', 'register', 'auth/a/*']],
-            'csrf',
+            //'csrf',
             'invalidchars',
         ],
         'after' => [
-            'cors',
             'toolbar',
             'honeypot',
             'secureheaders',

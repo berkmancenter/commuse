@@ -30,3 +30,12 @@ defined('SHOW_DEBUG_BACKTRACE') || define('SHOW_DEBUG_BACKTRACE', true);
  | items. It can always be used within your own application too.
  */
 defined('CI_DEBUG') || define('CI_DEBUG', true);
+
+if (php_sapi_name() !== 'cli') {
+  if (isset(getallheaders()['Origin'])) {
+    header('Access-Control-Allow-Origin: ' . getallheaders()['Origin']);
+    header('Access-Control-Allow-Methods: *');
+    header('Access-Control-Allow-Headers: *');
+    header('Access-Control-Allow-Credentials: true');
+  }
+}

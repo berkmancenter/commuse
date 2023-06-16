@@ -15,7 +15,7 @@ const fetchIt = async (url, options = {}) => {
   try {
     response = await fetch(url, options)
   } catch (error) {
-    globals.awn.warning('Something went wrong.<br>Please refresh the page.')
+    globals.awn.warning('Something went wrong, try again.')
   }
 
   const responsePromise = new Promise((resolve, reject) => {
@@ -27,4 +27,4 @@ const fetchIt = async (url, options = {}) => {
   return responsePromise
 }
 
-export default fetchIt;
+export default fetchIt

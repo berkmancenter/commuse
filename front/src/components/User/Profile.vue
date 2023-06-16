@@ -6,14 +6,14 @@
       <div class="field">
         <label class="label">First name</label>
         <div class="control">
-          <input class="input" type="text" v-model="firstName">
+          <input class="input" type="text" v-model="$store.state.app.userProfile.firstName">
         </div>
       </div>
 
       <div class="field">
         <label class="label">Last name</label>
         <div class="control">
-          <input class="input" type="text" v-model="lastName">
+          <input class="input" type="text" v-model="$store.state.app.userProfile.lastName">
         </div>
       </div>
 
@@ -21,7 +21,7 @@
         <label class="label">Short bio</label>
         <div class="control">
           <div class="control">
-            <textarea class="textarea" v-model="shortBio"></textarea>
+            <textarea class="textarea" v-model="$store.state.app.userProfile.shortBio"></textarea>
           </div>
         </div>
       </div>
@@ -30,7 +30,7 @@
         <label class="label">Full bio</label>
         <div class="control">
           <div class="control">
-            <textarea class="textarea" v-model="fullBio"></textarea>
+            <textarea class="textarea" v-model="$store.state.app.userProfile.bio"></textarea>
           </div>
         </div>
       </div>
@@ -38,49 +38,49 @@
       <div class="field">
         <label class="label">Continent</label>
         <div class="control">
-          <input class="input" type="text" v-model="continent">
+          <input class="input" type="text" v-model="$store.state.app.userProfile.continent">
         </div>
       </div>
 
       <div class="field">
         <label class="label">Country</label>
         <div class="control">
-          <input class="input" type="text" v-model="country">
+          <input class="input" type="text" v-model="$store.state.app.userProfile.country">
         </div>
       </div>
 
       <div class="field">
         <label class="label">City</label>
         <div class="control">
-          <input class="input" type="text" v-model="city">
+          <input class="input" type="text" v-model="$store.state.app.userProfile.city">
         </div>
       </div>
 
       <div class="field">
         <label class="label">Twitter link</label>
         <div class="control">
-          <input class="input" type="text" v-model="twitterLink">
+          <input class="input" type="text" v-model="$store.state.app.userProfile.twitterUrl">
         </div>
       </div>
 
       <div class="field">
         <label class="label">LinkedIn link</label>
         <div class="control">
-          <input class="input" type="text" v-model="linkedinLink">
+          <input class="input" type="text" v-model="$store.state.app.userProfile.linkedinUrl">
         </div>
       </div>
 
       <div class="field">
         <label class="label">Mastodon link</label>
         <div class="control">
-          <input class="input" type="text" v-model="mastodonLink">
+          <input class="input" type="text" v-model="$store.state.app.userProfile.mastodonUrl">
         </div>
       </div>
 
       <div class="field">
         <div class="control">
           <label class="checkbox">
-            <input type="checkbox" v-model="publicProfile">
+            <input type="checkbox" v-model="$store.state.app.userProfile.publicProfile">
             Public profile
           </label>
         </div>
@@ -96,41 +96,35 @@
 </template>
 
 <script>
+  import { keysToCamelCase, keysToSnakeCase } from '@/lib/keysConverting.js'
+
   export default {
     name: 'UserProfile',
     data() {
-      return {
-        firstName: '',
-        lastName: '',
-        shortBio: '',
-        fullBio: '',
-        continent: '',
-        country: '',
-        city: '',
-        publicProfile: false,
-        twitterLink: '',
-        linkedinLink: '',
-        mastodonLink: '',
-      }
+      return {}
+    },
+    created() {
+      this.initialDataLoad()
     },
     methods: {
-      saveProfile() {
-        const formData = {
-          firstName: this.firstName,
-          lastName: this.lastName,
-          shortBio: this.shortBio,
-          fullBio: this.fullBio,
-          continent: this.continent,
-          country: this.country,
-          city: this.city,
-          publicProfile: this.publicProfile,
-          twitterLink: this.twitterLink,
-          linkedinLink: this.linkedinLink,
-          mastodonLink: this.mastodonLink,
-        }
+      async saveProfile() {
+        const response = await this.$store.dispatch('app/saveProfile', keysToSnakeCase(this.$store.state.app.userProfile))
 
-        console.log(formData)
-      }
+        if (response.ok) {
+          this.awn.success('User profile has been saved.')
+        } else {
+          this.awn.warning('Something went wrong, try again.')
+        }
+      },
+      async initialDataLoad() {
+        let profile = await this.$store.dispatch('app/fetchProfile')
+
+        profile = keysToCamelCase(profile)
+
+        console.log(profile)
+
+        this.$store.dispatch('app/setUserProfile', profile)
+      },
     }
   }
 </script>
@@ -142,6 +136,10 @@
       width: 100%;
       max-width: 400px;
       min-width: unset;
+    }
+
+    label {
+      user-select: none;
     }
   }
 </style>

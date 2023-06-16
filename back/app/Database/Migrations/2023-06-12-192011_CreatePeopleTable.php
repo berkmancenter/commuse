@@ -30,9 +30,20 @@ class CreatePeopleTable extends Migration
                 'constraint' => '1000',
                 'default'    => '',
             ],
-            'social_media' => [
-                'type' => 'JSONB',
-                'default'    => '{}',
+            'twitter_url' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '1000',
+                'default'    => '',
+            ],
+            'linkedin_url' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '1000',
+                'default'    => '',
+            ],
+            'mastodon_url' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '1000',
+                'default'    => '',
             ],
             'short_bio' => [
                 'type' => 'TEXT',
@@ -42,7 +53,7 @@ class CreatePeopleTable extends Migration
                 'type' => 'TEXT',
                 'default'    => '',
             ],
-            'area' => [
+            'continent' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '100',
                 'default'    => '',
@@ -63,7 +74,12 @@ class CreatePeopleTable extends Migration
             ],
             'user_id' => [
                 'type' => 'INT',
-                'default'    => null,
+                'null'       => false,
+                'unique'     => true,
+            ],
+            'public_profile' => [
+                'type'       => 'BOOLEAN',
+                'default'    => false,
             ],
             'created_at' => [
                 'type' => 'datetime',

@@ -3,10 +3,25 @@ import store2 from 'store2'
 
 const apiUrl = import.meta.env.VITE_API_URL
 
+const defaultProfile = {
+  firstName: '',
+  lastName: '',
+  shortBio: '',
+  bio: '',
+  continent: '',
+  country: '',
+  city: '',
+  publicProfile: false,
+  twitterUrl: '',
+  linkedinUrl: '',
+  mastodonUrl: '',
+}
+
 const state = {
   news: [],
   people: [],
   sideMenuStatus: true,
+  userProfile: defaultProfile,
 }
 
 const mutations = {
@@ -18,6 +33,9 @@ const mutations = {
   },
   setSideMenuStatus(state, status) {
     state.sideMenuStatus = status
+  },
+  setUserProfile(state, profile) {
+    state.userProfile = profile
   },
 }
 
@@ -34,6 +52,12 @@ const actions = {
 
     return data
   },
+  async fetchProfile(context) {
+    const response = await fetchIt(`${apiUrl}/api/users/current`)
+    const data = await response.json()
+
+    return data
+  },
   setNews(context, news) {
     context.commit('setNews', news)
   },
@@ -43,6 +67,21 @@ const actions = {
   setSideMenuStatus(context, status) {
     context.commit('setSideMenuStatus', status)
     store2('commuse.side_menu_status', status)
+  },
+  setUserProfile(context, profile) {
+    context.commit('setUserProfile', profile)
+  },
+  async saveProfile(context, profileData) {
+    const response = await fetchIt(`${apiUrl}/api/users/saveProfile`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(profileData),
+    })
+
+    return response
   },
 }
 
