@@ -50,8 +50,6 @@ class Users extends BaseController
           'user_id'        => $userId,
       ];
 
-      log_message('error', print_r($data, true));
-
       $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';
 
       $result = $existingPerson ? $peopleModel->update($existingPerson['id'], $data) : $peopleModel->insert($data);
