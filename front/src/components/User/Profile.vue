@@ -134,8 +134,24 @@
     input[type=text],
     textarea {
       width: 100%;
-      max-width: 400px;
+      max-width: 30%;
       min-width: unset;
+
+      @media all and (max-width: 1600px) {
+        max-width: 40%;
+      }
+
+      @media all and (max-width: 1300px) {
+        max-width: 50%;
+      }
+
+      @media all and (max-width: 900px) {
+        max-width: 70%;
+      }
+
+      @media all and (max-width: 700px) {
+        max-width: 100%;
+      }
     }
 
     label {
