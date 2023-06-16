@@ -44,7 +44,7 @@
         const searchTerm = this.searchTerm.toLowerCase();
 
         return this.$store.state.app.people.filter((person) => {
-          const searchText = `${person.first_name} ${person.last_name} ${person.short_bio} ${person.topics.join(' ')}`.toLowerCase();
+          const searchText = `${person.first_name} ${person.last_name} ${person.short_bio} ${person.city} ${person.country} ${person.continent} ${person.topics.join(' ')}`.toLowerCase();
 
           return searchText.includes(searchTerm);
         });
@@ -58,6 +58,7 @@
     methods: {
       async initialDataLoad() {
         const people = await this.$store.dispatch('app/fetchPeople')
+        console.log(people)
         this.$store.dispatch('app/setPeople', people)
         this.$nextTick(() => {
           this.lazyLoadInstance.update()

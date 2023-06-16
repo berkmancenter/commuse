@@ -5,33 +5,39 @@
       <div>{{ person.last_name }}</div>
     </div>
 
-    <div class="is-size-5 mb-4">
-      <div class="is-flex is-justify-content-center is-align-items-center" v-if="person.organization">
-        {{ person.organization }}
-      </div>
-    </div>
-
     <div class="people-section-avatar">
       <img class="lazy" :data-src="person.image_url">
     </div>
 
-    <div class="mt-2 people-section-topics">
+    <div class="is-size-6" v-if="person.city">
+        {{ person.city }}
+    </div>
+
+    <div class="is-size-6" v-if="person.country">
+        {{ person.country }}
+    </div>
+
+    <div class="is-size-6" v-if="person.continent">
+        {{ person.continent }}
+    </div>
+
+    <div class="mt-2 people-section-topics" v-if="person.topics.length > 0">
       <span class="tag" v-for="topic in person.topics" :key="topic">{{ topic }}</span>
     </div>
 
     <div class="mt-2 person-section-social is-flex">
-      <div v-if="person.bio" class="mr-2">
-        <a :href="person.twitter" target="_blank">
+      <div v-if="person.twitter_url" class="mr-2">
+        <a :href="person.twitter_url" target="_blank">
           <img src="@/assets/images/twitter.svg">
         </a>
       </div>
-      <div v-if="person.bio" class="mr-2">
-        <a :href="person.linkedin" target="_blank">
+      <div v-if="person.linkedin_url" class="mr-2">
+        <a :href="person.linkedin_url" target="_blank">
           <img src="@/assets/images/linkedin.svg">
         </a>
       </div>
-      <div v-if="person.bio" class="mr-2">
-        <a :href="person.mastodon" target="_blank">
+      <div v-if="person.mastodon_url" class="mr-2">
+        <a :href="person.mastodon_url" target="_blank">
           <img src="@/assets/images/mastodon.svg">
         </a>
       </div>
