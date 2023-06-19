@@ -3,6 +3,8 @@ set -o allexport
 source .env
 set +o allexport
 
+[ ! -d "dist" ] && mkdir "dist"
+
 CONFIG_FILE=vite.config.js
 if [ ! -f "$CONFIG_FILE" ]; then
   echo 'You must run the script from the "front" directory.'
@@ -17,6 +19,6 @@ fi
 
 yarn install
 yarn run build --base=$BASE_PATH
-rm -rf /back/app/Views/front_end.html /back/public/front_assets
-mv dist/index.html /back/app/Views/front_end.html
-cp -R dist/front_assets /back/public
+rm -rf ../back/app/Views/front_end.html ../back/public/front_assets
+mv dist/index.html ../back/app/Views/front_end.html
+cp -R dist/front_assets ../back/public
