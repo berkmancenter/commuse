@@ -6,7 +6,7 @@
     </div>
 
     <div class="people-section-avatar">
-      <img class="lazy" :data-src="person.image_url">
+      <img class="lazy" :data-src="`${apiUrl}/api/files/get/${person.image_url}`">
     </div>
 
     <div class="is-size-6" v-if="person.city">
@@ -52,6 +52,11 @@
 <script>
 export default {
   name: 'Person',
+  data() {
+    return {
+      apiUrl: import.meta.env.VITE_API_URL,
+    }
+  },
   props: {
     person: {
       type: Object,
@@ -84,6 +89,7 @@ export default {
     .people-section-avatar {
       img {
         max-width: 200px;
+        max-height: 200px;
       }
     }
 

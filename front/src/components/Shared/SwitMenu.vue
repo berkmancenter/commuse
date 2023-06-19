@@ -60,7 +60,6 @@
         this.toggleBodyClass()
       },
       closeMenu() {
-        console.log(111)
         this.$store.dispatch('app/setSideMenuStatus', false)
         this.toggleBodyClass()
       },

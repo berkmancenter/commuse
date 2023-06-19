@@ -33,6 +33,8 @@ $routes->get('api/news', 'News::index');
 $routes->get('api/people', 'People::index');
 $routes->get('api/users/current', 'Users::current');
 $routes->post('api/users/saveProfile', 'Users::saveProfile');
+$routes->post('api/users/uploadProfileImage', 'Users::uploadProfileImage');
+$routes->get('api/files/get/(.+)', 'Files::get/$1');
 
 $routes->get('/', function() {
   return view('front_end.html');

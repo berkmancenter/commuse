@@ -58,7 +58,7 @@
     methods: {
       async initialDataLoad() {
         const people = await this.$store.dispatch('app/fetchPeople')
-        console.log(people)
+
         this.$store.dispatch('app/setPeople', people)
         this.$nextTick(() => {
           this.lazyLoadInstance.update()

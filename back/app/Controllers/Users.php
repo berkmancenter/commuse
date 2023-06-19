@@ -16,11 +16,15 @@ class Users extends BaseController
     $personData = $peopleModel->where('user_id', $userId)->first() ?? [];
 
     if (isset($personData['public_profile'])) {
-      if ($personData['public_profile'] === 't') {
-        $personData['public_profile'] = true;
-      } else {
-        $personData['public_profile'] = false;
-      }
+        if ($personData['public_profile'] === 't') {
+            $personData['public_profile'] = true;
+        } else {
+            $personData['public_profile'] = false;
+        }
+    }
+
+    if (isset($personData['image_url'])) {
+        $personData['image_url'] = "profile_images/{$personData['image_url']}";
     }
 
     return $this->respond($personData);
@@ -56,6 +60,47 @@ class Users extends BaseController
 
       if ($result) {
           return $this->respond(['message' => $message], 200);
+      } else {
+          return $this->respond(['message' => 'Error saving data'], 500);
+      }
+  }
+
+  public function uploadProfileImage()
+  {
+      helper('text');
+
+      $peopleModel = new PeopleModel();
+      $userId = auth()->id();
+
+      $existingPerson = $peopleModel->where('user_id', $userId)->first();
+
+      $file = $this->request->getFile('image');
+
+      if (!$file->isValid()) {
+        return;
+      }
+
+      $fileName = $file->getRandomName();
+      $dirPath = ROOTPATH . 'writable/uploads/profile_images/';
+      if (!is_dir($dirPath)) {
+          mkdir($dirPath);
+      }
+      $file->move($dirPath, $fileName);
+
+      $data = [
+          'image_url'  => $fileName,
+          'user_id'    => $userId,
+      ];
+
+      $result = $existingPerson ? $peopleModel->update($existingPerson['id'], $data) : $peopleModel->insert($data);
+
+      $message = $existingPerson ? 'Profile image updated successfully' : 'Profile image created successfully';
+
+      if ($result) {
+          return $this->respond([
+              'message' => 'ok',
+              'image' => "profile_images/{$fileName}",
+          ], 200);
       } else {
           return $this->respond(['message' => 'Error saving data'], 500);
       }

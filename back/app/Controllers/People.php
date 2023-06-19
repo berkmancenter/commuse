@@ -27,11 +27,13 @@ class People extends BaseController
               'linkedin_url',
               'mastodon_url',
           ])
-          ->orderBy('id', 'desc')
+          ->where('public_profile', true)
+          ->orderBy('last_name', 'asc')
           ->findAll();
 
       $people = array_map(function ($person) {
           $person['topics'] = json_decode($person['topics']);
+          $person['image_url'] = "profile_images/{$person['image_url']}";
 
           return $person;
       }, $people);

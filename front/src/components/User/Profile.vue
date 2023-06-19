@@ -1,8 +1,22 @@
 <template>
-  <div class="user-profile">
+  <div class="user-profile mb-4">
     <h3 class="is-size-2 mb-4">Your profile</h3>
 
     <form @submit.prevent="saveProfile">
+      <div class="field user-profile-image">
+        <label class="label">Profile image</label>
+        <div class="control">
+          <img :src="`${apiUrl}/api/files/get/${$store.state.app.userProfile.imageUrl}`">
+          <input ref="userProfileImageInput" type="file" accept=".jpg, .png, .jpeg, .gif" @change="uploadProfileImage()">
+          <div class="my-2">
+            <button class="button" type="button" @click="openUploadProfileImage()">
+              <img src="@/assets/images/profile_image.svg">
+              Upload new profile image
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="field">
         <label class="label">First name</label>
         <div class="control">
@@ -101,7 +115,9 @@
   export default {
     name: 'UserProfile',
     data() {
-      return {}
+      return {
+        apiUrl: import.meta.env.VITE_API_URL,
+      }
     },
     created() {
       this.initialDataLoad()
@@ -111,7 +127,7 @@
         const response = await this.$store.dispatch('app/saveProfile', keysToSnakeCase(this.$store.state.app.userProfile))
 
         if (response.ok) {
-          this.awn.success('User profile has been saved.')
+          this.awn.success('Your profile has been saved.')
         } else {
           this.awn.warning('Something went wrong, try again.')
         }
@@ -121,9 +137,25 @@
 
         profile = keysToCamelCase(profile)
 
-        console.log(profile)
-
         this.$store.dispatch('app/setUserProfile', profile)
+      },
+      openUploadProfileImage() {
+        this.$refs.userProfileImageInput.click()
+      },
+      async uploadProfileImage() {
+        if (this.$refs.userProfileImageInput.files[0]) {
+          const response = await this.$store.dispatch('app/uploadProfileImage', this.$refs.userProfileImageInput.files[0])
+
+          if (response.ok) {
+            const profile = this.$store.state.app.userProfile
+            const data = await response.json()
+            profile.imageUrl = data.image
+            this.$store.dispatch('app/setUserProfile', profile)
+            this.awn.success('Your profile image has been saved.')
+          } else {
+            this.awn.warning('Something went wrong, try again.')
+          }
+        }
       },
     }
   }
@@ -156,6 +188,24 @@
 
     label {
       user-select: none;
+    }
+
+    .user-profile-image {
+      img {
+        max-width: 200px;
+      }
+
+      button {
+        img {
+          height: 1rem;
+          width: 1rem;
+          margin-right: 0.5rem;
+        }
+      }
+
+      input {
+        display: none;
+      }
     }
   }
 </style>
