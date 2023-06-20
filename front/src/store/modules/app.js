@@ -20,7 +20,7 @@ const defaultProfile = {
 const state = {
   news: [],
   people: [],
-  sideMenuStatus: true,
+  sideMenuStatus: false,
   userProfile: defaultProfile,
 }
 
@@ -103,7 +103,7 @@ const getters = {}
 
 function initLocalStorage() {
   if (store2('commuse.side_menu_status') === null) {
-    store2('commuse.side_menu_status', true)
+    store2('commuse.side_menu_status', false)
   }
 
   state.sideMenuStatus = store2('commuse.side_menu_status')
