@@ -19,6 +19,10 @@ const fetchIt = async (url, options = {}) => {
   }
 
   const responsePromise = new Promise((resolve, reject) => {
+    if (response.redirected === true && response.url.includes('/login')) {
+      window.location.href = response.url
+    }
+
     if (response) {
       resolve(response)
     }
