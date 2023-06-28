@@ -124,6 +124,7 @@
     },
     methods: {
       async saveProfile() {
+        console.log(this.$store.state.app.userProfile)
         const response = await this.$store.dispatch('app/saveProfile', keysToSnakeCase(this.$store.state.app.userProfile))
 
         if (response.ok) {
@@ -134,6 +135,10 @@
       },
       async initialDataLoad() {
         let profile = await this.$store.dispatch('app/fetchProfile')
+
+        if (profile.length === 0) {
+          return
+        }
 
         profile = keysToCamelCase(profile)
 

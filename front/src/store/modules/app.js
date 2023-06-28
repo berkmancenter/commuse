@@ -21,7 +21,7 @@ const state = {
   news: [],
   people: [],
   sideMenuStatus: false,
-  userProfile: defaultProfile,
+  userProfile: JSON.parse(JSON.stringify(defaultProfile)),
 }
 
 const mutations = {

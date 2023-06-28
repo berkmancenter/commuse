@@ -23,7 +23,7 @@ class Users extends BaseController
         }
     }
 
-    if (isset($personData['image_url'])) {
+    if (isset($personData['image_url']) && $personData['image_url']) {
         $personData['image_url'] = "profile_images/{$personData['image_url']}";
     }
 
