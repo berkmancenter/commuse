@@ -6,7 +6,7 @@
       <div class="field user-profile-image">
         <label class="label">Profile image</label>
         <div class="control">
-          <img :src="`${apiUrl}/api/files/get/${$store.state.app.userProfile.imageUrl}`">
+          <img :src="`${apiUrl}/api/files/get/${$store.state.app.userProfile.imageUrl}`" v-if="$store.state.app.userProfile.imageUrl">
           <input ref="userProfileImageInput" type="file" accept=".jpg, .png, .jpeg, .gif" @change="uploadProfileImage()">
           <div class="my-2">
             <button class="button" type="button" @click="openUploadProfileImage()">
