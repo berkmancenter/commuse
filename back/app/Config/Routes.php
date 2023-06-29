@@ -42,6 +42,9 @@ $routes->get('/', function() {
 $routes->get('people', function() {
   return view('front_end.html');
 });
+$routes->get('profile', function() {
+  return view('front_end.html');
+});
 
 service('auth')->routes($routes);
 
