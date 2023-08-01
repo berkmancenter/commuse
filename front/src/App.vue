@@ -7,7 +7,11 @@
     >
       <ul>
         <li v-for="(link) in menu">
-          <router-link :to="link.href" class="hvr-fade" @click="hideMenuMobile">
+          <a :href="link.href" class="hvr-fade" @click="hideMenuMobile" v-if="link.external === true">
+            <img class="side-menu-icon" :src="link.icon">
+            {{ link.title }}
+          </a>
+          <router-link :to="link.href" class="hvr-fade" @click="hideMenuMobile" v-if="link.external !== true">
             <img class="side-menu-icon" :src="link.icon">
             {{ link.title }}
           </router-link>
@@ -48,7 +52,10 @@ import SwitMenu from '@/components/Shared/SwitMenu.vue'
 import homeMenuIcon from '@/assets/images/home_menu.svg'
 import peopleMenuIcon from '@/assets/images/people_menu.svg'
 import profileMenuIcon from '@/assets/images/profile_menu.svg'
+import logoutIcon from '@/assets/images/logout.svg'
 import { isMobile } from '@/lib/mobile_utils.js'
+
+const apiUrl = import.meta.env.VITE_API_URL
 
 export default {
   name: 'CommUse',
@@ -73,6 +80,12 @@ export default {
           href: '/profile',
           title: 'My profile',
           icon: profileMenuIcon,
+        },
+        {
+          href: `${apiUrl}/logout`,
+          title: 'Log out',
+          icon: logoutIcon,
+          external: true,
         },
       ],
     }

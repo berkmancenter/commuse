@@ -110,7 +110,7 @@
 </template>
 
 <script>
-  import { keysToCamelCase, keysToSnakeCase } from '@/lib/keysConverting.js'
+  import { keysToCamelCase, keysToSnakeCase } from '@/lib/keys_converting.js'
 
   export default {
     name: 'UserProfile',
