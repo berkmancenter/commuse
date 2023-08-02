@@ -12,8 +12,6 @@ class People extends BaseController
   {
       $peopleModel = model('PeopleModel');
 
-var_dump($peopleModel->getAllUniqueTopics());
-
       $people = $peopleModel
           ->select([
               'id',
