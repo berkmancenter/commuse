@@ -48,56 +48,56 @@
 </template>
 
 <script>
-import SwitMenu from '@/components/Shared/SwitMenu.vue'
-import homeMenuIcon from '@/assets/images/home_menu.svg'
-import peopleMenuIcon from '@/assets/images/people_menu.svg'
-import profileMenuIcon from '@/assets/images/profile_menu.svg'
-import logoutIcon from '@/assets/images/logout.svg'
-import { isMobile } from '@/lib/mobile_utils.js'
+  import SwitMenu from '@/components/Shared/SwitMenu.vue'
+  import homeMenuIcon from '@/assets/images/home_menu.svg'
+  import peopleMenuIcon from '@/assets/images/people_menu.svg'
+  import profileMenuIcon from '@/assets/images/profile_menu.svg'
+  import logoutIcon from '@/assets/images/logout.svg'
+  import { isMobile } from '@/lib/mobile_utils.js'
 
-const apiUrl = import.meta.env.VITE_API_URL
+  const apiUrl = import.meta.env.VITE_API_URL
 
-export default {
-  name: 'CommUse',
-  components: {
-    SwitMenu,
-  },
-  data() {
-    return {
-      appTitle: import.meta.env.VITE_APP_TITLE || 'commuse',
-      menu: [
-        {
-          href: '/',
-          title: 'Home',
-          icon: homeMenuIcon,
-        },
-        {
-          href: '/people',
-          title: 'People',
-          icon: peopleMenuIcon,
-        },
-        {
-          href: '/profile',
-          title: 'My profile',
-          icon: profileMenuIcon,
-        },
-        {
-          href: `${apiUrl}/logout`,
-          title: 'Log out',
-          icon: logoutIcon,
-          external: true,
-        },
-      ],
-    }
-  },
-  methods: {
-    hideMenuMobile() {
-      if (isMobile()) {
-        this.mitt.emit('closeSideMenu')
+  export default {
+    name: 'CommUse',
+    components: {
+      SwitMenu,
+    },
+    data() {
+      return {
+        appTitle: import.meta.env.VITE_APP_TITLE || 'commuse',
+        menu: [
+          {
+            href: '/',
+            title: 'Home',
+            icon: homeMenuIcon,
+          },
+          {
+            href: '/people',
+            title: 'People',
+            icon: peopleMenuIcon,
+          },
+          {
+            href: '/profile',
+            title: 'My profile',
+            icon: profileMenuIcon,
+          },
+          {
+            href: `${apiUrl}/logout`,
+            title: 'Log out',
+            icon: logoutIcon,
+            external: true,
+          },
+        ],
       }
     },
-  },
-}
+    methods: {
+      hideMenuMobile() {
+        if (isMobile()) {
+          this.mitt.emit('closeSideMenu')
+        }
+      },
+    },
+  }
 </script>
 
 <style lang="scss">

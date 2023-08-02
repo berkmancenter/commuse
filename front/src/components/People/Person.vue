@@ -50,20 +50,20 @@
 </template>
 
 <script>
-export default {
-  name: 'Person',
-  data() {
-    return {
-      apiUrl: import.meta.env.VITE_API_URL,
-    }
-  },
-  props: {
-    person: {
-      type: Object,
-      required: true
+  export default {
+    name: 'Person',
+    data() {
+      return {
+        apiUrl: import.meta.env.VITE_API_URL,
+      }
+    },
+    props: {
+      person: {
+        type: Object,
+        required: true
+      }
     }
   }
-};
 </script>
 
 <style lang="scss">
@@ -88,7 +88,6 @@ export default {
 
     .people-section-avatar {
       img {
-        max-width: 200px;
         max-height: 200px;
       }
     }

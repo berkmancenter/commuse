@@ -27,6 +27,7 @@
 <script>
   import LazyLoad from 'vanilla-lazyload'
   import Person from './Person.vue'
+  import profileFallbackImage from '@/assets/images/profile_fallback.png'
 
   export default {
     name: 'PeopleIndex',
@@ -37,6 +38,7 @@
       return {
         lazyLoadInstance: null,
         searchTerm: '',
+        profileFallbackImage: profileFallbackImage,
       }
     },
     computed: {
@@ -67,7 +69,7 @@
       initLazyLoad() {
         this.lazyLoadInstance = new LazyLoad({
           callback_error: (img) => {
-            img.setAttribute('src', '')
+            img.setAttribute('src', this.profileFallbackImage)
           },
           unobserve_entered: true,
           unobserve_completed: true,
