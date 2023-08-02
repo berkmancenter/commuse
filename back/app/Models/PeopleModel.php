@@ -38,4 +38,14 @@ class PeopleModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getAllUniqueTopics()
+    {
+        $query = $this->db->query('SELECT DISTINCT jsonb_array_elements_text(topics) AS unique_topics FROM people;');
+        $results = $query->getResultArray();
+
+        $uniqueTopics = array_column($results, 'unique_topics');
+
+        return $uniqueTopics;
+    }
 }

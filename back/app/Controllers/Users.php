@@ -27,6 +27,8 @@ class Users extends BaseController
         $personData['image_url'] = "profile_images/{$personData['image_url']}";
     }
 
+    $personData['topics'] = json_decode($personData['topics']);
+
     return $this->respond($personData);
   }
 
@@ -51,6 +53,7 @@ class Users extends BaseController
           'linkedin_url'   => $requestData['linkedin_url'] ?? '',
           'mastodon_url'   => $requestData['mastodon_url'] ?? '',
           'public_profile' => $requestData['public_profile'] ?? '0',
+          'topics'         => json_encode($requestData['topics']) ?? '[]',
           'user_id'        => $userId,
       ];
 

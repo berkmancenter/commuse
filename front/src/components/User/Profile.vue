@@ -71,6 +71,22 @@
       </div>
 
       <div class="field">
+        <label class="label">Interests</label>
+        <div class="control">
+          <VueMultiselect
+            v-model="$store.state.app.userProfile.topics"
+            :multiple="true"
+            :taggable="true"
+            :options="topics"
+            tag-placeholder="Add this as new interest"
+            placeholder="Search or add an interest"
+            @tag="addInterest"
+          >
+          </VueMultiselect>
+        </div>
+      </div>
+
+      <div class="field">
         <label class="label">Twitter link</label>
         <div class="control">
           <input class="input" type="text" v-model="$store.state.app.userProfile.twitterUrl">
@@ -111,13 +127,18 @@
 
 <script>
   import { keysToCamelCase, keysToSnakeCase } from '@/lib/keys_converting.js'
+  import VueMultiselect from 'vue-multiselect'
 
   export default {
     name: 'UserProfile',
     data() {
       return {
         apiUrl: import.meta.env.VITE_API_URL,
+        topics: [],
       }
+    },
+    components: {
+      VueMultiselect: VueMultiselect,
     },
     created() {
       this.initialDataLoad()
@@ -134,15 +155,8 @@
         }
       },
       async initialDataLoad() {
-        let profile = await this.$store.dispatch('app/fetchProfile')
-
-        if (profile.length === 0) {
-          return
-        }
-
-        profile = keysToCamelCase(profile)
-
-        this.$store.dispatch('app/setUserProfile', profile)
+        this.loadProfile()
+        this.loadTopics()
       },
       openUploadProfileImage() {
         this.$refs.userProfileImageInput.click()
@@ -162,14 +176,32 @@
           }
         }
       },
+      addInterest (newInterest) {
+        this.$store.dispatch('app/addInterest', newInterest)
+      },
+      async loadProfile() {
+        let profile = await this.$store.dispatch('app/fetchProfile')
+
+        if (profile.length === 0) {
+          return
+        }
+
+        profile = keysToCamelCase(profile)
+
+        this.$store.dispatch('app/setUserProfile', profile)
+      },
+      async loadTopics() {
+        let topics = await this.$store.dispatch('app/fetchTopics')
+
+        this.topics = topics
+      },
     }
   }
 </script>
 
 <style lang="scss">
   .user-profile {
-    input[type=text],
-    textarea {
+    .field {
       width: 100%;
       max-width: 30%;
       min-width: unset;

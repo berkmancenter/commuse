@@ -110,3 +110,20 @@
 .container.is-fluid {
   padding: 0 1rem;
 }
+
+.multiselect__tag {
+  background-color: var(--secondary-color);
+  font-size: 1rem;
+
+  .multiselect__tag-icon::after {
+    color: #ffffff;
+  }
+}
+
+.multiselect__option--highlight {
+  background-color: var(--secondary-color);
+
+  &::after {
+    background-color: var(--secondary-color);
+  }
+}

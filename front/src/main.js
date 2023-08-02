@@ -5,6 +5,7 @@ import './plugins/hover_css'
 import awn from './plugins/awesome_notifications'
 import store2 from 'store2'
 import mitt from './plugins/mitt'
+import './plugins/multiselect'
 
 import { createApp } from 'vue'
 import router from './router/index'

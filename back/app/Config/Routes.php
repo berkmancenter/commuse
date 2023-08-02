@@ -32,6 +32,7 @@ $routes->set404Override();
 $routes->get('api/news', 'News::index');
 $routes->get('api/people', 'People::index');
 $routes->get('api/users/current', 'Users::current');
+$routes->get('api/people/topics', 'People::topics');
 $routes->post('api/users/saveProfile', 'Users::saveProfile');
 $routes->post('api/users/uploadProfileImage', 'Users::uploadProfileImage');
 $routes->get('api/files/get/(.+)', 'Files::get/$1');

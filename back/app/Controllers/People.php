@@ -12,6 +12,8 @@ class People extends BaseController
   {
       $peopleModel = model('PeopleModel');
 
+var_dump($peopleModel->getAllUniqueTopics());
+
       $people = $peopleModel
           ->select([
               'id',
@@ -39,5 +41,13 @@ class People extends BaseController
       }, $people);
 
       return $this->respond($people);
+  }
+
+  public function topics()
+  {
+      $peopleModel = model('PeopleModel');
+      $uniqueTopics = $peopleModel->getAllUniqueTopics();
+
+      return $this->respond($uniqueTopics);
   }
 }
