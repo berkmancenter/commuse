@@ -157,6 +157,10 @@
       > div {
         margin-right: 1rem;
       }
+
+      input::placeholder {
+        color: rgba(54, 54, 54, 0.3);
+      }
     }
   }
 </style>
