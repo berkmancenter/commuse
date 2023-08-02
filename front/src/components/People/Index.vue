@@ -7,9 +7,19 @@
         <input
           type="text"
           v-model="searchTerm"
-          placeholder="Filter"
+          placeholder="Filter by text"
           class="input mb-4"
         >
+      </div>
+
+      <div>
+        <VueMultiselect
+          v-model="topics"
+          :multiple="true"
+          :options="allTopics"
+          placeholder="Filter by interests"
+        >
+        </VueMultiselect>
       </div>
     </div>
 
@@ -28,28 +38,35 @@
   import LazyLoad from 'vanilla-lazyload'
   import Person from './Person.vue'
   import profileFallbackImage from '@/assets/images/profile_fallback.png'
+  import VueMultiselect from 'vue-multiselect'
 
   export default {
     name: 'PeopleIndex',
     components: {
       Person,
+      VueMultiselect,
     },
     data() {
       return {
         lazyLoadInstance: null,
         searchTerm: '',
         profileFallbackImage: profileFallbackImage,
+        topics: [],
+        allTopics: [],
       }
     },
     computed: {
       filteredPeople() {
-        const searchTerm = this.searchTerm.toLowerCase();
+        const searchTerm = this.searchTerm.toLowerCase()
 
         return this.$store.state.app.people.filter((person) => {
-          const searchText = `${person.first_name} ${person.last_name} ${person.short_bio} ${person.city} ${person.country} ${person.continent} ${person.topics.join(' ')}`.toLowerCase();
+          const searchText = `${person.first_name} ${person.last_name} ${person.short_bio} ${person.city} ${person.country} ${person.continent} ${person.topics.join(' ')}`.toLowerCase()
 
-          return searchText.includes(searchTerm);
-        });
+          const hasSearchTerm = searchText.includes(searchTerm)
+          const hasSelectedTopics = this.topics.length === 0 || this.topics.some(topic => person.topics.includes(topic))
+
+          return hasSearchTerm && hasSelectedTopics
+        })
       },
     },
     created() {
@@ -59,6 +76,8 @@
     mounted() {},
     methods: {
       async initialDataLoad() {
+        this.loadTopics();
+
         const people = await this.$store.dispatch('app/fetchPeople')
 
         this.$store.dispatch('app/setPeople', people)
@@ -76,9 +95,19 @@
         })
         this.lazyLoadInstance.update()
       },
+      async loadTopics() {
+        let topics = await this.$store.dispatch('app/fetchTopics')
+
+        this.allTopics = topics
+      },
     },
     watch: {
       searchTerm() {
+        this.$nextTick(() => {
+          this.lazyLoadInstance.update()
+        })
+      },
+      topics() {
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
         })
