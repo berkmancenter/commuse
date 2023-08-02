@@ -22,7 +22,7 @@
     </div>
 
     <div class="mt-2 people-section-topics" v-if="person.topics.length > 0">
-      <span class="tag" v-for="topic in person.topics" :key="topic">{{ topic }}</span>
+      <span class="tag" v-for="topic in person.topics" :key="topic" @click="setTopicActive(topic)">{{ topic }}</span>
     </div>
 
     <div class="mt-2 person-section-social is-flex">
@@ -62,7 +62,12 @@
         type: Object,
         required: true
       }
-    }
+    },
+    methods: {
+      setTopicActive(topic) {
+        this.mitt.emit('setTopicActive', topic)
+      },
+    },
   }
 </script>
 
@@ -107,6 +112,8 @@
         padding: .2rem .3rem;
         margin: .4rem .4rem .4rem 0;
         border: .1rem solid #000000;
+        cursor: pointer;
+        user-select: none;
       }
     }
   }

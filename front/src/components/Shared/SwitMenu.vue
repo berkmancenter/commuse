@@ -29,6 +29,8 @@
       }
     },
     mounted () {
+      const that = this
+
       this.mitt.on('closeSideMenu', () => that.closeMenu())
 
       this.button = document.querySelector('' + this.buttonSelector)
@@ -45,7 +47,6 @@
 
       this.button.onclick = this.toggleMenu
 
-      const that = this
       document.querySelectorAll('.switmenu-menu a').forEach(function(element) {
         if (that.closeOnClick) {
           element.onclick = function() {

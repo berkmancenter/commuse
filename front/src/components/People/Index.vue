@@ -70,6 +70,9 @@
       },
     },
     created() {
+      const that = this
+
+      this.mitt.on('setTopicActive', (topic) => that.setTopicActive(topic))
       this.initialDataLoad()
       this.initLazyLoad()
     },
@@ -99,6 +102,11 @@
         let topics = await this.$store.dispatch('app/fetchTopics')
 
         this.allTopics = topics
+      },
+      setTopicActive(topic) {
+        if (!this.topics.includes(topic)) {
+          this.topics.push(topic)
+        }
       },
     },
     watch: {
