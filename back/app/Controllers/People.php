@@ -13,7 +13,24 @@ class People extends BaseController
       $peopleModel = model('PeopleModel');
 
       $people = $peopleModel
-          ->select('*')
+          ->select([
+              'id',
+              'prefix',
+              'first_name',
+              'last_name',
+              'middle_name',
+              'preferred_name',
+              'preferred_pronouns',
+              'short_bio',
+              'image_url',
+              'interested_in',
+              'home_city',
+              'home_country',
+              'home_state_province',
+              'twitter_link',
+              'linkedin_link',
+              'mastodon_link',
+          ])
           ->where('public_profile', true)
           ->orderBy('last_name', 'asc')
           ->findAll();

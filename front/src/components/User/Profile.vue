@@ -147,7 +147,7 @@
                   v-model="$store.state.app.userProfile.interestedIn"
                   :multiple="true"
                   :taggable="true"
-                  :options="[]"
+                  :options="interests"
                   tag-placeholder="Add"
                   placeholder="Search or add new"
                   @tag="addProfilePropertyOption"
@@ -355,7 +355,7 @@
     data() {
       return {
         apiUrl: import.meta.env.VITE_API_URL,
-        topics: [],
+        interests: [],
         affiliationOptions: ['Staff', 'Faculty', 'Affiliate', 'Faculty Associate', 'BKC Fellow', 'RSM Fellow', 'RSM Scholar', 'Assembly Fellow', 'Other'],
       }
     },
@@ -382,7 +382,7 @@
       },
       async initialDataLoad() {
         this.loadProfile()
-        this.loadTopics()
+        this.loadInterests()
       },
       openUploadProfileImage() {
         this.$refs.userProfileImageInput.click()
@@ -419,10 +419,10 @@
 
         this.$store.dispatch('app/setUserProfile', profile)
       },
-      async loadTopics() {
-        let topics = await this.$store.dispatch('app/fetchTopics')
+      async loadInterests() {
+        let interests = await this.$store.dispatch('app/fetchInterests')
 
-        this.topics = topics
+        this.interests = interests
       },
     }
   }
