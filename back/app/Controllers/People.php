@@ -13,26 +13,13 @@ class People extends BaseController
       $peopleModel = model('PeopleModel');
 
       $people = $peopleModel
-          ->select([
-              'id',
-              'first_name',
-              'last_name',
-              'short_bio',
-              'image_url',
-              'topics',
-              'city',
-              'country',
-              'continent',
-              'twitter_url',
-              'linkedin_url',
-              'mastodon_url',
-          ])
+          ->select('*')
           ->where('public_profile', true)
           ->orderBy('last_name', 'asc')
           ->findAll();
 
       $people = array_map(function ($person) {
-          $person['topics'] = json_decode($person['topics']);
+          $person['interested_in'] = json_decode($person['interested_in']);
           $person['image_url'] = "profile_images/{$person['image_url']}";
 
           return $person;
@@ -41,11 +28,11 @@ class People extends BaseController
       return $this->respond($people);
   }
 
-  public function topics()
+  public function interests()
   {
       $peopleModel = model('PeopleModel');
-      $uniqueTopics = $peopleModel->getAllUniqueTopics();
+      $uniqueInterests = $peopleModel->getAllUniqueInterests();
 
-      return $this->respond($uniqueTopics);
+      return $this->respond($uniqueInterests);
   }
 }

@@ -39,13 +39,13 @@ class PeopleModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function getAllUniqueTopics()
+    public function getAllUniqueInterests()
     {
-        $query = $this->db->query('SELECT DISTINCT jsonb_array_elements_text(topics) AS unique_topics FROM people;');
+        $query = $this->db->query('SELECT DISTINCT jsonb_array_elements_text(interested_in) AS unique_interests FROM people;');
         $results = $query->getResultArray();
 
-        $uniqueTopics = array_column($results, 'unique_topics');
+        $uniqueInterests = array_column($results, 'unique_interests');
 
-        return $uniqueTopics;
+        return $uniqueInterests;
     }
 }

@@ -14,9 +14,9 @@
 
       <div>
         <VueMultiselect
-          v-model="topics"
+          v-model="interests"
           :multiple="true"
-          :options="allTopics"
+          :options="allInterests"
           placeholder="Filter by interests"
         >
         </VueMultiselect>
@@ -51,8 +51,8 @@
         lazyLoadInstance: null,
         searchTerm: '',
         profileFallbackImage: profileFallbackImage,
-        topics: [],
-        allTopics: [],
+        interests: [],
+        allInterests: [],
       }
     },
     computed: {
@@ -60,26 +60,26 @@
         const searchTerm = this.searchTerm.toLowerCase()
 
         return this.$store.state.app.people.filter((person) => {
-          const searchText = `${person.first_name} ${person.last_name} ${person.short_bio} ${person.city} ${person.country} ${person.continent} ${person.topics.join(' ')}`.toLowerCase()
+          const searchText = `${person.first_name} ${person.last_name} ${person.bio} ${person.city} ${person.country} ${person.interested_in.join(' ')}`.toLowerCase()
 
           const hasSearchTerm = searchText.includes(searchTerm)
-          const hasSelectedTopics = this.topics.length === 0 || this.topics.some(topic => person.topics.includes(topic))
+          const hasSelectedInterests = this.interests.length === 0 || this.interests.some(interest => person.interested_in.includes(interest))
 
-          return hasSearchTerm && hasSelectedTopics
+          return hasSearchTerm && hasSelectedInterests
         })
       },
     },
     created() {
       const that = this
 
-      this.mitt.on('setTopicActive', (topic) => that.setTopicActive(topic))
+      this.mitt.on('setInterestActive', (interest) => that.setInterestActive(interest))
       this.initialDataLoad()
       this.initLazyLoad()
     },
     mounted() {},
     methods: {
       async initialDataLoad() {
-        this.loadTopics();
+        this.loadInterests()
 
         const people = await this.$store.dispatch('app/fetchPeople')
 
@@ -98,14 +98,16 @@
         })
         this.lazyLoadInstance.update()
       },
-      async loadTopics() {
-        let topics = await this.$store.dispatch('app/fetchTopics')
+      async loadInterests() {
+        let interests = await this.$store.dispatch('app/fetchInterests')
 
-        this.allTopics = topics
+        this.allInterests = interests
       },
-      setTopicActive(topic) {
-        if (!this.topics.includes(topic)) {
-          this.topics.push(topic)
+      setInterestActive(interest) {
+        if (!this.interests.includes(interest)) {
+          this.interests.push(interest)
+
+          document.querySelector('body').scrollIntoView()
         }
       },
     },
@@ -115,7 +117,7 @@
           this.lazyLoadInstance.update()
         })
       },
-      topics() {
+      interests() {
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
         })

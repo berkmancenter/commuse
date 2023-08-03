@@ -28,6 +28,12 @@ class Users extends BaseController
     }
 
     $personData['topics'] = json_decode($personData['topics']);
+    $personData['affiliation'] = json_decode($personData['affiliation']);
+    $personData['affiliation_years'] = json_decode($personData['affiliation_years']);
+    $personData['interested_in'] = json_decode($personData['interested_in']);
+    $personData['knowledgeable_in'] = json_decode($personData['knowledgeable_in']);
+    $personData['working_groups'] = json_decode($personData['working_groups']);
+    $personData['projects'] = json_decode($personData['projects']);
 
     return $this->respond($personData);
   }
@@ -42,19 +48,36 @@ class Users extends BaseController
       $requestData = json_decode(file_get_contents('php://input'), true);
 
       $data = [
-          'first_name'     => $requestData['first_name'] ?? '',
-          'last_name'      => $requestData['last_name'] ?? '',
-          'short_bio'      => $requestData['short_bio'] ?? '',
-          'bio'            => $requestData['bio'] ?? '',
-          'continent'      => $requestData['continent'] ?? '',
-          'country'        => $requestData['country'] ?? '',
-          'city'           => $requestData['city'] ?? '',
-          'twitter_url'    => $requestData['twitter_url'] ?? '',
-          'linkedin_url'   => $requestData['linkedin_url'] ?? '',
-          'mastodon_url'   => $requestData['mastodon_url'] ?? '',
-          'public_profile' => $requestData['public_profile'] ?? '0',
-          'topics'         => json_encode($requestData['topics']) ?? '[]',
-          'user_id'        => $userId,
+          'prefix'             => $requestData['prefix'] ?? '',
+          'first_name'         => $requestData['first_name'] ?? '',
+          'middle_name'        => $requestData['middle_name'] ?? '',
+          'last_name'          => $requestData['last_name'] ?? '',
+          'preferred_name'     => $requestData['preferred_name'] ?? '',
+          'preferred_pronouns' => $requestData['preferred_pronouns'] ?? '',
+          'bio'                => $requestData['bio'] ?? '',
+          'website_link'       => $requestData['website_link'] ?? '',
+          'facebook_link'      => $requestData['facebook_link'] ?? '',
+          'twitter_link'       => $requestData['twitter_link'] ?? '',
+          'linkedin_link'      => $requestData['linkedin_link'] ?? '',
+          'mastodon_link'      => $requestData['mastodon_link'] ?? '',
+          'instagram_link'     => $requestData['instagram_link'] ?? '',
+          'snapchat_link'      => $requestData['snapchat_link'] ?? '',
+          'other_link'         => $requestData['other_link'] ?? '',
+          'mobile_phone_number'=> $requestData['mobile_phone_number'] ?? '',
+          'email'              => $requestData['email'] ?? '',
+          'home_city'          => $requestData['home_city'] ?? '',
+          'home_state_province'=> $requestData['home_state_province'] ?? '',
+          'home_country'       => $requestData['home_country'] ?? '',
+          'employer_name'      => $requestData['employer_name'] ?? '',
+          'job_title'          => $requestData['job_title'] ?? '',
+          'industry'           => $requestData['industry'] ?? '',
+          'affiliation'        => json_encode($requestData['affiliation']) ?? '[]',
+          'affiliation_years'  => json_encode($requestData['affiliation_years']) ?? '[]',
+          'interested_in'      => json_encode($requestData['interested_in']) ?? '[]',
+          'knowledgeable_in'   => json_encode($requestData['knowledgeable_in']) ?? '[]',
+          'working_groups'     => json_encode($requestData['working_groups']) ?? '[]',
+          'projects'           => json_encode($requestData['projects']) ?? '[]',
+          'user_id'            => $userId,
       ];
 
       $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';

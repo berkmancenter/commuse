@@ -1,50 +1,53 @@
 <template>
   <div class="people-section-person">
     <div class="is-size-4 mb-2 people-section-person-full-name">
-      <div>{{ person.first_name }}</div>
-      <div>{{ person.last_name }}</div>
+      <div v-if="!person.preferred_name">
+        <div>{{ person.prefix }}</div>
+        <div><span>{{ person.first_name }}</span> <span v-if="person.middle_name">{{ person.middle_name }}</span></div>
+        <div>{{ person.last_name }}</div>
+      </div>
+      <div v-if="person.preferred_name">
+        <div>{{ person.preferred_name }}</div>
+      </div>
+      <div class="is-size-6" v-if="person.preferred_pronouns">({{ person.preferred_pronouns }})</div>
     </div>
 
     <div class="people-section-avatar">
       <img class="lazy" :data-src="`${apiUrl}/api/files/get/${person.image_url}`">
     </div>
 
-    <div class="is-size-6" v-if="person.city">
-        {{ person.city }}
+    <div class="is-size-6" v-if="person.home_city">
+        {{ person.home_city }}
     </div>
 
-    <div class="is-size-6" v-if="person.country">
-        {{ person.country }}
+    <div class="is-size-6" v-if="person.home_state_province">
+        {{ person.home_state_province }}
     </div>
 
-    <div class="is-size-6" v-if="person.continent">
-        {{ person.continent }}
+    <div class="is-size-6" v-if="person.home_country">
+        {{ person.home_country }}
     </div>
 
-    <div class="mt-2 people-section-topics" v-if="person.topics.length > 0">
-      <span class="tag" v-for="topic in person.topics" :key="topic" @click="setTopicActive(topic)">{{ topic }}</span>
+    <div class="mt-2 people-section-interests" v-if="person.interested_in.length > 0">
+      <span class="tag" v-for="interest in person.interested_in" :key="interest" @click="setInterestActive(interest)">{{ interest }}</span>
     </div>
 
     <div class="mt-2 person-section-social is-flex">
-      <div v-if="person.twitter_url" class="mr-2">
-        <a :href="person.twitter_url" target="_blank">
+      <div v-if="person.twitter_link" class="mr-2">
+        <a :href="person.twitter_link" target="_blank">
           <img src="@/assets/images/twitter.svg">
         </a>
       </div>
-      <div v-if="person.linkedin_url" class="mr-2">
-        <a :href="person.linkedin_url" target="_blank">
+      <div v-if="person.linkedin_link" class="mr-2">
+        <a :href="person.linkedin_link" target="_blank">
           <img src="@/assets/images/linkedin.svg">
         </a>
       </div>
-      <div v-if="person.mastodon_url" class="mr-2">
-        <a :href="person.mastodon_url" target="_blank">
+      <div v-if="person.mastodon_link" class="mr-2">
+        <a :href="person.mastodon_link" target="_blank">
           <img src="@/assets/images/mastodon.svg">
         </a>
       </div>
-    </div>
-
-    <div class="is-size-6 mt-2 people-section-bio">
-      {{ person.short_bio }}
     </div>
   </div>
 </template>
@@ -64,8 +67,8 @@
       }
     },
     methods: {
-      setTopicActive(topic) {
-        this.mitt.emit('setTopicActive', topic)
+      setInterestActive(interest) {
+        this.mitt.emit('setInterestActive', interest)
       },
     },
   }
@@ -104,7 +107,7 @@
       hyphens: auto;
     }
 
-    .people-section-topics {
+    .people-section-interests {
       display: flex;
       flex-wrap: wrap;
 

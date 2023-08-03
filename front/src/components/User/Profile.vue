@@ -1,120 +1,341 @@
 <template>
   <div class="user-profile mb-4">
-    <h3 class="is-size-2 mb-4">Your profile</h3>
+    <h2 class="is-size-2 mb-4">My profile</h2>
 
     <form @submit.prevent="saveProfile">
-      <div class="field user-profile-image">
-        <label class="label">Profile image</label>
-        <div class="control">
-          <img :src="`${apiUrl}/api/files/get/${$store.state.app.userProfile.imageUrl}`" v-if="$store.state.app.userProfile.imageUrl">
-          <input ref="userProfileImageInput" type="file" accept=".jpg, .png, .jpeg, .gif" @change="uploadProfileImage()">
-          <div class="my-2">
-            <button class="button" type="button" @click="openUploadProfileImage()">
-              <img src="@/assets/images/profile_image.svg">
-              Upload new profile image
-            </button>
+      <nav class="panel">
+        <p class="panel-heading">
+          My Information
+        </p>
+        <div class="panel-block">
+          <div class="field user-profile-image">
+            <label class="label">Profile image</label>
+            <div class="control">
+              <img :src="`${apiUrl}/api/files/get/${$store.state.app.userProfile.imageUrl}`" v-if="$store.state.app.userProfile.imageUrl">
+              <input ref="userProfileImageInput" type="file" accept=".jpg, .png, .jpeg, .gif" @change="uploadProfileImage()">
+              <div class="my-2">
+                <button class="button" type="button" @click="openUploadProfileImage()">
+                  <img src="@/assets/images/profile_image.svg">
+                  Upload new profile image
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Prefix</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.prefix">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">First name</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.firstName">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Middle name</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.middleName">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Last name</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.lastName">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Preferred Name</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.preferredName">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Preferred Pronouns</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.preferredPronouns">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Bio</label>
+            <div class="control">
+              <div class="control">
+                <textarea class="textarea" v-model="$store.state.app.userProfile.bio"></textarea>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </nav>
 
-      <div class="field">
-        <label class="label">First name</label>
-        <div class="control">
-          <input class="input" type="text" v-model="$store.state.app.userProfile.firstName">
-        </div>
-      </div>
+      <nav class="panel">
+        <p class="panel-heading">
+          Contact Information
+        </p>
+        <div class="panel-block">
+          <div class="field">
+            <label class="label">Mobile Phone Number</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.mobilePhoneNumber">
+            </div>
+          </div>
 
-      <div class="field">
-        <label class="label">Last name</label>
-        <div class="control">
-          <input class="input" type="text" v-model="$store.state.app.userProfile.lastName">
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="label">Short bio</label>
-        <div class="control">
-          <div class="control">
-            <textarea class="textarea" v-model="$store.state.app.userProfile.shortBio"></textarea>
+          <div class="field">
+            <label class="label">Email</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.email">
+            </div>
           </div>
         </div>
-      </div>
+      </nav>
 
-      <div class="field">
-        <label class="label">Full bio</label>
-        <div class="control">
-          <div class="control">
-            <textarea class="textarea" v-model="$store.state.app.userProfile.bio"></textarea>
+      <nav class="panel">
+        <p class="panel-heading">
+          BKC Affiliation
+        </p>
+        <div class="panel-block">
+          <div class="field">
+            <label class="label">Affiliation</label>
+            <div class="control">
+              <div class="control">
+                <VueMultiselect
+                  id="affiliation"
+                  v-model="$store.state.app.userProfile.affiliation"
+                  :multiple="true"
+                  :options="affiliationOptions"
+                  placeholder="Select"
+                >
+                </VueMultiselect>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Affiliation Year(s)</label>
+            <div class="control">
+              <VueMultiselect
+                v-model="$store.state.app.userProfile.affiliationYears"
+                :multiple="true"
+                :options="affiliationYearsOptions"
+                placeholder="Select"
+                @tag="addProfilePropertyOption"
+              >
+              </VueMultiselect>
+            </div>
           </div>
         </div>
-      </div>
+      </nav>
 
-      <div class="field">
-        <label class="label">Continent</label>
-        <div class="control">
-          <input class="input" type="text" v-model="$store.state.app.userProfile.continent">
-        </div>
-      </div>
+      <nav class="panel">
+        <p class="panel-heading">
+          Interests
+        </p>
+        <div class="panel-block">
+          <div class="field">
+            <label class="label">Interested In</label>
+            <div class="control">
+              <div class="control">
+                <VueMultiselect
+                  id="interestedIn"
+                  v-model="$store.state.app.userProfile.interestedIn"
+                  :multiple="true"
+                  :taggable="true"
+                  :options="[]"
+                  tag-placeholder="Add"
+                  placeholder="Search or add new"
+                  @tag="addProfilePropertyOption"
+                >
+                </VueMultiselect>
+              </div>
+            </div>
+          </div>
 
-      <div class="field">
-        <label class="label">Country</label>
-        <div class="control">
-          <input class="input" type="text" v-model="$store.state.app.userProfile.country">
-        </div>
-      </div>
+          <div class="field">
+            <label class="label">Knowledgeable In</label>
+            <div class="control">
+              <div class="control">
+                <VueMultiselect
+                  id="knowledgeableIn"
+                  v-model="$store.state.app.userProfile.knowledgeableIn"
+                  :multiple="true"
+                  :taggable="true"
+                  :options="[]"
+                  tag-placeholder="Add"
+                  placeholder="Search or add new"
+                  @tag="addProfilePropertyOption"
+                >
+                </VueMultiselect>
+              </div>
+            </div>
+          </div>
 
-      <div class="field">
-        <label class="label">City</label>
-        <div class="control">
-          <input class="input" type="text" v-model="$store.state.app.userProfile.city">
-        </div>
-      </div>
+          <div class="field">
+            <label class="label">Working Groups</label>
+            <div class="control">
+              <div class="control">
+                <VueMultiselect
+                  id="workingGroups"
+                  v-model="$store.state.app.userProfile.workingGroups"
+                  :multiple="true"
+                  :taggable="true"
+                  :options="[]"
+                  tag-placeholder="Add"
+                  placeholder="Search or add new"
+                  @tag="addProfilePropertyOption"
+                >
+                </VueMultiselect>
+              </div>
+            </div>
+          </div>
 
-      <div class="field">
-        <label class="label">Interests</label>
-        <div class="control">
-          <VueMultiselect
-            v-model="$store.state.app.userProfile.topics"
-            :multiple="true"
-            :taggable="true"
-            :options="topics"
-            tag-placeholder="Add this as new interest"
-            placeholder="Search or add an interest"
-            @tag="addInterest"
-          >
-          </VueMultiselect>
+          <div class="field">
+            <label class="label">Projects</label>
+            <div class="control">
+              <div class="control">
+                <VueMultiselect
+                  id="projects"
+                  v-model="$store.state.app.userProfile.projects"
+                  :multiple="true"
+                  :taggable="true"
+                  :options="[]"
+                  tag-placeholder="Add"
+                  placeholder="Search or add new"
+                  @tag="addProfilePropertyOption"
+                >
+                </VueMultiselect>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </nav>
 
-      <div class="field">
-        <label class="label">Twitter link</label>
-        <div class="control">
-          <input class="input" type="text" v-model="$store.state.app.userProfile.twitterUrl">
-        </div>
-      </div>
+      <nav class="panel">
+        <p class="panel-heading">
+          Online Presence
+        </p>
+        <div class="panel-block">
+          <div class="field">
+            <label class="label">Website link</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.websiteLink">
+            </div>
+          </div>
 
-      <div class="field">
-        <label class="label">LinkedIn link</label>
-        <div class="control">
-          <input class="input" type="text" v-model="$store.state.app.userProfile.linkedinUrl">
-        </div>
-      </div>
+          <div class="field">
+            <label class="label">Facebook link</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.facebookLink">
+            </div>
+          </div>
 
-      <div class="field">
-        <label class="label">Mastodon link</label>
-        <div class="control">
-          <input class="input" type="text" v-model="$store.state.app.userProfile.mastodonUrl">
-        </div>
-      </div>
+          <div class="field">
+            <label class="label">Twitter link</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.twitterLink">
+            </div>
+          </div>
 
-      <div class="field">
-        <div class="control">
-          <label class="checkbox">
-            <input type="checkbox" v-model="$store.state.app.userProfile.publicProfile">
-            Public profile
-          </label>
+          <div class="field">
+            <label class="label">Mastodon link</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.mastodonLink">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Instagram link</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.instagramLink">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Snapchat link</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.snapchatLink">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">LinkedIn link</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.linkedinLink">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Other link</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.otherLink">
+            </div>
+          </div>
         </div>
-      </div>
+      </nav>
+
+      <nav class="panel">
+        <p class="panel-heading">
+          Location Information
+        </p>
+        <div class="panel-block">
+          <p class="mb-4">We ask for this information so that we can let you know of any events in your locality and tailor the news feed to events in your locality.</p>
+
+          <div class="field">
+            <label class="label">Home City</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.homeCity">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Home State/Province</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.homeStateProvince">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Home Country</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.homeCountry">
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <nav class="panel">
+        <p class="panel-heading">
+          Professional Information
+        </p>
+        <div class="panel-block">
+          <div class="field">
+            <label class="label">Employer Name</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.employerName">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Job Title</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.jobTitle">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Industry</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$store.state.app.userProfile.industry">
+            </div>
+          </div>
+        </div>
+      </nav>
 
       <div class="field is-grouped">
         <div class="control">
@@ -135,6 +356,7 @@
       return {
         apiUrl: import.meta.env.VITE_API_URL,
         topics: [],
+        affiliationOptions: ['Staff', 'Faculty', 'Affiliate', 'Faculty Associate', 'BKC Fellow', 'RSM Fellow', 'RSM Scholar', 'Assembly Fellow', 'Other'],
       }
     },
     components: {
@@ -143,9 +365,13 @@
     created() {
       this.initialDataLoad()
     },
+    computed: {
+      affiliationYearsOptions() {
+        return Array.from(Array(new Date().getFullYear() - 1995 + 1), (_, index) => new Date().getFullYear() - index)
+      },
+    },
     methods: {
       async saveProfile() {
-        console.log(this.$store.state.app.userProfile)
         const response = await this.$store.dispatch('app/saveProfile', keysToSnakeCase(this.$store.state.app.userProfile))
 
         if (response.ok) {
@@ -176,8 +402,11 @@
           }
         }
       },
-      addInterest (newInterest) {
-        this.$store.dispatch('app/addInterest', newInterest)
+      addProfilePropertyOption (newOption, key) {
+        this.$store.dispatch('app/addProfilePropertyOption', {
+          key: key,
+          newOption: newOption,
+        })
       },
       async loadProfile() {
         let profile = await this.$store.dispatch('app/fetchProfile')
@@ -243,6 +472,12 @@
       input {
         display: none;
       }
+    }
+
+    .panel-block {
+      flex-direction: column;
+      align-items: normal;
+      padding-bottom: 1rem;
     }
   }
 </style>

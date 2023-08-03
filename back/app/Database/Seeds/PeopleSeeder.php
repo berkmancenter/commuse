@@ -28,15 +28,6 @@ class PeopleSeeder extends Seeder
             'education',
         ];
 
-        $continents = [
-            'Africa',
-            'Asia',
-            'Europe',
-            'North America',
-            'Oceania',
-            'South America',
-        ];
-
         $dirPath = ROOTPATH . 'writable/uploads/profile_images/';
         if (!is_dir($dirPath)) {
             mkdir($dirPath);
@@ -57,23 +48,21 @@ class PeopleSeeder extends Seeder
             ]);
             $users->save($user);
 
-            $continent = $faker->randomElement($continents);
-
             copy(ROOTPATH . "app/Database/Seeds/assets/people/{$i}.jpg", ROOTPATH . "writable/uploads/profile_images/{$i}.jpg");
 
             $data = [
-                'first_name'        => $faker->firstName,
-                'last_name'         => $faker->lastName,
-                'image_url'         => $i . '.jpg',
-                'short_bio'         => $faker->paragraphs(2, true),
-                'public_profile'    => true,
-                'topics'            => json_encode($randomTopics),
-                'city'              => $faker->city,
-                'country'           => $faker->country,
-                'continent'         => $continent,
-                'user_id'           => $users->getInsertID(),
-                'created_at'        => date('Y-m-d H:i:s'),
-                'updated_at'        => date('Y-m-d H:i:s'),
+                'first_name'         => $faker->firstName,
+                'last_name'          => $faker->lastName,
+                'image_url'          => $i . '.jpg',
+                'bio'                => $faker->paragraphs(2, true),
+                'public_profile'     => true,
+                'interested_in'      => json_encode($randomTopics),
+                'home_city'          => $faker->city,
+                'home_country'       => $faker->country,
+                'home_state_province'=> $faker->state,
+                'user_id'            => $users->getInsertID(),
+                'created_at'         => date('Y-m-d H:i:s'),
+                'updated_at'         => date('Y-m-d H:i:s'),
             ];
 
             $this->db->table('people')->insert($data);

@@ -15,7 +15,7 @@ const defaultProfile = {
   twitterUrl: '',
   linkedinUrl: '',
   mastodonUrl: '',
-  topics: [],
+  interests: [],
 }
 
 const state = {
@@ -38,9 +38,8 @@ const mutations = {
   setUserProfile(state, profile) {
     state.userProfile = profile
   },
-  addInterest(state, interest) {
-    state.userProfile.topics.push(interest)
-    console.log(state.userProfile.topics)
+  addProfilePropertyOption(state, data) {
+    state.userProfile[data.key].push(data.newOption)
   },
 }
 
@@ -63,8 +62,8 @@ const actions = {
 
     return data
   },
-  async fetchTopics(context) {
-    const response = await fetchIt(`${apiUrl}/api/people/topics`)
+  async fetchInterests(context) {
+    const response = await fetchIt(`${apiUrl}/api/people/interests`)
     const data = await response.json()
 
     return data
@@ -108,8 +107,8 @@ const actions = {
 
     return response
   },
-  addInterest(context, interest) {
-    context.commit('addInterest', interest)
+  addProfilePropertyOption(context, data) {
+    context.commit('addProfilePropertyOption', data)
   },
 }
 
