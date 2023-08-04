@@ -6,13 +6,13 @@
       </div>
       <div class="people-section-details-image-content">
         <div class="is-flex is-align-items-center">
-          <img class="people-section-details-icon" :src="emailIcon">
+          <img class="people-section-details-icon" :src="phoneIcon">
           {{ valOrNot(person.mobile_phone_number) }}
         </div>
 
         <div>
           <a :href="`mailto:${person.email}`" class="is-flex is-align-items-center">
-            <img class="people-section-details-icon" :src="phoneIcon">
+            <img class="people-section-details-icon" :src="emailIcon">
             {{ valOrNot(person.email) }}
           </a>
         </div>
