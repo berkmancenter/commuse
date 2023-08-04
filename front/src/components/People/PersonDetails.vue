@@ -221,7 +221,7 @@
       }
 
       .people-section-details-image-content {
-        padding: 1rem;
+        padding-top: 0.5rem;
         overflow-wrap: anywhere;
       }
     }
