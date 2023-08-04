@@ -58,11 +58,16 @@ class People extends BaseController
       $peopleModel = model('PeopleModel');
 
       $person = $peopleModel
-        ->where('user_id', $id)
+        ->where('id', $id)
         ->where('public_profile', true)
         ->first();
 
       $person['image_url'] = "profile_images/{$person['image_url']}";
+      $person['interested_in'] = json_decode($person['interested_in']);
+      $person['knowledgeable_in'] = json_decode($person['knowledgeable_in']);
+      $person['working_groups'] = json_decode($person['working_groups']);
+      $person['projects'] = json_decode($person['projects']);
+
 
       return $this->respond($person);
   }

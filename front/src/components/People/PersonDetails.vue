@@ -7,19 +7,19 @@
       <div class="people-section-details-image-content">
         <div class="is-flex is-align-items-center">
           <img class="people-section-details-icon" :src="emailIcon">
-          {{ person.mobile_phone_number }}
+          {{ valOrNot(person.mobile_phone_number) }}
         </div>
 
         <div>
           <a :href="`mailto:${person.email}`" class="is-flex is-align-items-center">
             <img class="people-section-details-icon" :src="phoneIcon">
-            {{ person.email }}
+            {{ valOrNot(person.email) }}
           </a>
         </div>
 
         <div class="is-flex is-align-items-center">
           <img class="people-section-details-icon" :src="homeIcon">
-          {{ address }}
+          {{ valOrNot(address) }}
         </div>
       </div>
     </div>
@@ -33,6 +33,52 @@
           <div>{{ person.preferred_name }}</div>
         </div>
         <div class="is-size-6" v-if="person.preferred_pronouns">({{ person.preferred_pronouns }})</div>
+      </div>
+
+      <div class="people-section-details-content-interests">
+        <nav class="panel">
+          <p class="panel-heading">
+            Areas of Interest
+          </p>
+          <div class="panel-block">
+            <div class="content">
+              <table class="table">
+                <tr>
+                  <th>Interested In</th>
+                  <td>
+                    <div class="tags are-medium are-light">
+                      <span class="tag" v-for="item in person.interested_in">{{ item }}</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Knowledgeable In</th>
+                  <td>
+                    <div class="tags are-medium are-light">
+                      <span class="tag" v-for="item in person.knowledgeable_in">{{ item }}</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Working Groups</th>
+                  <td>
+                    <div class="tags are-medium are-light">
+                      <span class="tag" v-for="item in person.working_groups">{{ item }}</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Projects</th>
+                  <td>
+                    <div class="tags are-medium are-light">
+                      <span class="tag" v-for="item in person.projects">{{ item }}</span>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </nav>
       </div>
 
       <nav class="panel people-section-details-content-bio" v-if="person.bio">
@@ -195,6 +241,10 @@
       margin-right: 0.5rem;
     }
 
+    .people-section-details-content-interests {
+      margin-bottom: 1.5rem;
+    }
+
     .people-section-details-content-other {
       @media screen and (min-width: 1200px) {
         display: flex;
@@ -208,6 +258,12 @@
     }
 
     table {
+      @media screen and (min-width: 700px) {
+        th {
+          width: 250px;
+        }
+      }
+
       td {
         overflow-wrap: anywhere;
       }

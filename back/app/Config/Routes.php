@@ -50,6 +50,9 @@ $routes->get('people', function() {
 $routes->get('profile', function() {
   return view('front_end.html');
 });
+$routes->get('people/(:num)', function() {
+  return view('front_end.html');
+});
 
 service('auth')->routes($routes);
 
