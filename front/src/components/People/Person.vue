@@ -1,20 +1,22 @@
 <template>
   <div class="people-section-person">
-    <div class="is-size-4 mb-2 people-section-person-full-name">
-      <div v-if="!person.preferred_name">
-        <div>{{ person.prefix }}</div>
-        <div><span>{{ person.first_name }}</span> <span v-if="person.middle_name">{{ person.middle_name }}</span></div>
-        <div>{{ person.last_name }}</div>
+    <router-link :to="'/people/' + person.id">
+      <div class="is-size-4 mb-2 people-section-person-full-name">
+        <div v-if="!person.preferred_name">
+          <div>{{ person.prefix }}</div>
+          <div><span>{{ person.first_name }}</span> <span v-if="person.middle_name">{{ person.middle_name }}</span></div>
+          <div>{{ person.last_name }}</div>
+        </div>
+        <div v-if="person.preferred_name">
+          <div>{{ person.preferred_name }}</div>
+        </div>
+        <div class="is-size-6" v-if="person.preferred_pronouns">({{ person.preferred_pronouns }})</div>
       </div>
-      <div v-if="person.preferred_name">
-        <div>{{ person.preferred_name }}</div>
-      </div>
-      <div class="is-size-6" v-if="person.preferred_pronouns">({{ person.preferred_pronouns }})</div>
-    </div>
 
-    <div class="people-section-avatar">
-      <img class="lazy" :data-src="`${apiUrl}/api/files/get/${person.image_url}`">
-    </div>
+      <div class="people-section-avatar">
+        <img class="lazy" :data-src="`${apiUrl}/api/files/get/${person.image_url}`">
+      </div>
+    </router-link>
 
     <div class="is-size-6" v-if="person.home_city">
         {{ person.home_city }}

@@ -1,5 +1,5 @@
 <template>
-  <div class="user-profile mb-4">
+  <div class="user-profile">
     <h2 class="is-size-2 mb-4">My profile</h2>
 
     <form @submit.prevent="saveProfile">

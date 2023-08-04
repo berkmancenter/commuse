@@ -23,6 +23,11 @@ const router = createRouter({
       },
     },
     {
+      path: '/people/:id',
+      component: () => import('@/components/People/PersonDetails.vue'),
+      name: 'people.details',
+    },
+    {
       path: '/profile',
       component: () => import('@/components/User/Profile.vue'),
       name: 'user-profile.index',
@@ -38,7 +43,9 @@ router.afterEach(route => {
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = `${to.meta.title} | ${appTitle}`
+  if (to.meta.title) {
+    document.title = `${to.meta.title} | ${appTitle}`
+  }
   next()
 })
 

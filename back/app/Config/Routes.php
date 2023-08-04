@@ -30,11 +30,15 @@ $routes->set404Override();
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('api/news', 'News::index');
+
 $routes->get('api/people', 'People::index');
-$routes->get('api/users/current', 'Users::current');
 $routes->get('api/people/interests', 'People::interests');
+$routes->get('api/people/(:num)', 'People::person/$1');
+
+$routes->get('api/users/current', 'Users::current');
 $routes->post('api/users/saveProfile', 'Users::saveProfile');
 $routes->post('api/users/uploadProfileImage', 'Users::uploadProfileImage');
+
 $routes->get('api/files/get/(.+)', 'Files::get/$1');
 
 $routes->get('/', function() {

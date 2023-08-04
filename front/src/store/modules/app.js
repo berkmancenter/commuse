@@ -68,6 +68,12 @@ const actions = {
 
     return data
   },
+  async fetchPerson(context, id) {
+    const response = await fetchIt(`${apiUrl}/api/people/${id}`)
+    const data = await response.json()
+
+    return data
+  },
   setNews(context, news) {
     context.commit('setNews', news)
   },

@@ -52,4 +52,18 @@ class People extends BaseController
 
       return $this->respond($uniqueInterests);
   }
+
+  public function person($id)
+  {
+      $peopleModel = model('PeopleModel');
+
+      $person = $peopleModel
+        ->where('user_id', $id)
+        ->where('public_profile', true)
+        ->first();
+
+      $person['image_url'] = "profile_images/{$person['image_url']}";
+
+      return $this->respond($person);
+  }
 }
