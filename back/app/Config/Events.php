@@ -4,6 +4,7 @@ namespace Config;
 
 use CodeIgniter\Events\Events;
 use CodeIgniter\Exceptions\FrameworkException;
+use App\Models\InvitationCodeModel;
 
 /*
  * --------------------------------------------------------------------
@@ -45,4 +46,15 @@ Events::on('pre_system', static function () {
         Events::on('DBQuery', 'CodeIgniter\Debug\Toolbar\Collectors\Database::collect');
         Services::toolbar()->respond();
     }
+});
+
+Events::on('register', function($user) {
+    $session = \Config\Services::session();
+    $invitationCodeModel = new InvitationCodeModel();
+    $invitationCodeModel
+      ->set('used', true)
+      ->where('code', $session->get('invitation_code'))
+      ->update();
+
+    $session->remove('invitation_code');
 });

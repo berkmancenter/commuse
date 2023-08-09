@@ -54,6 +54,9 @@ $routes->get('people/(:num)', function() {
   return view('front_end.html');
 });
 
+$routes->get('register', 'RegisterController::registerView');
+$routes->post('register', 'RegisterController::registerAction');
+
 service('auth')->routes($routes);
 
 /*

@@ -29,7 +29,7 @@ class Auth extends ShieldAuth
      * ////////////////////////////////////////////////////////////////////
      */
     public array $views = [
-        'login'                       => '\CodeIgniter\Shield\Views\login',
+        'login'                       => '\App\Views\Shield\login',
         'register'                    => '\CodeIgniter\Shield\Views\register',
         'layout'                      => '\App\Views\Shield\layout',
         'action_email_2fa'            => '\CodeIgniter\Shield\Views\email_2fa_show',
@@ -262,7 +262,7 @@ class Auth extends ShieldAuth
     public array $passwordValidators = [
         CompositionValidator::class,
         NothingPersonalValidator::class,
-        DictionaryValidator::class,
+        // DictionaryValidator::class,
         // PwnedValidator::class,
     ];
 
