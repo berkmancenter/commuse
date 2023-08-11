@@ -42,46 +42,45 @@
           </p>
           <div class="panel-block">
             <div class="content">
-              <table class="table">
-                <tr v-if="person.interested_in?.length">
-                  <th>Interested In</th>
-                  <td>
-                    <div class="tags are-medium are-light">
-                      <span class="tag" v-for="item in person.interested_in">{{ item }}</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr v-if="person.knowledgeable_in?.length">
-                  <th>Knowledgeable In</th>
-                  <td>
-                    <div class="tags are-medium are-light">
-                      <span class="tag" v-for="item in person.knowledgeable_in">{{ item }}</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr v-if="person.working_groups?.length">
-                  <th>Working Groups</th>
-                  <td>
-                    <div class="tags are-medium are-light">
-                      <span class="tag" v-for="item in person.working_groups">{{ item }}</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr v-if="person.projects?.length">
-                  <th>Projects</th>
-                  <td>
-                    <div class="tags are-medium are-light">
-                      <span class="tag" v-for="item in person.projects">{{ item }}</span>
-                    </div>
-                  </td>
-                </tr>
+              <div v-if="person.interested_in?.length" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Interested In</div>
+                <div>
+                  <div class="tags are-medium are-light">
+                    <span class="tag" v-for="item in person.interested_in">{{ item }}</span>
+                  </div>
+                </div>
+              </div>
 
-                <tr v-if="!person.interested_in?.length && !person.knowledgeable_in?.length && !person.working_groups?.length && !person.projects?.length">
-                  <td>
-                    No information has been entered yet.
-                  </td>
-                </tr>
-              </table>
+              <div v-if="person.knowledgeable_in?.length" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Knowledgeable In</div>
+                <div>
+                  <div class="tags are-medium are-light">
+                    <span class="tag" v-for="item in person.knowledgeable_in">{{ item }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="person.working_groups?.length" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Working Groups</div>
+                <div>
+                  <div class="tags are-medium are-light">
+                    <span class="tag" v-for="item in person.working_groups">{{ item }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="person.projects?.length" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Projects</div>
+                <div>
+                  <div class="tags are-medium are-light">
+                    <span class="tag" v-for="item in person.projects">{{ item }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="!person.interested_in?.length && !person.knowledgeable_in?.length && !person.working_groups?.length && !person.projects?.length">
+                No information has been entered yet.
+              </div>
             </div>
           </div>
         </nav>
@@ -274,10 +273,19 @@
     }
 
     table {
+      &:not(:last-child) {
+        margin-bottom: 0;
+      }
+
       @media screen and (min-width: 700px) {
         th {
           width: 250px;
         }
+      }
+
+      td,
+      th {
+        padding: 0;
       }
 
       td {
