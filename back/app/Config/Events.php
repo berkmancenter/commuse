@@ -54,6 +54,7 @@ Events::on('register', function($user) {
     $invitationCodeModel
       ->set('used', true)
       ->where('code', $session->get('invitation_code'))
+      ->where('type', 'single')
       ->update();
 
     $session->remove('invitation_code');
