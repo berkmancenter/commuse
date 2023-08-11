@@ -43,7 +43,7 @@
           <div class="panel-block">
             <div class="content">
               <table class="table">
-                <tr v-if="person.interested_in.length">
+                <tr v-if="person.interested_in?.length">
                   <th>Interested In</th>
                   <td>
                     <div class="tags are-medium are-light">
@@ -51,7 +51,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr v-if="person.knowledgeable_in.length">
+                <tr v-if="person.knowledgeable_in?.length">
                   <th>Knowledgeable In</th>
                   <td>
                     <div class="tags are-medium are-light">
@@ -59,7 +59,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr v-if="person.working_groups.length">
+                <tr v-if="person.working_groups?.length">
                   <th>Working Groups</th>
                   <td>
                     <div class="tags are-medium are-light">
@@ -67,7 +67,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr v-if="person.projects.length">
+                <tr v-if="person.projects?.length">
                   <th>Projects</th>
                   <td>
                     <div class="tags are-medium are-light">
@@ -76,7 +76,7 @@
                   </td>
                 </tr>
 
-                <tr v-if="!person.interested_in.length && !person.knowledgeable_in.length && !person.working_groups.length && !person.projects.length">
+                <tr v-if="!person.interested_in?.length && !person.knowledgeable_in?.length && !person.working_groups?.length && !person.projects?.length">
                   <td>
                     No information has been entered yet.
                   </td>
