@@ -2,24 +2,24 @@
   <div class="people-section-details">
     <div class="people-section-details-image">
       <div class="people-section-details-image-image">
-        <img :src="`${apiUrl}/api/files/get/${person.image_url}`">
+        <img :src="`${apiUrl}/api/files/get/${person.image_url}`" @error="setProfileImageFallback">
       </div>
       <div class="people-section-details-image-content">
-        <div class="is-flex is-align-items-center">
+        <div class="is-flex is-align-items-center" v-if="person.mobile_phone_number">
           <img class="people-section-details-icon" :src="phoneIcon">
-          {{ valOrNot(person.mobile_phone_number) }}
+          {{ person.mobile_phone_number }}
         </div>
 
-        <div>
+        <div v-if="person.email">
           <a :href="`mailto:${person.email}`" class="is-flex is-align-items-center">
             <img class="people-section-details-icon" :src="emailIcon">
-            {{ valOrNot(person.email) }}
+            {{ person.email }}
           </a>
         </div>
 
-        <div class="is-flex is-align-items-center">
+        <div class="is-flex is-align-items-center" v-if="address">
           <img class="people-section-details-icon" :src="homeIcon">
-          {{ valOrNot(address) }}
+          {{ address }}
         </div>
       </div>
     </div>
@@ -43,7 +43,7 @@
           <div class="panel-block">
             <div class="content">
               <table class="table">
-                <tr>
+                <tr v-if="person.interested_in.length">
                   <th>Interested In</th>
                   <td>
                     <div class="tags are-medium are-light">
@@ -51,7 +51,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="person.knowledgeable_in.length">
                   <th>Knowledgeable In</th>
                   <td>
                     <div class="tags are-medium are-light">
@@ -59,7 +59,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="person.working_groups.length">
                   <th>Working Groups</th>
                   <td>
                     <div class="tags are-medium are-light">
@@ -67,12 +67,18 @@
                     </div>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="person.projects.length">
                   <th>Projects</th>
                   <td>
                     <div class="tags are-medium are-light">
                       <span class="tag" v-for="item in person.projects">{{ item }}</span>
                     </div>
+                  </td>
+                </tr>
+
+                <tr v-if="!person.interested_in.length && !person.knowledgeable_in.length && !person.working_groups.length && !person.projects.length">
+                  <td>
+                    No information has been entered yet.
                   </td>
                 </tr>
               </table>
@@ -97,20 +103,22 @@
           </p>
           <div class="panel-block">
             <div class="content">
-              <table class="table">
-                <tr>
-                  <th>Employer Name</th>
-                  <td>{{ valOrNot(person.employer_name) }}</td>
-                </tr>
-                <tr>
-                  <th>Job Title</th>
-                  <td>{{ valOrNot(person.job_title) }}</td>
-                </tr>
-                <tr>
-                  <th>Industry</th>
-                  <td>{{ valOrNot(person.industry) }}</td>
-                </tr>
-              </table>
+              <div v-if="person.employer_name" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Employer Name</div>
+                <div>{{ person.employer_name }}</div>
+              </div>
+              <div v-if="person.job_title" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Job Title</div>
+                <div>{{ person.job_title }}</div>
+              </div>
+              <div v-if="person.industry" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Industry</div>
+                <div>{{ person.industry }}</div>
+              </div>
+
+              <div v-if="!person.employer_name && !person.job_title && !person.industry">
+                No information has been entered yet.
+              </div>
             </div>
           </div>
         </nav>
@@ -121,41 +129,42 @@
           </p>
           <div class="panel-block">
             <div class="content">
-              <table class="table">
-                <tr>
-                  <th>Personal Website</th>
-                  <td>{{ valOrNot(person.website_link) }}</td>
-                </tr>
-                <tr>
-                  <th>X (Ex-Twitter)</th>
-                  <td>{{ valOrNot(person.twitter_link) }}</td>
-                </tr>
-                <tr>
-                  <th>Mastodon</th>
-                  <td>{{ valOrNot(person.mastodon_link) }}</td>
-                </tr>
-                <tr>
-                  <th>Linkedin</th>
-                  <td>{{ valOrNot(person.linkedin_link) }}</td>
-                </tr>
-                <tr>
-                  <th>Facebook</th>
-                  <td>{{ valOrNot(person.facebook_link) }}</td>
-                </tr>
-                <tr>
-                  <th>Instagram</th>
-                  <td>{{ valOrNot(person.instagram_link) }}</td>
-                </tr>
-                <tr>
-                  <th>Snapchat</th>
-                  <td>{{ valOrNot(person.snapchat_link) }}</td>
-                </tr>
-                <tr>
-                  <th>Other</th>
-                  <td>{{ valOrNot(person.other_link) }}</td>
-                </tr>
+              <div v-if="person.website_link" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Personal Website</div>
+                <div><a :href="person.website_link">{{ person.website_link }}</a></div>
+              </div>
+              <div v-if="person.twitter_link" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">X (Ex-Twitter)</div>
+                <div><a :href="person.twitter_link">{{ person.twitter_link }}</a></div>
+              </div>
+              <div v-if="person.mastodon_link" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Mastodon</div>
+                <div><a :href="person.mastodon_link">{{ person.mastodon_link }}</a></div>
+              </div>
+              <div v-if="person.linkedin_link" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Linkedin</div>
+                <div><a :href="person.linkedin_link">{{ person.linkedin_link }}</a></div>
+              </div>
+              <div v-if="person.facebook_link" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Facebook</div>
+                <div><a :href="person.facebook_link">{{ person.facebook_link }}</a></div>
+              </div>
+              <div v-if="person.instagram_link" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Instagram</div>
+                <div><a :href="person.instagram_link">{{ person.instagram_link }}</a></div>
+              </div>
+              <div v-if="person.snapchat_link" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Snapchat</div>
+                <div><a :href="person.snapchat_link">{{ person.snapchat_link }}</a></div>
+              </div>
+              <div v-if="person.other_link" class="people-section-details-data-item">
+                <div class="people-section-details-data-item-label">Other</div>
+                <div><a :href="person.other_link">{{ person.other_link }}</a></div>
+              </div>
 
-              </table>
+              <div v-if="!person.website_link && !person.twitter_link && !person.mastodon_link && !person.linkedin_link && !person.facebook_link && !person.instagram_link && !person.snapchat_link && !person.other_link">
+                No information has been entered yet.
+              </div>
             </div>
           </div>
         </nav>
@@ -168,6 +177,7 @@
   import emailIcon from '@/assets/images/email.svg'
   import phoneIcon from '@/assets/images/phone.svg'
   import homeIcon from '@/assets/images/home.svg'
+  import profileFallbackImage from '@/assets/images/profile_fallback.png'
 
   export default {
     name: 'PersonDetails',
@@ -178,6 +188,7 @@
         phoneIcon: phoneIcon,
         emailIcon: emailIcon,
         homeIcon: homeIcon,
+        profileFallbackImage: profileFallbackImage,
       }
     },
     computed: {
@@ -196,6 +207,11 @@
       },
       valOrNot(val) {
         return val || 'N/A'
+      },
+      setProfileImageFallback(e) {
+        const el = e.target
+        el.src = this.profileFallbackImage
+        el.onerror = ''
       },
     },
   }
@@ -267,11 +283,34 @@
       td {
         overflow-wrap: anywhere;
       }
+
+      th:only-child,
+      td:only-child {
+        border-bottom: none;
+      }
     }
 
     .panel-block {
       > * {
         flex-grow: 1;
+      }
+    }
+
+    .people-section-details-data-item {
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid #dbdbdb;
+      overflow-wrap: anywhere;
+
+      &:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+
+      .people-section-details-data-item-label {
+        font-weight: bold;
+        margin-bottom: 0.2rem;
       }
     }
   }
