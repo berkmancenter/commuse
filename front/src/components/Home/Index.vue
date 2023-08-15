@@ -11,7 +11,12 @@
             </figure>
           </div>
           <div class="media-content">
-            <p class="title is-4">{{ news.title }}</p>
+            <p class="title is-4">
+              <div v-if="!news.remote_url">{{ news.title }}</div>
+              <div v-if="news.remote_url">
+                <a :href="news.remote_url" target="_blank">{{ news.title }}</a>
+              </div>
+            </p>
             <p>{{ news.short_description }}</p>
           </div>
         </div>
@@ -69,14 +74,14 @@
         margin-bottom: 0;
 
         .media-left {
-          max-width: 30%;
+          max-width: 20%;
         }
       }
 
       margin-bottom: 2rem;
     }
 
-    @media (max-width: 575px) {
+    @media (max-width: 768px) {
       .card {
         .media {
           flex-direction: column;
