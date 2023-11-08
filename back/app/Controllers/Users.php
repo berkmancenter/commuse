@@ -47,38 +47,23 @@ class Users extends BaseController
 
       $requestData = json_decode(file_get_contents('php://input'), true);
 
-      $data = [
-          'prefix'             => $requestData['prefix'] ?? '',
-          'first_name'         => $requestData['first_name'] ?? '',
-          'middle_name'        => $requestData['middle_name'] ?? '',
-          'last_name'          => $requestData['last_name'] ?? '',
-          'preferred_name'     => $requestData['preferred_name'] ?? '',
-          'preferred_pronouns' => $requestData['preferred_pronouns'] ?? '',
-          'bio'                => $requestData['bio'] ?? '',
-          'website_link'       => $requestData['website_link'] ?? '',
-          'facebook_link'      => $requestData['facebook_link'] ?? '',
-          'twitter_link'       => $requestData['twitter_link'] ?? '',
-          'linkedin_link'      => $requestData['linkedin_link'] ?? '',
-          'mastodon_link'      => $requestData['mastodon_link'] ?? '',
-          'instagram_link'     => $requestData['instagram_link'] ?? '',
-          'snapchat_link'      => $requestData['snapchat_link'] ?? '',
-          'other_link'         => $requestData['other_link'] ?? '',
-          'mobile_phone_number'=> $requestData['mobile_phone_number'] ?? '',
-          'email'              => $requestData['email'] ?? '',
-          'home_city'          => $requestData['home_city'] ?? '',
-          'home_state_province'=> $requestData['home_state_province'] ?? '',
-          'home_country'       => $requestData['home_country'] ?? '',
-          'employer_name'      => $requestData['employer_name'] ?? '',
-          'job_title'          => $requestData['job_title'] ?? '',
-          'industry'           => $requestData['industry'] ?? '',
-          'affiliation'        => json_encode($requestData['affiliation']) ?? '[]',
-          'affiliation_years'  => json_encode($requestData['affiliation_years']) ?? '[]',
-          'interested_in'      => json_encode($requestData['interested_in']) ?? '[]',
-          'knowledgeable_in'   => json_encode($requestData['knowledgeable_in']) ?? '[]',
-          'working_groups'     => json_encode($requestData['working_groups']) ?? '[]',
-          'projects'           => json_encode($requestData['projects']) ?? '[]',
-          'user_id'            => $userId,
+      $keysToMap = [
+          'prefix', 'first_name', 'middle_name', 'last_name', 'preferred_name',
+          'preferred_pronouns', 'bio', 'website_link', 'facebook_link', 'twitter_link',
+          'linkedin_link', 'mastodon_link', 'instagram_link', 'snapchat_link', 'other_link',
+          'mobile_phone_number', 'email', 'home_city', 'home_state_province', 'home_country',
+          'employer_name', 'job_title', 'industry', 'affiliation', 'affiliation_years',
+          'interested_in', 'knowledgeable_in', 'working_groups', 'projects'
       ];
+
+      $data = $this->mapRequestData($requestData, $keysToMap);
+      $data['affiliation'] = json_encode($data['affiliation'] ?? []);
+      $data['affiliation_years'] = json_encode($data['affiliation_years'] ?? []);
+      $data['interested_in'] = json_encode($data['interested_in'] ?? []);
+      $data['knowledgeable_in'] = json_encode($data['knowledgeable_in'] ?? []);
+      $data['working_groups'] = json_encode($data['working_groups'] ?? []);
+      $data['projects'] = json_encode($data['projects'] ?? []);
+      $data['user_id'] = $userId;
 
       $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';
 
@@ -130,5 +115,16 @@ class Users extends BaseController
       } else {
           return $this->respond(['message' => 'Error saving data'], 500);
       }
+  }
+
+  private function mapRequestData($requestData, $keys)
+  {
+      $mappedData = [];
+
+      foreach ($keys as $key) {
+          $mappedData[$key] = $requestData[$key] ?? '';
+      }
+
+      return $mappedData;
   }
 }
