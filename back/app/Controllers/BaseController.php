@@ -57,4 +57,15 @@ abstract class BaseController extends Controller
 
     // E.g.: $this->session = \Config\Services::session();
   }
+
+  protected function mapRequestData($requestData, $keys)
+  {
+    $mappedData = [];
+
+    foreach ($keys as $key) {
+      $mappedData[$key] = $requestData[$key] ?? '';
+    }
+
+    return $mappedData;
+  }
 }

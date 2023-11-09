@@ -11,7 +11,7 @@ const router = createRouter({
       component: () => import('@/components/Home/Index.vue'),
       name: 'home.index',
       meta: {
-        title: 'Home'
+        title: 'Home',
       },
     },
     {
@@ -19,7 +19,7 @@ const router = createRouter({
       component: () => import('@/components/People/Index.vue'),
       name: 'people.index',
       meta: {
-        title: 'People'
+        title: 'People',
       },
     },
     {
@@ -32,7 +32,23 @@ const router = createRouter({
       component: () => import('@/components/User/Profile.vue'),
       name: 'user-profile.index',
       meta: {
-        title: 'Profile'
+        title: 'Profile',
+      },
+    },
+    {
+      path: '/admin/users',
+      component: () => import('@/components/Admin/Users.vue'),
+      name: 'admin-users.index',
+      meta: {
+        title: 'Users admin',
+      },
+    },
+    {
+      path: '/admin/invitations',
+      component: () => import('@/components/Admin/Invitations/Index.vue'),
+      name: 'admin-invitations.index',
+      meta: {
+        title: 'Invitations admin',
       },
     },
   ]

@@ -25,7 +25,7 @@
     </div>
 
     <div class="box people-section-details-content">
-      <div class="is-size-2 mb-2 p-4 people-section-person-full-name">
+      <div class="is-size-4 mb-2 p-4 people-section-person-full-name">
         <div v-if="!person.preferred_name">
           {{ person.prefix }} {{ person.first_name }} {{ person.middle_name }} {{ person.last_name }}
         </div>

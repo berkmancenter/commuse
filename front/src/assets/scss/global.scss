@@ -1,3 +1,34 @@
 body, button, input, optgroup, select, textarea {
   font-family: var(--main-font-family);
 }
+
+.no-select {
+  user-select: none;
+}
+
+.no-break {
+  word-break: normal;
+  white-space: nowrap;
+}
+
+.swal2-shown {
+  padding-right: 0 !important;
+}
+
+#swal2-html-container {
+  text-align: left;
+}
+
+.button.is-success {
+  background-color: #276b37;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: #39994f;
+  }
+}
+
+.air-datepicker-global-container {
+  z-index: 2000;
+}

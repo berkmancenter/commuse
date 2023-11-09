@@ -41,6 +41,10 @@ $routes->post('api/users/uploadProfileImage', 'Users::uploadProfileImage');
 
 $routes->get('api/files/get/(.+)', 'Files::get/$1');
 
+$routes->get('api/admin/invitations', 'Invitations::index');
+$routes->post('api/admin/invitations/upsert', 'Invitations::upsert');
+$routes->post('api/admin/invitations/delete', 'Invitations::delete');
+
 $routes->get('/', function() {
   return view('front_end.html');
 });
@@ -51,6 +55,9 @@ $routes->get('profile', function() {
   return view('front_end.html');
 });
 $routes->get('people/(:num)', function() {
+  return view('front_end.html');
+});
+$routes->get('admin/users', function() {
   return view('front_end.html');
 });
 

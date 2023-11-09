@@ -17,6 +17,21 @@
           </router-link>
         </li>
       </ul>
+
+      <div class="is-size-5 px-2 py-1">Admin</div>
+
+      <ul>
+        <li v-for="(link) in adminMenu">
+          <a :href="link.href" class="hvr-fade" @click="hideMenuMobile" v-if="link.external === true">
+            <img class="side-menu-icon" :src="link.icon">
+            {{ link.title }}
+          </a>
+          <router-link :to="link.href" class="hvr-fade" @click="hideMenuMobile" v-if="link.external !== true">
+            <img class="side-menu-icon" :src="link.icon">
+            {{ link.title }}
+          </router-link>
+        </li>
+      </ul>
     </swit-menu>
 
     <nav class="top-nav">
@@ -52,6 +67,8 @@
   import homeMenuIcon from '@/assets/images/home_menu.svg'
   import peopleMenuIcon from '@/assets/images/people_menu.svg'
   import profileMenuIcon from '@/assets/images/profile_menu.svg'
+  import usersMenuIcon from '@/assets/images/users.svg'
+  import invitationsMenuIcon from '@/assets/images/invitations.svg'
   import logoutIcon from '@/assets/images/logout.svg'
   import { isMobile } from '@/lib/mobile_utils.js'
 
@@ -87,6 +104,18 @@
             icon: logoutIcon,
             external: true,
           },
+        ],
+        adminMenu: [
+          {
+            href: '/admin/invitations',
+            title: 'Invitations',
+            icon: invitationsMenuIcon,
+          },
+          // {
+          //   href: '/admin/users',
+          //   title: 'Users',
+          //   icon: usersMenuIcon,
+          // },
         ],
       }
     },

@@ -1,6 +1,6 @@
 <template>
   <div class="news-section">
-    <h3 class="is-size-2 mb-4">News & Events</h3>
+    <h3 class="is-size-3 has-text-weight-bold mb-4">News & Events</h3>
 
     <div class="card" v-for="(news) in $store.state.app.news">
       <div class="card-content">

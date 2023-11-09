@@ -11,31 +11,31 @@ class Users extends BaseController
 
   public function current()
   {
-  $peopleModel = new PeopleModel();
-  $userId = auth()->id();
-  $personData = $peopleModel->where('user_id', $userId)->first() ?? [];
+    $peopleModel = new PeopleModel();
+    $userId = auth()->id();
+    $personData = $peopleModel->where('user_id', $userId)->first() ?? [];
 
-  if (isset($personData['public_profile'])) {
-    if ($personData['public_profile'] === 't') {
-      $personData['public_profile'] = true;
-    } else {
-      $personData['public_profile'] = false;
+    if (isset($personData['public_profile'])) {
+      if ($personData['public_profile'] === 't') {
+        $personData['public_profile'] = true;
+      } else {
+        $personData['public_profile'] = false;
+      }
     }
-  }
 
-  if (isset($personData['image_url']) && $personData['image_url']) {
-    $personData['image_url'] = "profile_images/{$personData['image_url']}";
-  }
+    if (isset($personData['image_url']) && $personData['image_url']) {
+      $personData['image_url'] = "profile_images/{$personData['image_url']}";
+    }
 
-  $personData['topics'] = json_decode($personData['topics']);
-  $personData['affiliation'] = json_decode($personData['affiliation']);
-  $personData['affiliation_years'] = json_decode($personData['affiliation_years']);
-  $personData['interested_in'] = json_decode($personData['interested_in']);
-  $personData['knowledgeable_in'] = json_decode($personData['knowledgeable_in']);
-  $personData['working_groups'] = json_decode($personData['working_groups']);
-  $personData['projects'] = json_decode($personData['projects']);
+    $personData['topics'] = json_decode($personData['topics']);
+    $personData['affiliation'] = json_decode($personData['affiliation']);
+    $personData['affiliation_years'] = json_decode($personData['affiliation_years']);
+    $personData['interested_in'] = json_decode($personData['interested_in']);
+    $personData['knowledgeable_in'] = json_decode($personData['knowledgeable_in']);
+    $personData['working_groups'] = json_decode($personData['working_groups']);
+    $personData['projects'] = json_decode($personData['projects']);
 
-  return $this->respond($personData);
+    return $this->respond($personData);
   }
 
   public function saveProfile()
@@ -115,16 +115,5 @@ class Users extends BaseController
     } else {
       return $this->respond(['message' => 'Error saving data'], 500);
     }
-  }
-
-  private function mapRequestData($requestData, $keys)
-  {
-    $mappedData = [];
-
-    foreach ($keys as $key) {
-      $mappedData[$key] = $requestData[$key] ?? '';
-    }
-
-    return $mappedData;
   }
 }

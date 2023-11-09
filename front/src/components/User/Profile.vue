@@ -1,6 +1,6 @@
 <template>
   <div class="user-profile">
-    <h2 class="is-size-2 mb-4">My profile</h2>
+    <h3 class="is-size-3 has-text-weight-bold mb-4">My profile</h3>
 
     <form @submit.prevent="saveProfile">
       <nav class="panel">

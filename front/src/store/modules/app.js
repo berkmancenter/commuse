@@ -74,6 +74,12 @@ const actions = {
 
     return data
   },
+  async fetchInvitations(context, id) {
+    const response = await fetchIt(`${apiUrl}/api/admin/invitations`)
+    const data = await response.json()
+
+    return data
+  },
   setNews(context, news) {
     context.commit('setNews', news)
   },
@@ -115,6 +121,34 @@ const actions = {
   },
   addProfilePropertyOption(context, data) {
     context.commit('addProfilePropertyOption', data)
+  },
+  async saveInvitation(context, invitation) {
+    const response = await fetchIt(`${apiUrl}/api/admin/invitations/upsert`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        invitation: invitation,
+      }),
+    })
+
+    return response
+  },
+  async deleteInvitations(context, invitations) {
+    const response = await fetchIt(`${apiUrl}/api/admin/invitations/delete`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        invitations: invitations,
+      }),
+    })
+
+    return response
   },
 }
 

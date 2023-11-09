@@ -1,6 +1,6 @@
 <template>
   <div class="people-section">
-    <h3 class="is-size-2 mb-4">People</h3>
+    <h3 class="is-size-3 has-text-weight-bold mb-4">People</h3>
 
     <div class="people-section-filters mb-4">
       <div>
