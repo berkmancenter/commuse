@@ -10,65 +10,65 @@ class People extends BaseController
 
   public function index()
   {
-      $peopleModel = model('PeopleModel');
+    $peopleModel = model('PeopleModel');
 
-      $people = $peopleModel
-          ->select([
-              'id',
-              'prefix',
-              'first_name',
-              'last_name',
-              'middle_name',
-              'preferred_name',
-              'preferred_pronouns',
-              'short_bio',
-              'image_url',
-              'interested_in',
-              'home_city',
-              'home_country',
-              'home_state_province',
-              'twitter_link',
-              'linkedin_link',
-              'mastodon_link',
-          ])
-          ->where('public_profile', true)
-          ->orderBy('last_name', 'asc')
-          ->findAll();
+    $people = $peopleModel
+      ->select([
+        'id',
+        'prefix',
+        'first_name',
+        'last_name',
+        'middle_name',
+        'preferred_name',
+        'preferred_pronouns',
+        'short_bio',
+        'image_url',
+        'interested_in',
+        'home_city',
+        'home_country',
+        'home_state_province',
+        'twitter_link',
+        'linkedin_link',
+        'mastodon_link',
+      ])
+      ->where('public_profile', true)
+      ->orderBy('last_name', 'asc')
+      ->findAll();
 
-      $people = array_map(function ($person) {
-          $person['interested_in'] = json_decode($person['interested_in']);
-          $person['image_url'] = "profile_images/{$person['image_url']}";
+    $people = array_map(function ($person) {
+      $person['interested_in'] = json_decode($person['interested_in']);
+      $person['image_url'] = "profile_images/{$person['image_url']}";
 
-          return $person;
-      }, $people);
+      return $person;
+    }, $people);
 
-      return $this->respond($people);
+    return $this->respond($people);
   }
 
   public function interests()
   {
-      $peopleModel = model('PeopleModel');
-      $uniqueInterests = $peopleModel->getAllUniqueInterests();
+    $peopleModel = model('PeopleModel');
+    $uniqueInterests = $peopleModel->getAllUniqueInterests();
 
-      return $this->respond($uniqueInterests);
+    return $this->respond($uniqueInterests);
   }
 
   public function person($id)
   {
-      $peopleModel = model('PeopleModel');
+    $peopleModel = model('PeopleModel');
 
-      $person = $peopleModel
-        ->where('id', $id)
-        ->where('public_profile', true)
-        ->first();
+    $person = $peopleModel
+      ->where('id', $id)
+      ->where('public_profile', true)
+      ->first();
 
-      $person['image_url'] = "profile_images/{$person['image_url']}";
-      $person['interested_in'] = json_decode($person['interested_in']);
-      $person['knowledgeable_in'] = json_decode($person['knowledgeable_in']);
-      $person['working_groups'] = json_decode($person['working_groups']);
-      $person['projects'] = json_decode($person['projects']);
+    $person['image_url'] = "profile_images/{$person['image_url']}";
+    $person['interested_in'] = json_decode($person['interested_in']);
+    $person['knowledgeable_in'] = json_decode($person['knowledgeable_in']);
+    $person['working_groups'] = json_decode($person['working_groups']);
+    $person['projects'] = json_decode($person['projects']);
 
 
-      return $this->respond($person);
+    return $this->respond($person);
   }
 }

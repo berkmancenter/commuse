@@ -8,52 +8,52 @@ use App\Models\InvitationCodeModel;
 
 class RegisterController extends ShieldRegister
 {
-    public function registerView()
-    {
-        $invitationCode = $this->getInvitationCodeByCode($_GET['ic'] ?? '');
+  public function registerView()
+  {
+    $invitationCode = $this->getInvitationCodeByCode($_GET['ic'] ?? '');
 
-        if (is_null($invitationCode) === true) {
-            return redirect()->to('login')->with('errors', 'You need an invitation code to register.');
-        }
-
-        $session = \Config\Services::session();
-        $session->set('invitation_code', $invitationCode['code']);
-
-        return parent::registerView();
+    if (is_null($invitationCode) === true) {
+      return redirect()->to('login')->with('errors', 'You need an invitation code to register.');
     }
 
-    public function registerAction(): RedirectResponse
-    {
-        $session = \Config\Services::session();
+    $session = \Config\Services::session();
+    $session->set('invitation_code', $invitationCode['code']);
 
-        $invitationCode = $this->getInvitationCodeByCode($_SESSION['invitation_code'] ?? '');
+    return parent::registerView();
+  }
 
-        if (is_null($invitationCode) === true) {
-            return redirect()->to('login')->with('errors', 'You need an invitation code to register.');
-        }
+  public function registerAction(): RedirectResponse
+  {
+    $session = \Config\Services::session();
 
-        $session->set('invitation_code_username', $_POST['username']);
+    $invitationCode = $this->getInvitationCodeByCode($_SESSION['invitation_code'] ?? '');
 
-        return parent::registerAction();
+    if (is_null($invitationCode) === true) {
+      return redirect()->to('login')->with('errors', 'You need an invitation code to register.');
     }
 
-    private function getInvitationCodeByCode($code) {
-        $invitationCodeModel = new InvitationCodeModel();
-        $invitationCode = $invitationCodeModel
-          ->where('code', $code)
-          ->where('type', 'single')
-          ->where('used', false)
-          ->first();
+    $session->set('invitation_code_username', $_POST['username']);
 
-        if (is_null($invitationCode)) {
-            $currentTimestamp = date('Y-m-d H:i:s', time());
-            $invitationCode = $invitationCodeModel
-              ->where('code', $code)
-              ->where('type', 'multi')
-              ->where('expire >', $currentTimestamp)
-              ->first();
-        }
+    return parent::registerAction();
+  }
 
-        return $invitationCode;
+  private function getInvitationCodeByCode($code) {
+    $invitationCodeModel = new InvitationCodeModel();
+    $invitationCode = $invitationCodeModel
+      ->where('code', $code)
+      ->where('type', 'single')
+      ->where('used', false)
+      ->first();
+
+    if (is_null($invitationCode)) {
+      $currentTimestamp = date('Y-m-d H:i:s', time());
+      $invitationCode = $invitationCodeModel
+        ->where('code', $code)
+        ->where('type', 'multi')
+        ->where('expire >', $currentTimestamp)
+        ->first();
     }
+
+    return $invitationCode;
+  }
 }
