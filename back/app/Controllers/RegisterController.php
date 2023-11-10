@@ -49,8 +49,11 @@ class RegisterController extends ShieldRegister
       $currentTimestamp = date('Y-m-d H:i:s', time());
       $invitationCode = $invitationCodeModel
         ->where('code', $code)
-        ->where('type', 'multi')
-        ->where('expire >', $currentTimestamp)
+        ->where('type', 'multiple')
+        ->groupStart()
+          ->where('expire >', $currentTimestamp)
+          ->orWhere('expire IS NULL')
+        ->groupSnd()
         ->first();
     }
 

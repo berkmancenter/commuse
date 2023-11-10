@@ -163,7 +163,7 @@
       },
       copyCodeUrlToClipboard(code) {
         window.navigator.clipboard.writeText(`${this.apiUrl}/register?ic=${code}`)
-        this.awn.success('Invitation link copied to the clipboard.')
+        this.awn.success('Invitation link has been copied to the clipboard.')
       },
       deleteInvitation(invitation) {
         const that = this
