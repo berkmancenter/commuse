@@ -60,6 +60,9 @@ $routes->get('people/(:num)', function() {
 $routes->get('admin/users', function() {
   return view('front_end.html');
 });
+$routes->get('admin/invitations', function() {
+  return view('front_end.html');
+});
 
 $routes->get('register', 'RegisterController::registerView');
 $routes->post('register', 'RegisterController::registerAction');
