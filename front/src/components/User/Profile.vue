@@ -72,6 +72,15 @@
               </div>
             </div>
           </div>
+
+          <div class="field">
+            <label class="label">Public</label>
+            <div class="control">
+              <div class="control">
+                <input type="checkbox" v-model="$store.state.app.userProfile.publicProfile">
+              </div>
+            </div>
+          </div>
         </div>
       </nav>
 

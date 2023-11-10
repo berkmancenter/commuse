@@ -53,7 +53,7 @@ class Users extends BaseController
       'linkedin_link', 'mastodon_link', 'instagram_link', 'snapchat_link', 'other_link',
       'mobile_phone_number', 'email', 'home_city', 'home_state_province', 'home_country',
       'employer_name', 'job_title', 'industry', 'affiliation', 'affiliation_years',
-      'interested_in', 'knowledgeable_in', 'working_groups', 'projects'
+      'interested_in', 'knowledgeable_in', 'working_groups', 'projects', 'public_profile',
     ];
 
     $data = $this->mapRequestData($requestData, $keysToMap);

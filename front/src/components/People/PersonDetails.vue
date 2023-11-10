@@ -170,6 +170,8 @@
       </div>
     </div>
   </div>
+
+  <div class="has-text-right mt-2">Last updated: {{ person.updated_at }}</div>
 </template>
 
 <script>
