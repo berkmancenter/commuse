@@ -33,4 +33,12 @@
       background-color: #fff;
     }
   }
+
+  a.button, button {
+    img.commuse-icon {
+      padding: 0;
+      margin-right: 0.2rem;
+      align-self: normal;
+    }
+  }
 </style>
