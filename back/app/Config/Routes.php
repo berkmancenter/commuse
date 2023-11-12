@@ -44,6 +44,8 @@ $routes->get('api/files/get/(.+)', 'Files::get/$1');
 $routes->get('api/admin/invitations', 'Invitations::index');
 $routes->post('api/admin/invitations/upsert', 'Invitations::upsert');
 $routes->post('api/admin/invitations/delete', 'Invitations::delete');
+$routes->get('api/admin/users', 'Users::adminIndex');
+$routes->post('api/admin/users/delete', 'Users::delete');
 
 $routes->get('/', function() {
   return view('front_end.html');

@@ -80,6 +80,12 @@ const actions = {
 
     return data
   },
+  async fetchUsers(context, id) {
+    const response = await fetchIt(`${apiUrl}/api/admin/users`)
+    const data = await response.json()
+
+    return data
+  },
   setNews(context, news) {
     context.commit('setNews', news)
   },
@@ -145,6 +151,20 @@ const actions = {
       },
       body: JSON.stringify({
         invitations: invitations,
+      }),
+    })
+
+    return response
+  },
+  async deleteUsers(context, users) {
+    const response = await fetchIt(`${apiUrl}/api/admin/users/delete`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        users: users,
       }),
     })
 

@@ -37,7 +37,7 @@ const router = createRouter({
     },
     {
       path: '/admin/users',
-      component: () => import('@/components/Admin/Users.vue'),
+      component: () => import('@/components/Admin/Users/Index.vue'),
       name: 'admin-users.index',
       meta: {
         title: 'Users admin',

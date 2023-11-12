@@ -22,7 +22,7 @@
     },
     methods: {
       isValTrue() {
-        return this.value === 't'
+        return this.value === 't' || (this.value && this.value !== 'f')
       },
     },
   }

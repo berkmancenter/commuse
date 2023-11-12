@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
 use App\Models\PeopleModel;
+use App\Models\UserModel;
 
 class Users extends BaseController
 {
@@ -109,11 +110,60 @@ class Users extends BaseController
 
     if ($result) {
       return $this->respond([
-        'message' => 'ok',
+        'message' => $message,
         'image' => "profile_images/{$fileName}",
       ], 200);
     } else {
       return $this->respond(['message' => 'Error saving data'], 500);
+    }
+  }
+
+  public function adminIndex()
+  {
+    $db = \Config\Database::connect();
+    $query = $db->table('users')
+      ->select('
+        users.id,
+        users.username,
+        users.created_at,
+        people.first_name,
+        people.last_name,
+        auth_identities.secret AS email,
+        auth_identities.last_used_at AS last_login,
+        STRING_AGG(auth_groups_users.group, \',\') AS groups
+      ')
+      ->join('people', 'people.user_id = users.id', 'left')
+      ->join('auth_identities', 'auth_identities.user_id = users.id', 'left')
+      ->join('auth_groups_users', 'auth_groups_users.user_id = users.id', 'left')
+      ->groupBy('users.id, people.first_name, people.last_name, auth_identities.secret, auth_identities.last_used_at')
+      ->get();
+
+    $users = $query->getResultArray();
+
+    foreach ($users as &$user) {
+      $user['groups'] = array_map('trim', array_filter(explode(',', $user['groups'])));
+    }
+
+    return $this->respond($users);
+  }
+
+  public function delete()
+  {
+    $result = false;
+    $usersModel = model('UserModel');
+    $peopleModel = model('PeopleModel');
+    $requestData = json_decode(file_get_contents('php://input'), true);
+    $userIds = $requestData['users'] ?? [];
+
+    if (!empty($userIds)) {
+      $result = $usersModel->whereIn('id', $userIds)->delete();
+      $result = $peopleModel->whereIn('user_id', $userIds)->delete();
+    }
+
+    if ($result) {
+      return $this->respond(['message' => 'Users have been removed successfully.'], 200);
+    } else {
+      return $this->respond(['message' => 'Error removing users.'], 500);
     }
   }
 }

@@ -111,11 +111,11 @@
             title: 'Invitations',
             icon: invitationsMenuIcon,
           },
-          // {
-          //   href: '/admin/users',
-          //   title: 'Users',
-          //   icon: usersMenuIcon,
-          // },
+          {
+            href: '/admin/users',
+            title: 'Users',
+            icon: usersMenuIcon,
+          },
         ],
       }
     },
