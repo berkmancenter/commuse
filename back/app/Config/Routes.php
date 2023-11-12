@@ -46,6 +46,7 @@ $routes->post('api/admin/invitations/upsert', 'Invitations::upsert');
 $routes->post('api/admin/invitations/delete', 'Invitations::delete');
 $routes->get('api/admin/users', 'Users::adminIndex');
 $routes->post('api/admin/users/delete', 'Users::delete');
+$routes->post('api/admin/users/change_role', 'Users::changeRole');
 
 $routes->get('/', function() {
   return view('front_end.html');

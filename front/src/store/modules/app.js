@@ -170,6 +170,21 @@ const actions = {
 
     return response
   },
+  async changeUserRole(context, data) {
+    const response = await fetchIt(`${apiUrl}/api/admin/users/change_role`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        users: data.users,
+        role: data.role,
+      }),
+    })
+
+    return response
+  },
 }
 
 const getters = {}

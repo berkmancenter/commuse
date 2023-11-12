@@ -157,7 +157,10 @@ class Users extends BaseController
 
     if (!empty($userIds)) {
       $result = $usersModel->whereIn('id', $userIds)->delete();
-      $result = $peopleModel->whereIn('user_id', $userIds)->delete();
+
+      if ($result) {
+        $result = $peopleModel->whereIn('user_id', $userIds)->delete();
+      }
     }
 
     if ($result) {
@@ -165,5 +168,43 @@ class Users extends BaseController
     } else {
       return $this->respond(['message' => 'Error removing users.'], 500);
     }
+  }
+
+  public function changeRole()
+  {
+    $result = false;
+    $requestData = json_decode(file_get_contents('php://input'), true);
+    $userIds = $requestData['users'] ?? [];
+    $role = $requestData['role'] ?? [];
+    $db = \Config\Database::connect();
+
+    if (!empty($userIds) && !empty($role)) {
+      $db->transStart();
+
+      $db->table('auth_groups_users')
+        ->where('user_id', $userIds)
+        ->delete();
+
+      $newGroupsUsers = [];
+      foreach($userIds as $userId) {
+        $newGroupsUsers[] = [
+          'user_id' => $userId,
+          'group' => $role,
+          'created_at' => new \CodeIgniter\Database\RawSql('NOW()'),
+        ];
+      }
+      $db->table('auth_groups_users')
+        ->insertBatch($newGroupsUsers);
+
+      $db->transComplete();
+
+      $result = $db->transStatus();
+    }
+
+    // if ($result) {
+    //   return $this->respond(['message' => 'Users have been removed successfully.'], 200);
+    // } else {
+    //   return $this->respond(['message' => 'Error removing users.'], 500);
+    // }
   }
 }

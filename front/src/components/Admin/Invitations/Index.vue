@@ -49,6 +49,8 @@
 
     <div ref="saveInvitationTemplate" class="is-hidden">
       <div class="content" onsubmit="return false">
+        <div class="is-size-5 mb-4">Create invitation</div>
+
         <form class="form admin-invitations-form">
           <div class="field">
             <label class="label" for="type">Type</label>
@@ -170,7 +172,7 @@
 
         Swal.fire({
           title: 'Removing invitation',
-          text: `Are you sure to remove invitation ${invitation.code}?`,
+          html: `Are you sure to remove invitation <strong>${invitation.code}</strong>?`,
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: this.colors.main,
