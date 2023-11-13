@@ -240,9 +240,7 @@ class Users extends BaseController
     $result = false;
     $count = 0;
     $peopleModel = new PeopleModel();
-    $userModel = new UserModel();
     $usersProvider = auth()->getProvider();
-    $db = \Config\Database::connect();
 
     $file = $this->request->getFile('csv');
 
