@@ -139,10 +139,10 @@ class Users extends BaseController
         users.id,
         users.username,
         users.created_at,
+        users.last_active AS last_login,
         people.first_name,
         people.last_name,
         auth_identities.secret AS email,
-        auth_identities.last_used_at AS last_login,
         STRING_AGG(auth_groups_users.group, \',\') AS groups
       ')
       ->join('people', 'people.user_id = users.id', 'left')
