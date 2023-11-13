@@ -2,6 +2,13 @@
   <div class="admin-users">
     <h3 class="is-size-3 has-text-weight-bold mb-4">Users</h3>
 
+    <div class="mb-4">
+      <a class="button" @click="importUsersFromCsv">
+        <Icon :src="fileIcon" :interactive="false" />
+        Import users from CSV
+      </a>
+    </div>
+
     <form class="form">
       <admin-table :tableClasses="['admin-users-table']">
         <thead>
@@ -67,6 +74,24 @@
       </div>
     </div>
   </div>
+
+  <div ref="adminUserImportCsvTemplate" class="is-hidden">
+    <div class="content admin-users-import-from-csv-form">
+      <div class="is-size-5 mb-4">Choose CSV file to import</div>
+
+      <div class="field">
+        <div class="control">
+          <input ref="userProfileImageInput" type="file" accept=".csv" @change="runCsvImport()">
+          <div class="my-2">
+            <button class="button" type="button" @click="openUploadProfileImage()">
+              <Icon :src="fileIcon" :interactive="false" />
+              Choose file
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -76,6 +101,7 @@
   import clipboardIcon from '@/assets/images/clipboard.svg'
   import addWhiteIcon from '@/assets/images/add_white.svg'
   import toggleAdminIcon from '@/assets/images/toggle_admin.svg'
+  import fileIcon from '@/assets/images/file.svg'
   import Swal from 'sweetalert2'
   import AdminTable from '@/components/Admin/AdminTable.vue'
 
@@ -92,6 +118,7 @@
         addWhiteIcon,
         clipboardIcon,
         toggleAdminIcon,
+        fileIcon,
         users: [],
         roles: [
           'user',
@@ -185,8 +212,50 @@
           }
         })
       },
+      importUsersFromCsv() {
+        const templateElementSelector = '.swal2-html-container .admin-users-import-from-csv-form'
+
+        Swal.fire({
+          icon: null,
+          showCancelButton: true,
+          confirmButtonText: 'Import',
+          confirmButtonColor: this.colors.main,
+          html: this.$refs.adminUserImportCsvTemplate.innerHTML,
+          didOpen: () => {
+            document.querySelector(templateElementSelector).querySelector('.button').onclick = () => {
+              document.querySelector(templateElementSelector).querySelector('input').click()
+            }
+          },
+        }).then(async (result) => {
+          const fileInput = document.querySelector(templateElementSelector).querySelector('input')
+
+          if (result.isConfirmed) {
+            this.mitt.emit('spinnerStart')
+
+            if (fileInput.files[0]) {
+              const response = await this.$store.dispatch('app/importUsersFromCsv', fileInput.files[0])
+
+              if (response.ok) {
+                this.loadUsers()
+                const data = await response.json()
+                this.awn.success(data.message)
+              } else {
+                this.awn.warning('Something went wrong, try again.')
+              }
+            }
+
+            this.mitt.emit('spinnerStop')
+          }
+        })
+      },
     },
   }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+  .admin-users-import-from-csv-form {
+    input {
+      display: none;
+    }
+  }
+</style>

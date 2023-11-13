@@ -5,6 +5,9 @@ namespace App\Controllers;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\PeopleModel;
 use App\Models\UserModel;
+use League\Csv\Reader;
+use League\Csv\Statement;
+use CodeIgniter\Shield\Entities\User;
 
 class Users extends BaseController
 {
@@ -103,7 +106,7 @@ class Users extends BaseController
     $file = $this->request->getFile('image');
 
     if (!$file->isValid()) {
-    return;
+      return;
     }
 
     $fileName = $file->getRandomName();
@@ -225,6 +228,87 @@ class Users extends BaseController
       return $this->respond(['message' => 'User role has been set successfully.'], 200);
     } else {
       return $this->respond(['message' => 'Error changing user role.'], 500);
+    }
+  }
+
+  public function importFromCsv()
+  {
+    $this->checkAdminAccess();
+
+    helper('text');
+
+    $result = false;
+    $count = 0;
+    $peopleModel = new PeopleModel();
+    $userModel = new UserModel();
+    $usersProvider = auth()->getProvider();
+    $db = \Config\Database::connect();
+
+    $file = $this->request->getFile('csv');
+
+    if (!$file->isValid()) {
+      return;
+    }
+
+    $fileName = $file->getRandomName();
+    $dirPath = ROOTPATH . 'writable/uploads/import_users_csvs/';
+    if (!is_dir($dirPath)) {
+      mkdir($dirPath);
+    }
+    $file->move($dirPath, $fileName);
+
+    try {
+      $csv = Reader::createFromPath("{$dirPath}/{$fileName}", 'r');
+      $csv->setHeaderOffset(0);
+  
+      $stmt = Statement::create();
+      $records = $stmt->process($csv);
+      foreach ($records as $record) {
+        if (!$record['email']) {
+          continue;
+        }
+
+        try {
+          $keysToMap = [
+            'prefix', 'first_name', 'middle_name', 'last_name', 'preferred_name',
+            'preferred_pronouns', 'bio', 'website_link', 'facebook_link', 'twitter_link',
+            'linkedin_link', 'mastodon_link', 'instagram_link', 'snapchat_link', 'other_link',
+            'mobile_phone_number', 'email', 'home_city', 'home_state_province', 'home_country',
+            'employer_name', 'job_title', 'industry',
+          ];
+          $peopleData = $this->mapRequestData($record, $keysToMap);
+
+          $newUserData  = [
+            'username' => substr(md5(mt_rand()), 0, 10) . substr(md5($record['email']), 0, 20),
+            'email'    => $record['email'],
+            'password' => bin2hex(random_bytes(10)),
+          ];
+
+          $user = new User($newUserData);
+          $saved = $usersProvider->save($user);
+
+          if ($saved) {
+            $userId = $usersProvider->getInsertID();
+            $peopleData['user_id'] = $userId;
+            $peopleModel->insert($peopleData);
+            $count++;
+          }
+        } catch (\Throwable $exceptionRecord) {
+          error_log($exceptionRecord->getMessage());
+        }
+      }
+
+      $result = true;
+    } catch (\Throwable $exception) {
+      error_log($exception->getMessage());
+    }
+
+    if ($result) {
+      return $this->respond([
+        'message' => "Imported {$count} new users.",
+      ], 200);
+    } else {
+      return $this->respond(['message' => 'Error importing users.'], 500);
     }
   }
 }

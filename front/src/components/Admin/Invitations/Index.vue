@@ -3,8 +3,8 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">Invitations</h3>
 
     <div class="mb-4">
-      <a class="button is-success" @click="saveInvitation">
-        <Icon :src="addWhiteIcon" :interactive="false" />
+      <a class="button" @click="saveInvitation">
+        <Icon :src="addIcon" :interactive="false" />
         Create invitation
       </a>
     </div>
@@ -81,7 +81,7 @@
   import Booler from '@/components/Shared/Booler.vue'
   import minusIcon from '@/assets/images/minus.svg'
   import clipboardIcon from '@/assets/images/clipboard.svg'
-  import addWhiteIcon from '@/assets/images/add_white.svg'
+  import addIcon from '@/assets/images/add.svg'
   import Swal from 'sweetalert2'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import AirDatepicker from 'air-datepicker'
@@ -97,7 +97,7 @@
     data() {
       return {
         minusIcon,
-        addWhiteIcon,
+        addIcon,
         clipboardIcon,
         invitations: [],
         apiUrl: import.meta.env.VITE_API_URL,

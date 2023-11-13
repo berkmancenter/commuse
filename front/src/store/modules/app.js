@@ -224,6 +224,20 @@ const actions = {
   removeAffiliation(context, index) {
     context.commit('removeAffiliation', index)
   },
+  async importUsersFromCsv(context, file) {
+    const formData = new FormData();
+    formData.append('csv', file);
+    const response = await fetchIt(`${apiUrl}/api/admin/users/importFromCsv`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: formData,
+    })
+
+    return response
+  },
 }
 
 const getters = {}
