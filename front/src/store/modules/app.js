@@ -16,6 +16,17 @@ const defaultProfile = {
   linkedinUrl: '',
   mastodonUrl: '',
   interests: [],
+  affiliation: [],
+  interestedIn: [],
+  knowledgeableIn: [],
+  workingGroups: [],
+  projects: [],
+}
+
+const defaultAffiliation = {
+  from: '',
+  to: '',
+  position: '',
 }
 
 const state = {
@@ -47,6 +58,12 @@ const mutations = {
   },
   addProfilePropertyOption(state, data) {
     state.userProfile[data.key].push(data.newOption)
+  },
+  addEmptyAffiliation(state) {
+    state.userProfile.affiliation.push(defaultAffiliation)
+  },
+  removeAffiliation(state, index) {
+    state.userProfile.affiliation.splice(index, 1);
   },
 }
 
@@ -200,6 +217,12 @@ const actions = {
     })
 
     return response
+  },
+  addEmptyAffiliation(context) {
+    context.commit('addEmptyAffiliation')
+  },
+  removeAffiliation(context, index) {
+    context.commit('removeAffiliation', index)
   },
 }
 

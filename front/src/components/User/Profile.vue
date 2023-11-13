@@ -110,35 +110,55 @@
           BKC Affiliation
         </p>
         <div class="panel-block">
-          <div class="field">
-            <label class="label">Affiliation</label>
-            <div class="control">
+          <div class="box" v-for="(affiliation, index) in $store.state.app.userProfile.affiliation">
+            <span title="Remove item" @click="removeAffiliation(index)"><Icon :src="minusIcon" /></span>
+
+            <div class="field">
+              <label class="label">Type of affiliation</label>
               <div class="control">
-                <VueMultiselect
-                  id="affiliation"
-                  v-model="$store.state.app.userProfile.affiliation"
-                  :multiple="true"
-                  :options="affiliationOptions"
-                  placeholder="Select"
-                >
-                </VueMultiselect>
+                <div class="control">
+                  <VueMultiselect
+                    id="affiliation"
+                    v-model="affiliation.position"
+                    :multiple="true"
+                    :options="affiliationOptions"
+                    placeholder="Select"
+                  >
+                  </VueMultiselect>
+                </div>
+              </div>
+
+              <label class="label">From</label>
+              <div class="control">
+                <div class="control">
+                  <VueMultiselect
+                    id="affiliation"
+                    v-model="affiliation.from"
+                    :multiple="false"
+                    :options="affiliationYearsOptions"
+                    placeholder="Select"
+                  >
+                  </VueMultiselect>
+                </div>
+              </div>
+
+              <label class="label">To</label>
+              <div class="control">
+                <div class="control">
+                  <VueMultiselect
+                    id="affiliation"
+                    v-model="affiliation.to"
+                    :multiple="false"
+                    :options="affiliationYearsOptions"
+                    placeholder="Select"
+                  >
+                  </VueMultiselect>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="label">Affiliation Year(s)</label>
-            <div class="control">
-              <VueMultiselect
-                v-model="$store.state.app.userProfile.affiliationYears"
-                :multiple="true"
-                :options="affiliationYearsOptions"
-                placeholder="Select"
-                @tag="addProfilePropertyOption"
-              >
-              </VueMultiselect>
-            </div>
-          </div>
+          <span title="Add more" @click="addEmptyAffiliation"><Icon :src="addIcon" /></span>
         </div>
       </nav>
 
@@ -358,6 +378,9 @@
 <script>
   import { keysToCamelCase, keysToSnakeCase } from '@/lib/keys_converting.js'
   import VueMultiselect from 'vue-multiselect'
+  import Icon from '@/components/Shared/Icon.vue'
+  import addIcon from '@/assets/images/add.svg'
+  import minusIcon from '@/assets/images/minus_light.svg'
 
   export default {
     name: 'UserProfile',
@@ -366,10 +389,13 @@
         apiUrl: import.meta.env.VITE_API_URL,
         interests: [],
         affiliationOptions: ['Staff', 'Faculty', 'Affiliate', 'Faculty Associate', 'BKC Fellow', 'RSM Fellow', 'RSM Scholar', 'Assembly Fellow', 'Other'],
+        addIcon,
+        minusIcon,
       }
     },
     components: {
-      VueMultiselect: VueMultiselect,
+      VueMultiselect,
+      Icon,
     },
     created() {
       this.initialDataLoad()
@@ -432,6 +458,12 @@
         let interests = await this.$store.dispatch('app/fetchInterests')
 
         this.interests = interests
+      },
+      addEmptyAffiliation() {
+        this.$store.dispatch('app/addEmptyAffiliation')
+      },
+      removeAffiliation(index) {
+        this.$store.dispatch('app/removeAffiliation', index)
       },
     }
   }

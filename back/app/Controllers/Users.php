@@ -39,13 +39,14 @@ class Users extends BaseController
       $personData['image_url'] = "profile_images/{$personData['image_url']}";
     }
 
-    $personData['topics'] = json_decode($personData['topics']);
-    $personData['affiliation'] = json_decode($personData['affiliation']);
-    $personData['affiliation_years'] = json_decode($personData['affiliation_years']);
-    $personData['interested_in'] = json_decode($personData['interested_in']);
-    $personData['knowledgeable_in'] = json_decode($personData['knowledgeable_in']);
-    $personData['working_groups'] = json_decode($personData['working_groups']);
-    $personData['projects'] = json_decode($personData['projects']);
+    $jsonKeysToMap = [
+      'affiliation', 'interested_in', 'knowledgeable_in',
+      'working_groups', 'projects'
+    ];
+
+    foreach ($jsonKeysToMap as $key) {
+      $personData[$key] = json_decode($personData[$key] ?? '[]');
+    }
 
     return $this->respond($personData);
   }
@@ -64,18 +65,20 @@ class Users extends BaseController
       'preferred_pronouns', 'bio', 'website_link', 'facebook_link', 'twitter_link',
       'linkedin_link', 'mastodon_link', 'instagram_link', 'snapchat_link', 'other_link',
       'mobile_phone_number', 'email', 'home_city', 'home_state_province', 'home_country',
-      'employer_name', 'job_title', 'industry', 'affiliation', 'affiliation_years',
-      'interested_in', 'knowledgeable_in', 'working_groups', 'projects', 'public_profile',
+      'employer_name', 'job_title', 'industry',
     ];
 
     $data = $this->mapRequestData($requestData, $keysToMap);
-    $data['affiliation'] = json_encode($data['affiliation'] ?? []);
-    $data['affiliation_years'] = json_encode($data['affiliation_years'] ?? []);
-    $data['interested_in'] = json_encode($data['interested_in'] ?? []);
-    $data['knowledgeable_in'] = json_encode($data['knowledgeable_in'] ?? []);
-    $data['working_groups'] = json_encode($data['working_groups'] ?? []);
-    $data['projects'] = json_encode($data['projects'] ?? []);
+    $data['public_profile'] = $data['public_profile'] ?? false;
     $data['user_id'] = $userId;
+
+    $jsonKeysToMap = [
+      'affiliation', 'interested_in', 'knowledgeable_in',
+      'working_groups', 'projects',
+    ];
+    foreach ($jsonKeysToMap as $key) {
+      $data[$key] = json_encode($requestData[$key] ?? []);
+    }
 
     $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';
 

@@ -68,7 +68,6 @@ class People extends BaseController
     $person['working_groups'] = json_decode($person['working_groups']);
     $person['projects'] = json_decode($person['projects']);
 
-
     return $this->respond($person);
   }
 }
