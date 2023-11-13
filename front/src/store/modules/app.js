@@ -60,7 +60,7 @@ const mutations = {
     state.userProfile[data.key].push(data.newOption)
   },
   addEmptyAffiliation(state) {
-    state.userProfile.affiliation.push(defaultAffiliation)
+    state.userProfile.affiliation.push(JSON.parse(JSON.stringify(defaultAffiliation)))
   },
   removeAffiliation(state, index) {
     state.userProfile.affiliation.splice(index, 1);
