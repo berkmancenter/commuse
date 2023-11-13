@@ -69,7 +69,7 @@ class Users extends BaseController
     ];
 
     $data = $this->mapRequestData($requestData, $keysToMap);
-    $data['public_profile'] = $data['public_profile'] ?? false;
+    $data['public_profile'] = $requestData['public_profile'] ?? false;
     $data['user_id'] = $userId;
 
     $jsonKeysToMap = [
