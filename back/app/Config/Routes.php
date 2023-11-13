@@ -36,6 +36,7 @@ $routes->get('api/people/interests', 'People::interests');
 $routes->get('api/people/(:num)', 'People::person/$1');
 
 $routes->get('api/users/current', 'Users::current');
+$routes->get('api/users/currentProfile', 'Users::currentProfile');
 $routes->post('api/users/saveProfile', 'Users::saveProfile');
 $routes->post('api/users/uploadProfileImage', 'Users::uploadProfileImage');
 

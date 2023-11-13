@@ -11,6 +11,8 @@ class Invitations extends BaseController
 
   public function index()
   {
+    $this->checkAdminAccess();
+
     $invitationsModel = model('InvitationCodeModel');
 
     $invitations = $invitationsModel
@@ -22,6 +24,8 @@ class Invitations extends BaseController
 
   public function upsert()
   {
+    $this->checkAdminAccess();
+
     $result = false;
     $invitationsModel = model('InvitationCodeModel');
     $requestData = json_decode(file_get_contents('php://input'), true);
@@ -57,6 +61,8 @@ class Invitations extends BaseController
 
   public function delete()
   {
+    $this->checkAdminAccess();
+
     $result = false;
     $invitationsModel = model('InvitationCodeModel');
     $requestData = json_decode(file_get_contents('php://input'), true);

@@ -68,4 +68,18 @@ abstract class BaseController extends Controller
 
     return $mappedData;
   }
+
+  protected function authError()
+  {
+    header('HTTP/1.1 401 Unauthorized');
+    echo json_encode(['message' => 'Unauthorized.']);
+    die();
+  }
+
+  protected function checkAdminAccess()
+  {
+    if (auth()->user()->can('admin.access') === false) {
+      return $this->authError();
+    }
+  }
 }

@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use CodeIgniter\Model;
+use CodeIgniter\Shield\Models\UserModel as ShieldUserModel;
 
-class UserModel extends Model
+class UserModel extends ShieldUserModel
 {
-  protected $table = 'users';
-  protected $primaryKey = 'id';
+    protected function initialize(): void
+    {
+      parent::initialize();
+    }
 }

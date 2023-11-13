@@ -18,20 +18,22 @@
         </li>
       </ul>
 
-      <div class="is-size-5 px-2 py-1">Admin</div>
+      <div class="side-menu-admin" v-if="$store.state.app.currentUser.admin">
+        <div class="is-size-5 px-2 py-1">Admin</div>
 
-      <ul>
-        <li v-for="(link) in adminMenu">
-          <a :href="link.href" class="hvr-fade" @click="hideMenuMobile" v-if="link.external === true">
-            <img class="side-menu-icon" :src="link.icon">
-            {{ link.title }}
-          </a>
-          <router-link :to="link.href" class="hvr-fade" @click="hideMenuMobile" v-if="link.external !== true">
-            <img class="side-menu-icon" :src="link.icon">
-            {{ link.title }}
-          </router-link>
-        </li>
-      </ul>
+        <ul>
+          <li v-for="(link) in adminMenu">
+            <a :href="link.href" class="hvr-fade" @click="hideMenuMobile" v-if="link.external === true">
+              <img class="side-menu-icon" :src="link.icon">
+              {{ link.title }}
+            </a>
+            <router-link :to="link.href" class="hvr-fade" @click="hideMenuMobile" v-if="link.external !== true">
+              <img class="side-menu-icon" :src="link.icon">
+              {{ link.title }}
+            </router-link>
+          </li>
+        </ul>
+      </div>
     </swit-menu>
 
     <nav class="top-nav">
@@ -79,6 +81,9 @@
     components: {
       SwitMenu,
     },
+    created() {
+      this.loadCurrentUser()
+    },
     data() {
       return {
         appTitle: import.meta.env.VITE_APP_TITLE || 'commuse',
@@ -125,6 +130,10 @@
           this.mitt.emit('closeSideMenu')
         }
       },
+      async loadCurrentUser() {
+        const currentUser = await this.$store.dispatch('app/fetchCurrentUser')
+        this.$store.dispatch('app/setCurrentUser', currentUser)
+      }
     },
   }
 </script>

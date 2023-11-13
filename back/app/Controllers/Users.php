@@ -12,6 +12,17 @@ class Users extends BaseController
 
   public function current()
   {
+    $user = auth()->user();
+    $userId = auth()->id();
+
+    $userData['id'] = $userId;
+    $userData['admin'] = $user->inGroup('admin');
+
+    return $this->respond($userData);
+  }
+
+  public function currentProfile()
+  {
     $peopleModel = new PeopleModel();
     $userId = auth()->id();
     $personData = $peopleModel->where('user_id', $userId)->first() ?? [];
@@ -120,6 +131,8 @@ class Users extends BaseController
 
   public function adminIndex()
   {
+    $this->checkAdminAccess();
+
     $db = \Config\Database::connect();
     $query = $db->table('users')
       ->select('
@@ -149,6 +162,8 @@ class Users extends BaseController
 
   public function delete()
   {
+    $this->checkAdminAccess();
+
     $result = false;
     $usersModel = model('UserModel');
     $peopleModel = model('PeopleModel');
@@ -172,6 +187,8 @@ class Users extends BaseController
 
   public function changeRole()
   {
+    $this->checkAdminAccess();
+
     $result = false;
     $requestData = json_decode(file_get_contents('php://input'), true);
     $userIds = $requestData['users'] ?? [];
@@ -201,10 +218,10 @@ class Users extends BaseController
       $result = $db->transStatus();
     }
 
-    // if ($result) {
-    //   return $this->respond(['message' => 'Users have been removed successfully.'], 200);
-    // } else {
-    //   return $this->respond(['message' => 'Error removing users.'], 500);
-    // }
+    if ($result) {
+      return $this->respond(['message' => 'User role has been set successfully.'], 200);
+    } else {
+      return $this->respond(['message' => 'Error changing user role.'], 500);
+    }
   }
 }

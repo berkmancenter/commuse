@@ -23,6 +23,10 @@ const state = {
   people: [],
   sideMenuStatus: false,
   userProfile: JSON.parse(JSON.stringify(defaultProfile)),
+  currentUser: {
+    id: null,
+    admin: false,
+  },
 }
 
 const mutations = {
@@ -37,6 +41,9 @@ const mutations = {
   },
   setUserProfile(state, profile) {
     state.userProfile = profile
+  },
+  setCurrentUser(state, currentUser) {
+    state.currentUser = currentUser
   },
   addProfilePropertyOption(state, data) {
     state.userProfile[data.key].push(data.newOption)
@@ -56,8 +63,14 @@ const actions = {
 
     return data
   },
-  async fetchProfile(context) {
+  async fetchCurrentUser(context) {
     const response = await fetchIt(`${apiUrl}/api/users/current`)
+    const data = await response.json()
+
+    return data
+  },
+  async fetchProfile(context) {
+    const response = await fetchIt(`${apiUrl}/api/users/currentProfile`)
     const data = await response.json()
 
     return data
@@ -98,6 +111,9 @@ const actions = {
   },
   setUserProfile(context, profile) {
     context.commit('setUserProfile', profile)
+  },
+  setCurrentUser(context, currentUser) {
+    context.commit('setCurrentUser', currentUser)
   },
   async saveProfile(context, profileData) {
     const response = await fetchIt(`${apiUrl}/api/users/saveProfile`, {
