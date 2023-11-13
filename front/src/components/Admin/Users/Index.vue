@@ -79,6 +79,8 @@
     <div class="content admin-users-import-from-csv-form">
       <div class="is-size-5 mb-4">Choose CSV file to import</div>
 
+      <p>Download CSV import file structure: <a target="_blank" :href="`${apiUrl}/users_import_template.csv`">{{ `${apiUrl}/users_import_template.csv` }}</a></p>
+
       <div class="field">
         <div class="control">
           <input ref="userProfileImageInput" type="file" accept=".csv" @change="runCsvImport()">
