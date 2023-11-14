@@ -63,6 +63,7 @@ class People extends BaseController
       ->first();
 
     $person['image_url'] = "profile_images/{$person['image_url']}";
+    $person['affiliation'] = json_decode($person['affiliation']);
     $person['interested_in'] = json_decode($person['interested_in']);
     $person['knowledgeable_in'] = json_decode($person['knowledgeable_in']);
     $person['working_groups'] = json_decode($person['working_groups']);

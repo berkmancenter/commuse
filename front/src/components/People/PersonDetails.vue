@@ -1,10 +1,10 @@
 <template>
   <div class="people-section-details">
-    <div class="people-section-details-image">
-      <div class="people-section-details-image-image">
+    <div class="people-section-details-side">
+      <div class="people-section-details-side-image">
         <img :src="`${apiUrl}/api/files/get/${person.image_url}`" @error="setProfileImageFallback">
       </div>
-      <div class="people-section-details-image-content">
+      <div class="people-section-details-side-content">
         <div class="is-flex is-align-items-center" v-if="person.mobile_phone_number">
           <img class="people-section-details-icon" :src="phoneIcon">
           {{ person.mobile_phone_number }}
@@ -21,6 +21,22 @@
           <img class="people-section-details-icon" :src="homeIcon">
           {{ address }}
         </div>
+
+        <div class="panel people-section-details-side-affiliation" v-if="person.affiliation">
+          <p class="panel-heading">
+            BKC Affiliation
+          </p>
+          <div class="panel-block">
+            <div class="content">
+              <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.affiliation">
+                <div class="people-section-details-side-affiliation-item-position" v-for="affiliationPosition in affiliationItem.position">{{ affiliationPosition }}</div>
+                <div>
+                  From <span class="people-section-details-side-affiliation-item-date">{{ affiliationItem.from }}</span>to<span class="people-section-details-side-affiliation-item-date">{{ affiliationItem.to }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -36,7 +52,7 @@
       </div>
 
       <div class="people-section-details-content-interests">
-        <nav class="panel">
+        <div class="panel">
           <p class="panel-heading">
             Areas of Interest
           </p>
@@ -83,20 +99,20 @@
               </div>
             </div>
           </div>
-        </nav>
+        </div>
       </div>
 
-      <nav class="panel people-section-details-content-bio" v-if="person.bio">
+      <div class="panel people-section-details-content-bio" v-if="person.bio">
         <p class="panel-heading">
           Bio
         </p>
         <div class="panel-block">
           <div class="content" v-html="person.bio"></div>
         </div>
-      </nav>
+      </div>
 
       <div class="people-section-details-content-other">
-        <nav class="panel">
+        <div class="panel">
           <p class="panel-heading">
             Professional Information
           </p>
@@ -120,9 +136,9 @@
               </div>
             </div>
           </div>
-        </nav>
+        </div>
 
-        <nav class="panel">
+        <div class="panel">
           <p class="panel-heading">
             Online Presence
           </p>
@@ -166,7 +182,7 @@
               </div>
             </div>
           </div>
-        </nav>
+        </div>
       </div>
     </div>
   </div>
@@ -225,21 +241,60 @@
       gap: 2rem;
     }
 
-    .people-section-details-image {
+    .people-section-details-side {
       max-width: 300px;
       padding: 1rem;
       background-color: var(--super-light-color);
       margin: 0 auto;
 
-      .people-section-details-image-image {
+      .people-section-details-side-image {
         img {
           border-radius: 10px;
         }
       }
 
-      .people-section-details-image-content {
+      .people-section-details-side-content {
         padding-top: 0.5rem;
         overflow-wrap: anywhere;
+      }
+
+      .people-section-details-side-affiliation {
+        background-color: #ffffff;
+
+        .panel-heading {
+          border-bottom: 1px solid var(--secondary-color);
+          margin-bottom: 0.5rem;
+        }
+
+        .panel-heading, .panel-block {
+          background-color: #ffffff;
+        }
+
+        .people-section-details-side-affiliation-item {
+          border-bottom: 1px solid var(--secondary-color);
+          padding-bottom: 0.5rem;
+          margin-bottom: 1rem;
+
+          &:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+          }
+
+          .people-section-details-side-affiliation-item-position,
+          .people-section-details-side-affiliation-item-date {
+            display: inline-flex;
+            padding: 0.2rem 0.5rem;
+            background-color: #ffffff;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--secondary-color);
+            border-radius: 4px;
+          }
+
+          .people-section-details-side-affiliation-item-date {
+            margin: 0 0.3rem;
+          }
+        }
       }
     }
 

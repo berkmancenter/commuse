@@ -402,7 +402,7 @@
     },
     computed: {
       affiliationYearsOptions() {
-        return Array.from(Array(new Date().getFullYear() - 1995 + 1), (_, index) => new Date().getFullYear() - index)
+        return ['Now'].concat(Array.from(Array(new Date().getFullYear() - 1995 + 1), (_, index) => new Date().getFullYear() - index))
       },
     },
     methods: {
