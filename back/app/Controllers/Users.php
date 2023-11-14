@@ -171,16 +171,20 @@ class Users extends BaseController
     $this->checkAdminAccess();
 
     $result = false;
-    $usersModel = model('UserModel');
+    $usersProvider = auth()->getProvider();
     $peopleModel = model('PeopleModel');
     $requestData = json_decode(file_get_contents('php://input'), true);
     $userIds = $requestData['users'] ?? [];
 
     if (!empty($userIds)) {
-      $result = $usersModel->whereIn('id', $userIds)->delete();
-
-      if ($result) {
-        $result = $peopleModel->whereIn('user_id', $userIds)->delete();
+      try {
+        foreach ($userIds as $userId) {
+          $usersProvider->delete($userId, true);
+        }
+        $peopleModel->whereIn('user_id', $userIds)->delete();
+        $result = true;
+      } catch (\Throwable $exception) {
+        error_log($exception->getMessage());
       }
     }
 
