@@ -267,6 +267,7 @@ class Users extends BaseController
         }
 
         try {
+          $saved = false;
           $keysToMap = [
             'prefix', 'first_name', 'middle_name', 'last_name', 'preferred_name',
             'preferred_pronouns', 'bio', 'website_link', 'facebook_link', 'twitter_link',

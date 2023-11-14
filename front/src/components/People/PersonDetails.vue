@@ -2,7 +2,7 @@
   <div class="people-section-details">
     <div class="people-section-details-side">
       <div class="people-section-details-side-image">
-        <img :src="`${apiUrl}/api/files/get/${person.image_url}`" @error="setProfileImageFallback">
+        <img :src="imageSrc">
       </div>
       <div class="people-section-details-side-content">
         <div class="is-flex is-align-items-center" v-if="person.mobile_phone_number">
@@ -22,7 +22,7 @@
           {{ address }}
         </div>
 
-        <div class="panel people-section-details-side-affiliation mt-2" v-if="person.affiliation">
+        <div class="panel people-section-details-side-affiliation mt-2" v-if="person.affiliation?.length > 0">
           <p class="panel-heading">
             BKC Affiliation
           </p>
@@ -212,6 +212,15 @@
       address() {
         return [this.person.home_city, this.person.home_state_province, this.person.home_country].filter(n => n).join(', ')
       },
+      imageSrc() {
+        let src = this.profileFallbackImage
+
+        if (this.person.image_url) {
+          src = `${this.apiUrl}/api/files/get/${this.person.image_url}`
+        }
+
+        return src
+      }
     },
     created() {
       this.initialDataLoad()
@@ -221,14 +230,6 @@
         const person = await this.$store.dispatch('app/fetchPerson', this.$route.params.id)
 
         this.person = person
-      },
-      valOrNot(val) {
-        return val || 'N/A'
-      },
-      setProfileImageFallback(e) {
-        const el = e.target
-        el.src = this.profileFallbackImage
-        el.onerror = ''
       },
     },
   }

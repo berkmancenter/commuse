@@ -14,7 +14,7 @@ class People extends BaseController
 
     $people = $peopleModel
       ->select([
-        'id',
+        'user_id AS id',
         'prefix',
         'first_name',
         'last_name',
@@ -37,7 +37,7 @@ class People extends BaseController
 
     $people = array_map(function ($person) {
       $person['interested_in'] = json_decode($person['interested_in']);
-      $person['image_url'] = "profile_images/{$person['image_url']}";
+      $person['image_url'] = $person['image_url'] ? "profile_images/{$person['image_url']}" : '';
 
       return $person;
     }, $people);
@@ -57,12 +57,22 @@ class People extends BaseController
   {
     $peopleModel = model('PeopleModel');
 
-    $person = $peopleModel
-      ->where('id', $id)
-      ->where('public_profile', true)
-      ->first();
+    if (auth()->user()->can('admin.access') === false) {
+      $person = $peopleModel
+        ->where('user_id', $id)
+        ->where('public_profile', true)
+        ->first();
+    } else {
+      $person = $peopleModel
+        ->where('user_id', $id)
+        ->first();
+    }
 
-    $person['image_url'] = "profile_images/{$person['image_url']}";
+    if (empty($person)) {
+      return $this->respond(['message' => 'Person not found.'], 404);
+    }
+
+    $person['image_url'] = $person['image_url'] ? "profile_images/{$person['image_url']}" : '';
     $person['affiliation'] = json_decode($person['affiliation']);
     $person['interested_in'] = json_decode($person['interested_in']);
     $person['knowledgeable_in'] = json_decode($person['knowledgeable_in']);

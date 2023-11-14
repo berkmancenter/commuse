@@ -39,9 +39,12 @@
               <Booler :value="user.groups.includes('admin')" />
             </td>
             <td class="admin-table-actions">
+              <a title="Show user profile" @click.prevent="showUserProfile(user)">
+                <Icon :src="userIcon" />
+              </a>
               <a title="Change role" @click.prevent="changeUserRole(user)">
-                  <Icon :src="toggleAdminIcon" />
-                </a>
+                <Icon :src="toggleAdminIcon" />
+              </a>
               <a title="Delete user" @click.prevent="deleteUser(user)">
                 <Icon :src="minusIcon" />
               </a>
@@ -103,6 +106,7 @@
   import clipboardIcon from '@/assets/images/clipboard.svg'
   import addWhiteIcon from '@/assets/images/add_white.svg'
   import toggleAdminIcon from '@/assets/images/toggle_admin.svg'
+  import userIcon from '@/assets/images/user.svg'
   import fileIcon from '@/assets/images/file.svg'
   import Swal from 'sweetalert2'
   import AdminTable from '@/components/Admin/AdminTable.vue'
@@ -121,6 +125,7 @@
         clipboardIcon,
         toggleAdminIcon,
         fileIcon,
+        userIcon,
         users: [],
         roles: [
           'user',
@@ -249,6 +254,9 @@
             this.mitt.emit('spinnerStop')
           }
         })
+      },
+      showUserProfile(user) {
+        this.$router.push({ path: `/people/${user.id}` })
       },
     },
   }
