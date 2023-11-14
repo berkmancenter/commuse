@@ -285,6 +285,7 @@ class Users extends BaseController
             'username' => substr(md5(mt_rand()), 0, 10) . substr(md5($record['email']), 0, 20),
             'email'    => $record['email'],
             'password' => bin2hex(random_bytes(10)),
+            'active'   => true,
           ];
 
           $user = new User($newUserData);
