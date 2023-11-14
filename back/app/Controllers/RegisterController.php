@@ -53,7 +53,7 @@ class RegisterController extends ShieldRegister
         ->groupStart()
           ->where('expire >', $currentTimestamp)
           ->orWhere('expire IS NULL')
-        ->groupSnd()
+        ->groupEnd()
         ->first();
     }
 
