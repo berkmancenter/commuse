@@ -388,7 +388,7 @@
       return {
         apiUrl: import.meta.env.VITE_API_URL,
         interests: [],
-        affiliationOptions: ['Staff', 'Faculty', 'Affiliate', 'Faculty Associate', 'BKC Fellow', 'RSM Fellow', 'RSM Scholar', 'Assembly Fellow', 'Other'],
+        affiliationOptions: ['BKC Staff', 'BKC Faculty Board', 'BKC Affiliate', 'BKC Faculty Associate', 'BKC Fellow', 'RSM Fellow', 'RSM Scholar', 'Assembly Fellow', 'Other'],
         addIcon,
         minusIcon,
       }

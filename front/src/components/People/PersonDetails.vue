@@ -22,16 +22,15 @@
           {{ address }}
         </div>
 
-        <div class="panel people-section-details-side-affiliation mt-2" v-if="person.affiliation?.length > 0">
-          <p class="panel-heading">
-            BKC Affiliation
-          </p>
+        <div class="panel people-section-details-side-affiliation mt-2 pt-2" v-if="person.affiliation?.length > 0">
           <div class="panel-block">
             <div class="content">
               <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.affiliation">
-                <div class="people-section-details-side-affiliation-item-position" v-for="affiliationPosition in affiliationItem.position">{{ affiliationPosition }}</div>
+                <div class="people-section-details-side-affiliation-item-icon">
+                  <img class="people-section-details-icon" :src="affiliateIcon">
+                </div>
                 <div>
-                  From <span class="people-section-details-side-affiliation-item-date">{{ affiliationItem.from }}</span>to<span class="people-section-details-side-affiliation-item-date">{{ affiliationItem.to }}</span>
+                  {{ affiliationItem.position.join(', ') }}, {{ affiliationItem.from }} - {{ affiliationItem.to }}
                 </div>
               </div>
             </div>
@@ -195,6 +194,7 @@
   import phoneIcon from '@/assets/images/phone.svg'
   import homeIcon from '@/assets/images/home.svg'
   import profileFallbackImage from '@/assets/images/profile_fallback.png'
+  import affiliateIcon from '@/assets/images/affiliate.svg'
 
   export default {
     name: 'PersonDetails',
@@ -202,10 +202,11 @@
       return {
         person: {},
         apiUrl: import.meta.env.VITE_API_URL,
-        phoneIcon: phoneIcon,
-        emailIcon: emailIcon,
-        homeIcon: homeIcon,
-        profileFallbackImage: profileFallbackImage,
+        phoneIcon,
+        emailIcon,
+        homeIcon,
+        profileFallbackImage,
+        affiliateIcon,
       }
     },
     computed: {
@@ -275,25 +276,16 @@
           border-bottom: 1px solid var(--secondary-color);
           padding-bottom: 0.5rem;
           margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+
+          .people-section-details-side-affiliation-item-icon {
+            flex-shrink: 0;
+          }
 
           &:last-child {
             border-bottom: none;
             margin-bottom: 0;
-          }
-
-          .people-section-details-side-affiliation-item-position,
-          .people-section-details-side-affiliation-item-date {
-            display: inline-flex;
-            padding: 0.2rem 0.5rem;
-            background-color: #ffffff;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-            border: 1px solid var(--secondary-color);
-            border-radius: 4px;
-          }
-
-          .people-section-details-side-affiliation-item-date {
-            margin: 0 0.3rem;
           }
         }
       }
