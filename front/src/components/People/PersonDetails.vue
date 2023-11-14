@@ -30,7 +30,7 @@
                   <img class="people-section-details-icon" :src="affiliateIcon">
                 </div>
                 <div>
-                  {{ affiliationItem.position.join(', ') }}, {{ affiliationItem.from }} - {{ affiliationItem.to }}
+                  {{ affiliationItem.position.join(', ') }}, {{ affiliationItem.from }}-{{ affiliationItem.to }}
                 </div>
               </div>
             </div>
