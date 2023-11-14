@@ -22,7 +22,7 @@
           {{ address }}
         </div>
 
-        <div class="panel people-section-details-side-affiliation" v-if="person.affiliation">
+        <div class="panel people-section-details-side-affiliation mt-2" v-if="person.affiliation">
           <p class="panel-heading">
             BKC Affiliation
           </p>
