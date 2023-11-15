@@ -9,7 +9,7 @@
         </p>
         <div class="panel-block">
           <div class="notification is-warning" v-if="!$store.state.app.userProfile.publicProfile">
-            Your profile is currently set to private and will not show in the people page. Please check "List my information in the people page".
+            Your profile is currently set to private and will not show in the people page. To allow users of this platform to view your profile, please check the 'List my information in the people page.' checkbox.
           </div>
 
           <div class="field">
