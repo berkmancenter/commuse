@@ -5,6 +5,26 @@
     <form @submit.prevent="saveProfile">
       <nav class="panel">
         <p class="panel-heading">
+          Profile status
+        </p>
+        <div class="panel-block">
+          <div class="notification is-warning" v-if="!$store.state.app.userProfile.publicProfile">
+            Your profile is currently set to private and will not show in the people page. Please check "List my information in the people page".
+          </div>
+
+          <div class="field">
+            <label class="label">List my information in the people page</label>
+            <div class="control">
+              <div class="control">
+                <input type="checkbox" v-model="$store.state.app.userProfile.publicProfile">
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <nav class="panel">
+        <p class="panel-heading">
           My Information
         </p>
         <div class="panel-block">
@@ -69,15 +89,6 @@
             <div class="control">
               <div class="control">
                 <textarea class="textarea" v-model="$store.state.app.userProfile.bio"></textarea>
-              </div>
-            </div>
-          </div>
-
-          <div class="field">
-            <label class="label">Public</label>
-            <div class="control">
-              <div class="control">
-                <input type="checkbox" v-model="$store.state.app.userProfile.publicProfile">
               </div>
             </div>
           </div>
@@ -519,6 +530,12 @@
       flex-direction: column;
       align-items: normal;
       padding-bottom: 1rem;
+    }
+
+    input[type=checkbox] {
+      transform: scale(2);
+      margin-left: 0.5rem;
+      cursor: pointer;
     }
   }
 </style>
