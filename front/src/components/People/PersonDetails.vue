@@ -22,17 +22,13 @@
           {{ address }}
         </div>
 
-        <div class="panel people-section-details-side-affiliation mt-2 pt-2" v-if="person.affiliation?.length > 0">
-          <div class="panel-block">
-            <div class="content">
-              <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.affiliation">
-                <div class="people-section-details-side-affiliation-item-icon">
-                  <img class="people-section-details-icon" :src="affiliateIcon">
-                </div>
-                <div>
-                  {{ affiliationItem.position.join(', ') }}, {{ affiliationItem.from }}-{{ affiliationItem.to }}
-                </div>
-              </div>
+        <div class="people-section-details-side-affiliation" v-if="person.affiliation?.length > 0">
+          <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.affiliation">
+            <div class="people-section-details-side-affiliation-item-icon">
+              <img class="people-section-details-icon" :src="affiliateIcon">
+            </div>
+            <div>
+              {{ affiliationItem.position.join(', ') }}, {{ affiliationItem.from }}-{{ affiliationItem.to }}
             </div>
           </div>
         </div>
@@ -261,31 +257,14 @@
       }
 
       .people-section-details-side-affiliation {
-        background-color: #ffffff;
-
-        .panel-heading {
-          border-bottom: 1px solid var(--secondary-color);
-          margin-bottom: 0.5rem;
-        }
-
-        .panel-heading, .panel-block {
-          background-color: #ffffff;
-        }
-
         .people-section-details-side-affiliation-item {
-          border-bottom: 1px solid var(--secondary-color);
-          padding-bottom: 0.5rem;
-          margin-bottom: 1rem;
           display: flex;
           align-items: center;
 
           .people-section-details-side-affiliation-item-icon {
             flex-shrink: 0;
-          }
-
-          &:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
+            display: flex;
+            align-content: center;
           }
         }
       }
