@@ -71,6 +71,8 @@ $routes->get('admin/invitations', function() {
 
 $routes->get('register', 'RegisterController::registerView');
 $routes->post('register', 'RegisterController::registerAction');
+$routes->get('change_password', 'Users::changePasswordView');
+$routes->post('change_password', 'Users::changePassword');
 
 service('auth')->routes($routes);
 

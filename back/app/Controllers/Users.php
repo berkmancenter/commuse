@@ -8,6 +8,7 @@ use App\Models\UserModel;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use CodeIgniter\Shield\Entities\User;
+use App\Validation\ChangePasswordValidationRules;
 
 class Users extends BaseController
 {
@@ -293,6 +294,8 @@ class Users extends BaseController
 
           if ($saved) {
             $userId = $usersProvider->getInsertID();
+            $userSaved = $usersProvider->findById($userId);
+            $userSaved->forcePasswordReset();
             $peopleData['user_id'] = $userId;
             $peopleModel->insert($peopleData);
             $count++;
@@ -314,5 +317,36 @@ class Users extends BaseController
     } else {
       return $this->respond(['message' => 'Error importing users.'], 500);
     }
+  }
+
+  public function changePasswordView()
+  {
+    if (!auth()->loggedIn()) {
+      return redirect()->to(config('Auth')->login());
+    }
+
+    return view('\App\Views\Shield\change_password');
+  }
+
+  public function changePassword()
+  {
+    if (!auth()->loggedIn()) {
+      return redirect()->to(config('Auth')->login());
+    }
+
+    $rulesInstance = new ChangePasswordValidationRules();
+    $rules = $rulesInstance->getRules();
+
+    if (!$this->validateData($this->request->getPost(), $rules)) {
+      return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+    }
+
+    $usersProvider = auth()->getProvider();
+    $user = auth()->user();
+    $user->password = $this->request->getPost()['password'];
+    $usersProvider->save($user);
+    $user->undoForcePasswordReset();
+
+    return redirect()->to(config('Auth')->registerRedirect());
   }
 }

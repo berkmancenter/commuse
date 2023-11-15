@@ -8,6 +8,7 @@ use CodeIgniter\Filters\DebugToolbar;
 use CodeIgniter\Filters\Honeypot;
 use CodeIgniter\Filters\InvalidChars;
 use CodeIgniter\Filters\SecureHeaders;
+use App\Filters\ForcePasswordChange;
 
 class Filters extends BaseConfig
 {
@@ -16,11 +17,12 @@ class Filters extends BaseConfig
      * make reading things nicer and simpler.
      */
     public array $aliases = [
-        'csrf'          => CSRF::class,
-        'toolbar'       => DebugToolbar::class,
-        'honeypot'      => Honeypot::class,
-        'invalidchars'  => InvalidChars::class,
-        'secureheaders' => SecureHeaders::class,
+        'csrf'                  => CSRF::class,
+        'toolbar'               => DebugToolbar::class,
+        'honeypot'              => Honeypot::class,
+        'invalidchars'          => InvalidChars::class,
+        'secureheaders'         => SecureHeaders::class,
+        'force_password_change' => ForcePasswordChange::class,
     ];
 
     /**
@@ -30,6 +32,7 @@ class Filters extends BaseConfig
     public array $globals = [
         'before' => [
             'session' => ['except' => ['login*', 'register', 'auth/a/*']],
+            'force_password_change' => ['except' => ['login*', 'register', 'auth/a/*', 'api/users/current', 'api/users/change_password', 'change_password']],
             //'csrf',
             'invalidchars',
         ],
