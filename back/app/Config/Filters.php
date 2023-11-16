@@ -32,7 +32,7 @@ class Filters extends BaseConfig
     public array $globals = [
         'before' => [
             'session' => ['except' => ['login*', 'register', 'auth/a/*']],
-            'force_password_change' => ['except' => ['login*', 'register', 'auth/a/*', 'api/users/current', 'api/users/change_password', 'change_password']],
+            'force_password_change' => ['except' => ['login*', 'register', 'auth/a/*', 'change_password']],
             //'csrf',
             'invalidchars',
         ],
