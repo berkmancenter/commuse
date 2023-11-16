@@ -69,6 +69,10 @@ abstract class BaseController extends Controller
     return $mappedData;
   }
 
+  protected function dateToMilisecondsTimestamp($dateString) {
+    return strtotime($dateString) * 1000;
+  }
+
   protected function authError()
   {
     header('HTTP/1.1 401 Unauthorized');

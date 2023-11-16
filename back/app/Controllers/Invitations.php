@@ -19,6 +19,13 @@ class Invitations extends BaseController
       ->orderBy('id', 'desc')
       ->findAll();
 
+    $invitations = array_map(function ($invitation) {
+      $invitation['expire'] = $this->dateToMilisecondsTimestamp($invitation['expire']);
+      $invitation['created_at'] = $this->dateToMilisecondsTimestamp($invitation['created_at']);
+
+      return $invitation;
+    }, $invitations);
+
     return $this->respond($invitations);
   }
 

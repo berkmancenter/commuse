@@ -17,7 +17,7 @@
               <input type="checkbox" ref="toggleAllCheckbox" @click="toggleAll()">
             </th>
             <th>Code</th>
-            <th>Used</th>
+            <th>Valid</th>
             <th>Type</th>
             <th>Expire</th>
             <th>Created</th>
@@ -30,10 +30,10 @@
               <input type="checkbox" v-model="invitation.selected">
             </td>
             <td class="admin-invitations-table-code"><a class="button is-light" title="Click to copy invitation url" @click="copyCodeUrlToClipboard(invitation.code)">{{ invitation.code }} <Icon :src="clipboardIcon" /></a></td>
-            <td class="admin-invitations-table-used"><Booler :value="invitation.used" /></td>
+            <td class="admin-invitations-table-used"><Booler :value="isValid(invitation)" /></td>
             <td class="no-break admin-invitations-table-type">{{ invitation.type }}</td>
-            <td>{{ invitation.expire }}</td>
-            <td>{{ invitation.created_at }}</td>
+            <td>{{ formattedTimestamp(invitation.expire) }}</td>
+            <td>{{ formattedTimestamp(invitation.created_at) }}</td>
             <td class="admin-table-actions">
               <a title="Delete invitation" @click.prevent="deleteInvitation(invitation)">
                 <Icon :src="minusIcon" />
@@ -86,6 +86,7 @@
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import AirDatepicker from 'air-datepicker'
   import localeEn from 'air-datepicker/locale/en'
+  import { formattedTimestamp } from '@/lib/time_stuff'
 
   export default {
     name: 'AdminInvitations',
@@ -101,6 +102,7 @@
         clipboardIcon,
         invitations: [],
         apiUrl: import.meta.env.VITE_API_URL,
+        formattedTimestamp: formattedTimestamp,
       }
     },
     created() {
@@ -193,6 +195,17 @@
             this.mitt.emit('spinnerStop')
           }
         })
+      },
+      isValid(invitation) {
+        if (invitation.expire && invitation.expire < Date.now()) {
+          return false
+        }
+
+        if (invitation.type === 'single' && invitation.used === 't') {
+          return false
+        }
+
+        return true
       },
     },
   }

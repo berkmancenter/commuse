@@ -17,6 +17,7 @@
     "hover.css": "^2.3.2",
     "ldbutton": "^2.0.1",
     "mitt": "^3.0.0",
+    "moment": "^2.29.4",
     "pace-js": "^1.2.4",
     "store2": "^2.14.2",
     "sweetalert2": "^11.9.0",
