@@ -1,7 +1,7 @@
 <template>
   <div class="people-section-person">
     <router-link :to="'/people/' + person.id">
-      <div class="is-size-4 mb-2 people-section-person-full-name">
+      <div class="is-size-5 mb-2 people-section-person-full-name">
         <div v-if="!person.preferred_name">
           <div>{{ person.prefix }}</div>
           <div><span>{{ person.first_name }}</span> <span v-if="person.middle_name">{{ person.middle_name }}</span></div>
@@ -90,9 +90,7 @@
 
     .people-section-person-full-name {
       > div {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
+        word-wrap: break-word;
       }
     }
 
