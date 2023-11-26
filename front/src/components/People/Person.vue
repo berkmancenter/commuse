@@ -2,13 +2,10 @@
   <div class="people-section-person">
     <router-link :to="'/people/' + person.id">
       <div class="is-size-5 mb-2 people-section-person-full-name">
-        <div v-if="!person.preferred_name">
+        <div>
           <div>{{ person.prefix }}</div>
           <div><span>{{ person.first_name }}</span> <span v-if="person.middle_name">{{ person.middle_name }}</span></div>
           <div>{{ person.last_name }}</div>
-        </div>
-        <div v-if="person.preferred_name">
-          <div>{{ person.preferred_name }}</div>
         </div>
         <div class="is-size-6" v-if="person.preferred_pronouns">({{ person.preferred_pronouns }})</div>
       </div>
@@ -22,16 +19,16 @@
         {{ person.home_city }}
     </div>
 
-    <div class="is-size-6" v-if="person.home_state_province">
-        {{ person.home_state_province }}
+    <div class="is-size-6" v-if="person.home_state">
+        {{ person.home_state }}
     </div>
 
     <div class="is-size-6" v-if="person.home_country">
         {{ person.home_country }}
     </div>
 
-    <div class="mt-2 people-section-interests" v-if="person.interested_in.length > 0">
-      <span class="tag" v-for="interest in person.interested_in" :key="interest" @click="setInterestActive(interest)">{{ interest }}</span>
+    <div class="mt-2" v-if="person.issues_interested_exploring.length > 0">
+      <span class="tag" v-for="interest in person.issues_interested_exploring" :key="interest">{{ interest }}</span>
     </div>
 
     <div class="mt-2 person-section-social is-flex">
@@ -67,11 +64,6 @@
         type: Object,
         required: true
       }
-    },
-    methods: {
-      setInterestActive(interest) {
-        this.mitt.emit('setInterestActive', interest)
-      },
     },
   }
 </script>

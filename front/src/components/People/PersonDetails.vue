@@ -22,13 +22,13 @@
           {{ address }}
         </div>
 
-        <div class="people-section-details-side-affiliation" v-if="person.affiliation?.length > 0">
-          <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.affiliation">
+        <div class="people-section-details-side-affiliation" v-if="person.bkc_affiliation?.length > 0">
+          <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.bkc_affiliation">
             <div class="people-section-details-side-affiliation-item-icon">
               <img class="people-section-details-icon" :src="affiliateIcon">
             </div>
             <div>
-              {{ affiliationItem.position.join(', ') }}, {{ affiliationItem.from }}-{{ affiliationItem.to }}
+              {{ affiliationItem.tags.join(', ') }}, {{ affiliationItem.from }}-{{ affiliationItem.to }}
             </div>
           </div>
         </div>
@@ -37,147 +37,47 @@
 
     <div class="box people-section-details-content">
       <div class="is-size-4 mb-2 p-4 people-section-person-full-name">
-        <div v-if="!person.preferred_name">
+        <div>
           {{ person.prefix }} {{ person.first_name }} {{ person.middle_name }} {{ person.last_name }}
-        </div>
-        <div v-if="person.preferred_name">
-          <div>{{ person.preferred_name }}</div>
         </div>
         <div class="is-size-6" v-if="person.preferred_pronouns">({{ person.preferred_pronouns }})</div>
       </div>
 
-      <div class="people-section-details-content-interests">
-        <div class="panel">
-          <p class="panel-heading">
-            Areas of Interest
-          </p>
-          <div class="panel-block">
-            <div class="content">
-              <div v-if="person.interested_in?.length" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Interested In</div>
-                <div>
-                  <div class="tags are-medium are-light">
-                    <span class="tag" v-for="item in person.interested_in">{{ item }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="person.knowledgeable_in?.length" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Knowledgeable In</div>
-                <div>
-                  <div class="tags are-medium are-light">
-                    <span class="tag" v-for="item in person.knowledgeable_in">{{ item }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="person.working_groups?.length" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Working Groups</div>
-                <div>
-                  <div class="tags are-medium are-light">
-                    <span class="tag" v-for="item in person.working_groups">{{ item }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="person.projects?.length" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Projects</div>
-                <div>
-                  <div class="tags are-medium are-light">
-                    <span class="tag" v-for="item in person.projects">{{ item }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="!person.interested_in?.length && !person.knowledgeable_in?.length && !person.working_groups?.length && !person.projects?.length">
-                No information has been entered yet.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel people-section-details-content-bio" v-if="person.bio">
-        <p class="panel-heading">
-          Bio
-        </p>
-        <div class="panel-block">
-          <div class="content" v-html="person.bio"></div>
-        </div>
-      </div>
-
       <div class="people-section-details-content-other">
-        <div class="panel">
+        <div class="panel" v-if="person.bio">
           <p class="panel-heading">
-            Professional Information
+            Bio
           </p>
           <div class="panel-block">
-            <div class="content">
-              <div v-if="person.employer_name" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Employer Name</div>
-                <div>{{ person.employer_name }}</div>
-              </div>
-              <div v-if="person.job_title" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Job Title</div>
-                <div>{{ person.job_title }}</div>
-              </div>
-              <div v-if="person.industry" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Industry</div>
-                <div>{{ person.industry }}</div>
-              </div>
-
-              <div v-if="!person.employer_name && !person.job_title && !person.industry">
-                No information has been entered yet.
-              </div>
-            </div>
+            <div class="content" v-html="person.bio"></div>
           </div>
         </div>
 
-        <div class="panel">
-          <p class="panel-heading">
-            Online Presence
-          </p>
-          <div class="panel-block">
-            <div class="content">
-              <div v-if="person.website_link" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Personal Website</div>
-                <div><a :href="person.website_link">{{ person.website_link }}</a></div>
-              </div>
-              <div v-if="person.twitter_link" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">X (Ex-Twitter)</div>
-                <div><a :href="person.twitter_link">{{ person.twitter_link }}</a></div>
-              </div>
-              <div v-if="person.mastodon_link" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Mastodon</div>
-                <div><a :href="person.mastodon_link">{{ person.mastodon_link }}</a></div>
-              </div>
-              <div v-if="person.linkedin_link" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Linkedin</div>
-                <div><a :href="person.linkedin_link">{{ person.linkedin_link }}</a></div>
-              </div>
-              <div v-if="person.facebook_link" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Facebook</div>
-                <div><a :href="person.facebook_link">{{ person.facebook_link }}</a></div>
-              </div>
-              <div v-if="person.instagram_link" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Instagram</div>
-                <div><a :href="person.instagram_link">{{ person.instagram_link }}</a></div>
-              </div>
-              <div v-if="person.snapchat_link" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Snapchat</div>
-                <div><a :href="person.snapchat_link">{{ person.snapchat_link }}</a></div>
-              </div>
-              <div v-if="person.other_link" class="people-section-details-data-item">
-                <div class="people-section-details-data-item-label">Other</div>
-                <div><a :href="person.other_link">{{ person.other_link }}</a></div>
-              </div>
-
-              <div v-if="!person.website_link && !person.twitter_link && !person.mastodon_link && !person.linkedin_link && !person.facebook_link && !person.instagram_link && !person.snapchat_link && !person.other_link">
-                No information has been entered yet.
+        <template v-for="group in customGroups">
+          <div class="panel" v-if="hasFields(group)">
+            <p class="panel-heading">
+              {{ group.title }}
+            </p>
+            <div class="panel-block">
+              <div class="content">
+                <template v-for="field in group.custom_fields">
+                  <div class="people-section-details-data-item" v-if="person[field.machine_name] && person[field.machine_name] != '' && person[field.machine_name] != []">
+                    <div class="people-section-details-data-item-label">{{ field.title }}</div>
+                    <div v-if="!Array.isArray(person[field.machine_name])">
+                      <div v-if="!field.metadata.isLink">{{ person[field.machine_name] }}</div>
+                      <div v-if="field.metadata.isLink"><a :href="person[field.machine_name]" target="_blank">{{ person[field.machine_name] }}</a></div>
+                    </div>
+                    <div v-if="Array.isArray(person[field.machine_name])">
+                      <div class="tags are-medium">
+                        <div class="tag" v-for="value in person[field.machine_name]">{{ value }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
               </div>
             </div>
           </div>
-        </div>
+        </template>
       </div>
     </div>
   </div>
@@ -203,11 +103,12 @@
         homeIcon,
         profileFallbackImage,
         affiliateIcon,
+        profileStructure: [],
       }
     },
     computed: {
       address() {
-        return [this.person.home_city, this.person.home_state_province, this.person.home_country].filter(n => n).join(', ')
+        return [this.person.home_city, this.person.home_state, this.person.home_country].filter(n => n).join(', ')
       },
       imageSrc() {
         let src = this.profileFallbackImage
@@ -217,16 +118,40 @@
         }
 
         return src
-      }
+      },
+      myInformationCustomFields() {
+        return this.profileStructure
+          ?.filter((group) => { return group['machine_name'] == 'my_information' })[0]
+          ?.custom_fields ?? []
+      },
+      customGroups() {
+        return this.profileStructure
+          ?.filter((group) => { return !['my_information', 'contact_information', 'bkc_affiliation'].includes(group['machine_name']) })
+      },
     },
     created() {
       this.initialDataLoad()
     },
     methods: {
-      async initialDataLoad() {
+      initialDataLoad() {
+        this.loadPerson()
+        this.loadProfileStructure()
+      },
+      async loadPerson() {
         const person = await this.$store.dispatch('app/fetchPerson', this.$route.params.id)
 
         this.person = person
+      },
+      async loadProfileStructure() {
+        let profileStructure = await this.$store.dispatch('app/fetchProfileStructure')
+
+        this.profileStructure = profileStructure
+      },
+      hasFields(group) {
+        return group.custom_fields.some(field => {
+          const fieldValue = this.person[field.machine_name]
+          return fieldValue &&  fieldValue != '' && fieldValue != []
+        })
       },
     },
   }
@@ -293,11 +218,7 @@
       @media screen and (min-width: 1200px) {
         display: flex;
         gap: 1rem;
-        align-items: baseline;
-
-        > nav {
-          width: 50%;
-        }
+        flex-direction: column;
       }
     }
 

@@ -11,16 +11,6 @@
           class="input mb-4"
         >
       </div>
-
-      <div>
-        <VueMultiselect
-          v-model="interests"
-          :multiple="true"
-          :options="allInterests"
-          placeholder="Filter by interests"
-        >
-        </VueMultiselect>
-      </div>
     </div>
 
     <div class="content people-section-content">
@@ -60,10 +50,10 @@
         const searchTerm = this.searchTerm.toLowerCase()
 
         return this.$store.state.app.people.filter((person) => {
-          const searchText = `${person.first_name} ${person.last_name} ${person.bio} ${person.city} ${person.country} ${person.interested_in.join(' ')}`.toLowerCase()
+          const searchText = `${person.first_name} ${person.last_name} ${person.bio} ${person.city} ${person.country} ${person.issues_interested_exploring.join(' ')}`.toLowerCase()
 
           const hasSearchTerm = searchText.includes(searchTerm)
-          const hasSelectedInterests = this.interests.length === 0 || this.interests.some(interest => person.interested_in.includes(interest))
+          const hasSelectedInterests = this.interests.length === 0 || this.interests.some(interest => person.issues_interested_exploring.includes(interest))
 
           return hasSearchTerm && hasSelectedInterests
         })
@@ -79,8 +69,6 @@
     mounted() {},
     methods: {
       async initialDataLoad() {
-        this.loadInterests()
-
         const people = await this.$store.dispatch('app/fetchPeople')
 
         this.$store.dispatch('app/setPeople', people)
@@ -97,11 +85,6 @@
           unobserve_completed: true,
         })
         this.lazyLoadInstance.update()
-      },
-      async loadInterests() {
-        let interests = await this.$store.dispatch('app/fetchInterests')
-
-        this.allInterests = interests
       },
       setInterestActive(interest) {
         if (!this.interests.includes(interest)) {
