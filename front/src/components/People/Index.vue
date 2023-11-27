@@ -50,12 +50,11 @@
         const searchTerm = this.searchTerm.toLowerCase()
 
         return this.$store.state.app.people.filter((person) => {
-          const searchText = `${person.first_name} ${person.last_name} ${person.bio} ${person.city} ${person.country} ${person.issues_interested_exploring.join(' ')}`.toLowerCase()
+          const searchText = `${person.first_name} ${person.last_name} ${person.bio}`.toLowerCase()
 
           const hasSearchTerm = searchText.includes(searchTerm)
-          const hasSelectedInterests = this.interests.length === 0 || this.interests.some(interest => person.issues_interested_exploring.includes(interest))
 
-          return hasSearchTerm && hasSelectedInterests
+          return hasSearchTerm
         })
       },
     },

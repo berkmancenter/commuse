@@ -22,7 +22,7 @@
           {{ address }}
         </div>
 
-        <div class="people-section-details-side-affiliation" v-if="person.bkc_affiliation?.length > 0">
+        <div class="people-section-details-side-affiliation" v-if="person?.bkc_affiliation?.length > 0">
           <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.bkc_affiliation">
             <div class="people-section-details-side-affiliation-item-icon">
               <img class="people-section-details-icon" :src="affiliateIcon">
