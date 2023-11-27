@@ -31,6 +31,10 @@ class Users extends BaseController
     $userId = auth()->id();
     $userData = $usersModel->getUserProfileData($userId);
 
+    if (!$userData) {
+      return $this->respond([]);
+    }
+
     $userData['public_profile'] = $userData['public_profile'] == 't';
 
     if (isset($userData['image_url']) && $userData['image_url']) {

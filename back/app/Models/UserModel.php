@@ -29,12 +29,12 @@ class UserModel extends ShieldUserModel
 
     $baseUserData = $builder
       ->select('people.*')
-      ->where('people.id', $id)
+      ->where('people.user_id', $id)
       ->get()
       ->getRowArray();
 
     if ($baseUserData === null) {
-      return [];
+      return null;
     }
 
     if ($baseUserData !== null) {
@@ -45,7 +45,7 @@ class UserModel extends ShieldUserModel
         ->join('custom_field_data', 'custom_field_data.model_id = people.id', 'left')
         ->join('custom_fields', 'custom_fields.id = custom_field_data.custom_field_id', 'left')
         ->where('custom_fields.model_name = \'People\'')
-        ->where('people.id', $id)
+        ->where('people.user_id', $id)
         ->get()
         ->getResultArray();
 
@@ -130,12 +130,18 @@ class UserModel extends ShieldUserModel
     $data['user_id'] = $userId;
 
     $peopleModel->db->transStart();
+
     if ($existingPerson) {
       $peopleModel->update($existingPerson['id'], $data);
     } else {
       $peopleModel->insert($data);
     }
-    $this->saveCustomFieldsProfileData($requestData, $userId);
+
+    $record = $peopleModel->where('user_id', $userId)->first();
+    if (!empty($record)) {
+      $this->saveCustomFieldsProfileData($requestData, $record['id']);
+    }
+
     $peopleModel->db->transComplete();
 
     $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';
@@ -176,10 +182,14 @@ class UserModel extends ShieldUserModel
       $customFieldsData[] = $fieldData;
     }
 
-    $builder = $db->table('custom_field_data');
-    $result = $builder
-      ->onConstraint(['custom_field_id', 'model_id'])
-      ->upsertBatch($customFieldsData);
+    if (!empty($customFieldsData)) {
+      $builder = $db->table('custom_field_data');
+      $result = $builder
+        ->onConstraint(['custom_field_id', 'model_id'])
+        ->upsertBatch($customFieldsData);
+    } else {
+      $result = true;
+    }
 
     return $result;
   }

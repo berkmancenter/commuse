@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
+use App\Models\PeopleModel;
 
 class People extends BaseController
 {
@@ -10,7 +11,7 @@ class People extends BaseController
 
   public function index()
   {
-    $peopleModel = model('PeopleModel');
+    $peopleModel = new PeopleModel();
 
     $people = $peopleModel->getPeopleWithCustomFields([
       'people.public_profile' => true,
@@ -21,7 +22,7 @@ class People extends BaseController
 
   public function person($id)
   {
-    $peopleModel = model('PeopleModel');
+    $peopleModel = new PeopleModel();
 
     if (auth()->user()->can('admin.access') === false) {
       $person = $peopleModel->getPeopleWithCustomFields([

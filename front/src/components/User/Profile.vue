@@ -103,7 +103,7 @@
             label="Phone"
             type="short_text"
             v-bind:value="$store.state.app.userProfile.mobile_phone_number"
-            v-on:update:value="$store.state.app.userProfile.mobilephone_number = $event"
+            v-on:update:value="$store.state.app.userProfile.mobile_phone_number = $event"
           ></ProfileField>
 
           <ProfileField
