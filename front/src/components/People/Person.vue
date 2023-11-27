@@ -27,10 +27,6 @@
         {{ person.home_country }}
     </div>
 
-    <div class="mt-2" v-if="person.issues_interested_exploring.length > 0">
-      <span class="tag" v-for="interest in person.issues_interested_exploring" :key="interest">{{ interest }}</span>
-    </div>
-
     <div class="mt-2 person-section-social is-flex">
       <div v-if="person.twitter_link" class="mr-2">
         <a :href="person.twitter_link" target="_blank">
