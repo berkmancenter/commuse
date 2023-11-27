@@ -3,37 +3,17 @@ import store2 from 'store2'
 
 const apiUrl = import.meta.env.VITE_API_URL
 
-const defaultProfile = {
-  firstName: '',
-  lastName: '',
-  shortBio: '',
-  bio: '',
-  continent: '',
-  country: '',
-  city: '',
-  publicProfile: false,
-  twitterUrl: '',
-  linkedinUrl: '',
-  mastodonUrl: '',
-  interests: [],
-  affiliation: [],
-  interestedIn: [],
-  knowledgeableIn: [],
-  workingGroups: [],
-  projects: [],
-}
-
-const defaultAffiliation = {
+const defaultTagRange = {
   from: '',
   to: '',
-  position: '',
+  tags: '',
 }
 
 const state = {
   news: [],
   people: [],
   sideMenuStatus: false,
-  userProfile: JSON.parse(JSON.stringify(defaultProfile)),
+  userProfile: {},
   currentUser: {
     id: null,
     admin: false,
@@ -56,14 +36,22 @@ const mutations = {
   setCurrentUser(state, currentUser) {
     state.currentUser = currentUser
   },
-  addProfilePropertyOption(state, data) {
+  addTag(state, data) {
+    if (!state.userProfile[data.key]) {
+      state.userProfile[data.key] = []
+    }
+
     state.userProfile[data.key].push(data.newOption)
   },
-  addEmptyAffiliation(state) {
-    state.userProfile.affiliation.push(JSON.parse(JSON.stringify(defaultAffiliation)))
+  addEmptyTagRangeItem(state, machineName) {
+    if (!state.userProfile[machineName]) {
+      state.userProfile[machineName] = []
+    }
+
+    state.userProfile[machineName].push(JSON.parse(JSON.stringify(defaultTagRange)))
   },
-  removeAffiliation(state, index) {
-    state.userProfile.affiliation.splice(index, 1);
+  removeTagRangeItem(state, data) {
+    state.userProfile[data.machineName].splice(data.index, 1);
   },
 }
 
@@ -88,6 +76,12 @@ const actions = {
   },
   async fetchProfile(context) {
     const response = await fetchIt(`${apiUrl}/api/users/currentProfile`)
+    const data = await response.json()
+
+    return data
+  },
+  async fetchProfileStructure(context) {
+    const response = await fetchIt(`${apiUrl}/api/users/profileStructure`)
     const data = await response.json()
 
     return data
@@ -158,8 +152,8 @@ const actions = {
 
     return response
   },
-  addProfilePropertyOption(context, data) {
-    context.commit('addProfilePropertyOption', data)
+  addTag(context, data) {
+    context.commit('addTag', data)
   },
   async saveInvitation(context, invitation) {
     const response = await fetchIt(`${apiUrl}/api/admin/invitations/upsert`, {
@@ -218,11 +212,11 @@ const actions = {
 
     return response
   },
-  addEmptyAffiliation(context) {
-    context.commit('addEmptyAffiliation')
+  addEmptyTagRangeItem(context, machineName) {
+    context.commit('addEmptyTagRangeItem', machineName)
   },
-  removeAffiliation(context, index) {
-    context.commit('removeAffiliation', index)
+  removeTagRangeItem(context, data) {
+    context.commit('removeTagRangeItem', data)
   },
   async importUsersFromCsv(context, file) {
     const formData = new FormData();

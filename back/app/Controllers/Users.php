@@ -27,66 +27,33 @@ class Users extends BaseController
 
   public function currentProfile()
   {
-    $peopleModel = new PeopleModel();
+    $usersModel = new UserModel();
     $userId = auth()->id();
-    $personData = $peopleModel->where('user_id', $userId)->first() ?? [];
+    $userData = $usersModel->getUserProfileData($userId);
 
-    if (isset($personData['public_profile'])) {
-      if ($personData['public_profile'] === 't') {
-        $personData['public_profile'] = true;
-      } else {
-        $personData['public_profile'] = false;
-      }
+    $userData['public_profile'] = $userData['public_profile'] == 't';
+
+    if (isset($userData['image_url']) && $userData['image_url']) {
+      $userData['image_url'] = "profile_images/{$userData['image_url']}";
     }
 
-    if (isset($personData['image_url']) && $personData['image_url']) {
-      $personData['image_url'] = "profile_images/{$personData['image_url']}";
-    }
+    return $this->respond($userData);
+  }
 
-    $jsonKeysToMap = [
-      'affiliation', 'interested_in', 'knowledgeable_in',
-      'working_groups', 'projects'
-    ];
+  public function profileStructure()
+  {
+    $usersModel = new UserModel();
+    $profileStructure = $usersModel->getUserProfileStructure();
 
-    foreach ($jsonKeysToMap as $key) {
-      $personData[$key] = json_decode($personData[$key] ?? '[]');
-    }
-
-    return $this->respond($personData);
+    return $this->respond($profileStructure);
   }
 
   public function saveProfile()
   {
-    $peopleModel = new PeopleModel();
-    $userId = auth()->id();
-
-    $existingPerson = $peopleModel->where('user_id', $userId)->first();
-
+    $userModel = new UserModel();
     $requestData = json_decode(file_get_contents('php://input'), true);
 
-    $keysToMap = [
-      'prefix', 'first_name', 'middle_name', 'last_name', 'preferred_name',
-      'preferred_pronouns', 'bio', 'website_link', 'facebook_link', 'twitter_link',
-      'linkedin_link', 'mastodon_link', 'instagram_link', 'snapchat_link', 'other_link',
-      'mobile_phone_number', 'email', 'home_city', 'home_state_province', 'home_country',
-      'employer_name', 'job_title', 'industry',
-    ];
-
-    $data = $this->mapRequestData($requestData, $keysToMap);
-    $data['public_profile'] = $requestData['public_profile'] ?? false;
-    $data['user_id'] = $userId;
-
-    $jsonKeysToMap = [
-      'affiliation', 'interested_in', 'knowledgeable_in',
-      'working_groups', 'projects',
-    ];
-    foreach ($jsonKeysToMap as $key) {
-      $data[$key] = json_encode($requestData[$key] ?? []);
-    }
-
-    $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';
-
-    $result = $existingPerson ? $peopleModel->update($existingPerson['id'], $data) : $peopleModel->insert($data);
+    list($result, $message) = $userModel->saveProfileData($requestData);
 
     if ($result) {
       return $this->respond(['message' => $message], 200);

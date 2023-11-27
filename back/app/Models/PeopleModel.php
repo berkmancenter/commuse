@@ -39,13 +39,57 @@ class PeopleModel extends Model
   protected $beforeDelete   = [];
   protected $afterDelete  = [];
 
-  public function getAllUniqueInterests()
+  public function getPeopleWithCustomFields($extraConditions = [])
   {
-    $query = $this->db->query('SELECT DISTINCT jsonb_array_elements_text(interested_in) AS unique_interests FROM people;');
-    $results = $query->getResultArray();
+    $db = \Config\Database::connect();
+    $builder = $db->table('people');
+    $usersData = [];
 
-    $uniqueInterests = array_column($results, 'unique_interests');
+    $baseUsersData = $builder
+      ->select('people.*')
+      ->where($extraConditions)
+      ->get()
+      ->getResultArray();
 
-    return $uniqueInterests;
+    $usersData = array_merge($usersData, $baseUsersData);
+
+    $customFieldsData = $builder
+      ->select('
+        custom_field_data.model_id,
+        custom_field_data.value,
+        custom_field_data.value_json,
+        custom_fields.machine_name,
+        custom_fields.input_type
+      ')
+      ->join('custom_field_data', 'custom_field_data.model_id = people.id', 'left')
+      ->join('custom_fields', 'custom_fields.id = custom_field_data.custom_field_id', 'left')
+      ->where('custom_fields.model_name = \'People\'')
+      ->where('people.public_profile', true)
+      ->get()
+      ->getResultArray();
+
+      foreach ($usersData as &$userData) {
+        $matchingFields = array_values(array_filter($customFieldsData, function ($customFieldData) use ($userData) {
+          return $customFieldData['model_id'] === $userData['id'];
+        }));
+
+      if (!empty($matchingFields)) {
+        $userCustomFields = [];
+        foreach ($matchingFields as $customFieldRecord) {
+          $value = $customFieldRecord['value'];
+          if (in_array($customFieldRecord['input_type'], ['tags_range', 'tags'])) {
+            $value = json_decode($customFieldRecord['value_json']);
+          }
+
+          $userCustomFields[$customFieldRecord['machine_name']] = $value;
+        }
+
+        $userData = array_merge($userData, $userCustomFields);
+      }
+
+      $userData['image_url'] = $userData['image_url'] ? "profile_images/{$userData['image_url']}" : '';
+    }
+
+    return $usersData;
   }
 }
