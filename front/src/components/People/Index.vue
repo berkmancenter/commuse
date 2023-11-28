@@ -61,6 +61,7 @@
     created() {
       const that = this
 
+      this.mitt.emit('spinnerStart')
       this.mitt.on('setInterestActive', (interest) => that.setInterestActive(interest))
       this.initialDataLoad()
       this.initLazyLoad()
@@ -74,6 +75,7 @@
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
         })
+        this.mitt.emit('spinnerStop')
       },
       initLazyLoad() {
         this.lazyLoadInstance = new LazyLoad({

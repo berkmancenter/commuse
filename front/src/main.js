@@ -1,6 +1,5 @@
 // Additional libs
 import './plugins/bulma'
-import './plugins/pace'
 import './plugins/hover_css'
 import awn from './plugins/awesome_notifications'
 import store2 from 'store2'

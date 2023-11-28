@@ -130,6 +130,7 @@
       },
     },
     created() {
+      this.mitt.emit('spinnerStart', 2)
       this.initialDataLoad()
     },
     methods: {
@@ -141,11 +142,13 @@
         const person = await this.$store.dispatch('app/fetchPerson', this.$route.params.id)
 
         this.person = person
+        this.mitt.emit('spinnerStop')
       },
       async loadProfileStructure() {
         let profileStructure = await this.$store.dispatch('app/fetchProfileStructure')
 
         this.profileStructure = profileStructure
+        this.mitt.emit('spinnerStop')
       },
       hasFields(group) {
         return group.custom_fields.some(field => {

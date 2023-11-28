@@ -156,6 +156,7 @@
       ProfileField,
     },
     created() {
+      this.mitt.emit('spinnerStart', 2)
       this.initialDataLoad()
     },
     computed: {
@@ -171,7 +172,11 @@
     },
     methods: {
       async saveProfile() {
+        this.mitt.emit('spinnerStart')
+
         const response = await this.$store.dispatch('app/saveProfile', this.$store.state.app.userProfile)
+
+        this.mitt.emit('spinnerStop')
 
         if (response.ok) {
           this.awn.success('Your profile has been saved.')
@@ -188,7 +193,11 @@
       },
       async uploadProfileImage() {
         if (this.$refs.userProfileImageInput.files[0]) {
+          this.mitt.emit('spinnerStart')
+
           const response = await this.$store.dispatch('app/uploadProfileImage', this.$refs.userProfileImageInput.files[0])
+
+          this.mitt.emit('spinnerStop')
 
           if (response.ok) {
             const profile = this.$store.state.app.userProfile
@@ -204,6 +213,8 @@
       async loadProfile() {
         let profile = await this.$store.dispatch('app/fetchProfile')
 
+        this.mitt.emit('spinnerStop')
+
         if (profile.length === 0) {
           return
         }
@@ -214,6 +225,8 @@
         let profileStructure = await this.$store.dispatch('app/fetchProfileStructure')
 
         this.profileStructure = profileStructure
+
+        this.mitt.emit('spinnerStop')
       },
     }
   }

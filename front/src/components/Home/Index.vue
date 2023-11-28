@@ -41,6 +41,7 @@
     },
     computed: {},
     created() {
+      this.mitt.emit('spinnerStart')
       this.initialDataLoad()
       this.initLazyLoad()
     },
@@ -52,6 +53,7 @@
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
         })
+        this.mitt.emit('spinnerStop')
       },
       initLazyLoad() {
         this.lazyLoadInstance = new LazyLoad({

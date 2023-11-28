@@ -55,6 +55,8 @@
           return
         }
 
+        this.mitt.emit('spinnerStart')
+
         const response = await this.$store.dispatch('app/changePassword', this.passwordData)
         const data = await response.json()
 
@@ -67,6 +69,8 @@
         } else {
           this.awn.warning(data.message.join('<br>'))
         }
+
+        this.mitt.emit('spinnerStop')
       },
     },
   }

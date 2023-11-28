@@ -41,6 +41,7 @@
         <a class="side-menu-toggler hvr-grow">
           <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs></defs><title/><g data-name="70-Menu" id="_70-Menu"><rect class="cls-1" height="6" width="6" x="1" y="1"/><rect class="cls-1" height="6" width="6" x="25" y="1"/><rect class="cls-1" height="6" width="6" x="13" y="1"/><rect class="cls-1" height="6" width="6" x="1" y="13"/><rect class="cls-1" height="6" width="6" x="1" y="25"/><rect class="cls-1" height="6" width="6" x="25" y="25"/><rect class="cls-1" height="6" width="6" x="25" y="13"/><rect class="cls-1" height="6" width="6" x="13" y="13"/><rect class="cls-1" height="6" width="6" x="13" y="25"/></g></svg>
         </a>
+        <Spinner />
 
         <router-link :to="'/'" class="top-nav-name-link">
           <h3 class="is-size-4">{{ appTitle }}</h3>
@@ -74,6 +75,7 @@
   import shieldMenuIcon from '@/assets/images/shield.svg'
   import logoutIcon from '@/assets/images/logout.svg'
   import { isMobile } from '@/lib/mobile_utils.js'
+  import Spinner from '@/components/Shared/Spinner.vue'
 
   const apiUrl = import.meta.env.VITE_API_URL
 
@@ -81,6 +83,7 @@
     name: 'CommUse',
     components: {
       SwitMenu,
+      Spinner,
     },
     created() {
       this.loadCurrentUser()
