@@ -215,7 +215,7 @@ class Users extends BaseController
 
     $result = false;
     $count = 0;
-    $peopleModel = new PeopleModel();
+    $userModel = new UserModel();
     $usersProvider = auth()->getProvider();
 
     $file = $this->request->getFile('csv');
@@ -244,14 +244,6 @@ class Users extends BaseController
 
         try {
           $saved = false;
-          $keysToMap = [
-            'prefix', 'first_name', 'middle_name', 'last_name', 'preferred_name',
-            'preferred_pronouns', 'bio', 'website_link', 'facebook_link', 'twitter_link',
-            'linkedin_link', 'mastodon_link', 'instagram_link', 'snapchat_link', 'other_link',
-            'mobile_phone_number', 'email', 'home_city', 'home_state_province', 'home_country',
-            'employer_name', 'job_title', 'industry',
-          ];
-          $peopleData = $this->mapRequestData($record, $keysToMap);
 
           $newUserData  = [
             'username' => substr(md5(mt_rand()), 0, 10) . substr(md5($record['email']), 0, 20),
@@ -267,8 +259,7 @@ class Users extends BaseController
             $userId = $usersProvider->getInsertID();
             $userSaved = $usersProvider->findById($userId);
             $userSaved->forcePasswordReset();
-            $peopleData['user_id'] = $userId;
-            $peopleModel->insert($peopleData);
+            $userModel->saveProfileData($record, $userId);
             $count++;
           }
         } catch (\Throwable $exceptionRecord) {

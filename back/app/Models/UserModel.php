@@ -114,9 +114,11 @@ class UserModel extends ShieldUserModel
     return $customFieldGroups;
   }
 
-  public function saveProfileData($requestData) {
+  public function saveProfileData($requestData, $userId = null) {
     $peopleModel = new PeopleModel();
-    $userId = auth()->id();
+    if (is_null($userId)) {
+      $userId = auth()->id();
+    }
 
     $existingPerson = $peopleModel->where('user_id', $userId)->first();
 
