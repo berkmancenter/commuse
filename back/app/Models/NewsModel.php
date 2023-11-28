@@ -13,8 +13,6 @@ class NewsModel extends Model
   protected $returnType     = 'array';
   protected $useSoftDeletes   = false;
   protected $protectFields  = false;
-  protected $allowedFields  = [];
-
   // Dates
   protected $useTimestamps = true;
   protected $dateFormat  = 'datetime';
@@ -23,19 +21,9 @@ class NewsModel extends Model
   protected $deletedField  = 'deleted_at';
 
   // Validation
-  protected $validationRules    = [];
-  protected $validationMessages   = [];
   protected $skipValidation     = false;
   protected $cleanValidationRules = true;
 
   // Callbacks
   protected $allowCallbacks = true;
-  protected $beforeInsert   = [];
-  protected $afterInsert  = [];
-  protected $beforeUpdate   = [];
-  protected $afterUpdate  = [];
-  protected $beforeFind   = [];
-  protected $afterFind    = [];
-  protected $beforeDelete   = [];
-  protected $afterDelete  = [];
 }
