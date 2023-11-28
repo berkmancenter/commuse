@@ -2,8 +2,8 @@
   <div class="user-profile">
     <h3 class="is-size-3 has-text-weight-bold mb-4">My profile</h3>
 
-    <form @submit.prevent="saveProfile">
-      <nav class="panel">
+    <form class="form-commuse-blocks" @submit.prevent="saveProfile">
+      <div class="panel">
         <p class="panel-heading">
           Profile Status
         </p>
@@ -21,9 +21,9 @@
             </div>
           </div>
         </div>
-      </nav>
+      </div>
 
-      <nav class="panel">
+      <div class="panel">
         <p class="panel-heading">
           My Information
         </p>
@@ -92,9 +92,9 @@
             v-for="customField in myInformationCustomFields"
           ></ProfileField>
         </div>
-      </nav>
+      </div>
 
-      <nav class="panel">
+      <div class="panel">
         <p class="panel-heading">
           Contact Information
         </p>
@@ -113,9 +113,9 @@
             v-on:update:value="$store.state.app.userProfile.email = $event"
           ></ProfileField>
         </div>
-      </nav>
+      </div>
 
-      <nav class="panel" v-for="customGroup in customGroups">
+      <div class="panel" v-for="customGroup in customGroups">
         <p class="panel-heading">
           {{ customGroup.title }}
         </p>
@@ -130,7 +130,7 @@
             v-for="customField in customGroup.custom_fields"
           ></ProfileField>
         </div>
-      </nav>
+      </div>
 
       <div class="field is-grouped">
         <div class="control">
@@ -221,24 +221,6 @@
 
 <style lang="scss">
   .user-profile {
-    form {
-      width: 100%;
-      max-width: 30%;
-      min-width: unset;
-
-      @media all and (max-width: 1600px) {
-        max-width: 60%;
-      }
-
-      @media all and (max-width: 1300px) {
-        max-width: 70%;
-      }
-
-      @media all and (max-width: 900px) {
-        max-width: 100%;
-      }
-    }
-
     label {
       user-select: none;
     }
@@ -259,12 +241,6 @@
       input {
         display: none;
       }
-    }
-
-    .panel-block {
-      flex-direction: column;
-      align-items: normal;
-      padding-bottom: 1rem;
     }
 
     input[type=checkbox] {

@@ -198,7 +198,7 @@ const actions = {
     return response
   },
   async changeUserRole(context, data) {
-    const response = await fetchIt(`${apiUrl}/api/admin/users/change_role`, {
+    const response = await fetchIt(`${apiUrl}/api/admin/users/changeRole`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -222,6 +222,22 @@ const actions = {
     const formData = new FormData();
     formData.append('csv', file);
     const response = await fetchIt(`${apiUrl}/api/admin/users/importFromCsv`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: formData,
+    })
+
+    return response
+  },
+  async changePassword(context, data) {
+    const formData = new FormData();
+    formData.append('password', data.password);
+    formData.append('password_confirm', data.password_confirm);
+
+    const response = await fetchIt(`${apiUrl}/changePassword`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

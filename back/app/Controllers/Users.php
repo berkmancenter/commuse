@@ -287,7 +287,7 @@ class Users extends BaseController
       return redirect()->to(config('Auth')->login());
     }
 
-    return view('\App\Views\Shield\change_password');
+    return view('\App\Views\Shield\changePassword');
   }
 
   public function changePassword()
@@ -296,11 +296,17 @@ class Users extends BaseController
       return redirect()->to(config('Auth')->login());
     }
 
+    $request = service('request');
+
     $rulesInstance = new ChangePasswordValidationRules();
     $rules = $rulesInstance->getRules();
 
     if (!$this->validateData($this->request->getPost(), $rules)) {
-      return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+      if ($request->getHeaderLine('Accept') === 'application/json') {
+        return $this->respond(['message' => array_values($this->validator->getErrors())], 422);
+      } else {
+        return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+      }
     }
 
     $usersProvider = auth()->getProvider();
@@ -309,6 +315,10 @@ class Users extends BaseController
     $usersProvider->save($user);
     $user->undoForcePasswordReset();
 
-    return redirect()->to(config('Auth')->registerRedirect());
+    if ($request->getHeaderLine('Accept') === 'application/json') {
+      return $this->respond(['message' => 'Password has been updated successfully.']);
+    } else {
+      return redirect()->to(config('Auth')->registerRedirect());
+    }
   }
 }

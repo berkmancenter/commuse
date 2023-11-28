@@ -32,3 +32,27 @@ body, button, input, optgroup, select, textarea {
 .air-datepicker-global-container {
   z-index: 2000;
 }
+
+.panel-block {
+  flex-direction: column;
+  align-items: normal;
+  padding-bottom: 1rem;
+}
+
+form.form-commuse-blocks {
+  width: 100%;
+  max-width: 30%;
+  min-width: unset;
+
+  @media all and (max-width: 1600px) {
+    max-width: 60%;
+  }
+
+  @media all and (max-width: 1300px) {
+    max-width: 70%;
+  }
+
+  @media all and (max-width: 900px) {
+    max-width: 100%;
+  }
+}

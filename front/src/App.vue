@@ -71,6 +71,7 @@
   import profileMenuIcon from '@/assets/images/profile_menu.svg'
   import usersMenuIcon from '@/assets/images/users.svg'
   import invitationsMenuIcon from '@/assets/images/invitations.svg'
+  import shieldMenuIcon from '@/assets/images/shield.svg'
   import logoutIcon from '@/assets/images/logout.svg'
   import { isMobile } from '@/lib/mobile_utils.js'
 
@@ -102,6 +103,11 @@
             href: '/profile',
             title: 'My profile',
             icon: profileMenuIcon,
+          },
+          {
+            href: '/account',
+            title: 'My account',
+            icon: shieldMenuIcon,
           },
           {
             href: `${apiUrl}/logout`,

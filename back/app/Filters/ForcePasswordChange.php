@@ -16,7 +16,7 @@ class ForcePasswordChange implements FilterInterface
         $user = auth()->user();
 
         if ($user->requiresPasswordReset()) {
-          return redirect()->to(site_url('change_password'));
+          return redirect()->to(site_url('changePassword'));
         }
       }
     }

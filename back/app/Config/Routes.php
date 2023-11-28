@@ -48,32 +48,27 @@ $routes->post('api/admin/invitations/upsert', 'Invitations::upsert');
 $routes->post('api/admin/invitations/delete', 'Invitations::delete');
 $routes->get('api/admin/users', 'Users::adminIndex');
 $routes->post('api/admin/users/delete', 'Users::delete');
-$routes->post('api/admin/users/change_role', 'Users::changeRole');
+$routes->post('api/admin/users/changeRole', 'Users::changeRole');
 $routes->post('api/admin/users/importFromCsv', 'Users::importFromCsv');
 
-$routes->get('/', function() {
-  return view('front_end.html');
-});
-$routes->get('people', function() {
-  return view('front_end.html');
-});
-$routes->get('profile', function() {
-  return view('front_end.html');
-});
-$routes->get('people/(:num)', function() {
-  return view('front_end.html');
-});
-$routes->get('admin/users', function() {
-  return view('front_end.html');
-});
-$routes->get('admin/invitations', function() {
-  return view('front_end.html');
-});
+$frontRoutes = [
+  '/',
+  'people',
+  'profile',
+  'account',
+  'people/(:num)',
+  'admin/users',
+  'admin/invitations'
+];
+
+foreach ($frontRoutes as $route) {
+  $routes->get($route, 'Front::index');
+}
 
 $routes->get('register', 'RegisterController::registerView');
 $routes->post('register', 'RegisterController::registerAction');
-$routes->get('change_password', 'Users::changePasswordView');
-$routes->post('change_password', 'Users::changePassword');
+$routes->get('changePassword', 'Users::changePasswordView');
+$routes->post('changePassword', 'Users::changePassword');
 
 service('auth')->routes($routes);
 

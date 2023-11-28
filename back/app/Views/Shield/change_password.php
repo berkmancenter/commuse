@@ -28,7 +28,7 @@
                 <div class="alert alert-success" role="alert"><?= session('message') ?></div>
                 <?php endif ?>
 
-                <form action="<?= url_to('change_password') ?>" method="post">
+                <form action="<?= url_to('changePassword') ?>" method="post">
                     <?= csrf_field() ?>
 
                     <!-- Password -->
