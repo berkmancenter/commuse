@@ -221,24 +221,20 @@
 
 <style lang="scss">
   .user-profile {
-    .field {
+    form {
       width: 100%;
       max-width: 30%;
       min-width: unset;
 
       @media all and (max-width: 1600px) {
-        max-width: 40%;
+        max-width: 60%;
       }
 
       @media all and (max-width: 1300px) {
-        max-width: 50%;
-      }
-
-      @media all and (max-width: 900px) {
         max-width: 70%;
       }
 
-      @media all and (max-width: 700px) {
+      @media all and (max-width: 900px) {
         max-width: 100%;
       }
     }
