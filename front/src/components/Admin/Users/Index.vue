@@ -3,10 +3,7 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">Users</h3>
 
     <div class="mb-4">
-      <a class="button" @click="importUsersFromCsv">
-        <Icon :src="fileIcon" :interactive="false" />
-        Import users from CSV
-      </a>
+      <ActionButton buttonText="Import users from CSV" :onClick="importUsersFromCsv" :icon="fileIcon"></ActionButton>
     </div>
 
     <form class="form">
@@ -110,6 +107,7 @@
   import fileIcon from '@/assets/images/file.svg'
   import Swal from 'sweetalert2'
   import AdminTable from '@/components/Admin/AdminTable.vue'
+  import ActionButton from '@/components/Shared/ActionButton.vue'
 
   export default {
     name: 'AdminUsers',
@@ -117,6 +115,7 @@
       Icon,
       AdminTable,
       Booler,
+      ActionButton,
     },
     data() {
       return {

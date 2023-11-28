@@ -3,10 +3,7 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">Invitations</h3>
 
     <div class="mb-4">
-      <a class="button" @click="saveInvitation">
-        <Icon :src="addIcon" :interactive="false" />
-        Create invitation
-      </a>
+      <ActionButton buttonText="Create invitation" :onClick="openNewInvitationModal" :icon="addIcon"></ActionButton>
     </div>
 
     <form class="form">
@@ -25,7 +22,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="invitation in invitations" :key="invitation.id">
+          <tr v-for="invitation in invitations" :key="invitation.id" class="no-break">
             <td class="admin-table-selector">
               <input type="checkbox" v-model="invitation.selected">
             </td>
@@ -87,6 +84,7 @@
   import AirDatepicker from 'air-datepicker'
   import localeEn from 'air-datepicker/locale/en'
   import { formattedTimestamp } from '@/lib/time_stuff'
+  import ActionButton from '@/components/Shared/ActionButton.vue'
 
   export default {
     name: 'AdminInvitations',
@@ -94,6 +92,7 @@
       Icon,
       AdminTable,
       Booler,
+      ActionButton,
     },
     data() {
       return {
@@ -121,7 +120,7 @@
 
         this.mitt.emit('spinnerStop')
       },
-      saveInvitation(invitation) {
+      openNewInvitationModal() {
         const templateElementSelector = '.swal2-html-container .admin-invitations-form'
 
         Swal.fire({
