@@ -193,7 +193,7 @@
           if (response.ok) {
             const profile = this.$store.state.app.userProfile
             const data = await response.json()
-            profile.imageUrl = data.image
+            profile.image_url = data.image
             this.$store.dispatch('app/setUserProfile', profile)
             this.awn.success('Your profile image has been saved.')
           } else {
