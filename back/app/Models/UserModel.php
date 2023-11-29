@@ -125,6 +125,10 @@ class UserModel extends ShieldUserModel
     $mappedData = [];
     foreach (UserModel::BASE_FIELDS as $key) {
       $mappedData[$key] = $requestData[$key] ?? '';
+
+      if (is_string($mappedData[$key])) {
+        $mappedData[$key] = strip_tags($mappedData[$key]);
+      }
     }
     $data = $mappedData;
 
@@ -177,7 +181,7 @@ class UserModel extends ShieldUserModel
         $fieldData['value_json'] = json_encode($value);
         $fieldData['value'] = '';
       } else {
-        $fieldData['value'] = $value;
+        $fieldData['value'] = strip_tags($value);
         $fieldData['value_json'] = '[]';
       }
 
