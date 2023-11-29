@@ -53,36 +53,13 @@
           </div>
         </div>
 
-        <template v-for="group in customGroups">
-          <div class="panel" v-if="hasFields(group)">
-            <p class="panel-heading">
-              {{ group.title }}
-            </p>
-            <div class="panel-block">
-              <div class="content">
-                <template v-for="field in group.custom_fields">
-                  <div class="people-section-details-data-item" v-if="person[field.machine_name] && person[field.machine_name] != '' && person[field.machine_name] != []">
-                    <div class="people-section-details-data-item-label">{{ field.title }}</div>
-                    <div v-if="!Array.isArray(person[field.machine_name])">
-                      <div v-if="!field.metadata.isLink">{{ person[field.machine_name] }}</div>
-                      <div v-if="field.metadata.isLink"><a :href="person[field.machine_name]" target="_blank">{{ person[field.machine_name] }}</a></div>
-                    </div>
-                    <div v-if="Array.isArray(person[field.machine_name])">
-                      <div class="tags are-medium">
-                        <div class="tag" v-for="value in person[field.machine_name]">{{ value }}</div>
-                      </div>
-                    </div>
-                  </div>
-                </template>
-              </div>
-            </div>
-          </div>
-        </template>
+        <PersonDetailsGroup :group="myInformationGroup" :person="person" custom-group-title="Additional Information" v-if="Object.keys(myInformationGroup).length > 0"></PersonDetailsGroup>
+        <PersonDetailsGroup :group="group" :person="person" v-for="group in customGroups" :key="group.machine_name"></PersonDetailsGroup>
       </div>
     </div>
   </div>
 
-  <div class="has-text-right mt-2">Last updated: {{ person.updated_at }} UTC</div>
+  <div class="has-text-right mt-2 people-section-details-last-updated">Last updated: {{ person.updated_at }} UTC</div>
 </template>
 
 <script>
@@ -91,6 +68,7 @@
   import homeIcon from '@/assets/images/home.svg'
   import profileFallbackImage from '@/assets/images/profile_fallback.png'
   import affiliateIcon from '@/assets/images/affiliate.svg'
+  import PersonDetailsGroup from '@/components/People/PersonDetailsGroup.vue'
 
   export default {
     name: 'PersonDetails',
@@ -106,6 +84,9 @@
         profileStructure: [],
       }
     },
+    components: {
+      PersonDetailsGroup,
+    },
     computed: {
       address() {
         return [this.person.home_city, this.person.home_state, this.person.home_country].filter(n => n).join(', ')
@@ -119,14 +100,13 @@
 
         return src
       },
-      myInformationCustomFields() {
+      myInformationGroup() {
         return this.profileStructure
-          ?.filter((group) => { return group['machine_name'] == 'my_information' })[0]
-          ?.custom_fields ?? []
+          ?.filter((group) => { return group['machine_name'] == 'my_information' })[0] ?? {}
       },
       customGroups() {
         return this.profileStructure
-          ?.filter((group) => { return !['my_information', 'contact_information', 'bkc_affiliation'].includes(group['machine_name']) })
+        ?.filter((group) => { return !['my_information', 'contact_information', 'bkc_affiliation'].includes(group['machine_name']) })
       },
     },
     created() {
@@ -150,18 +130,14 @@
         this.profileStructure = profileStructure
         this.mitt.emit('spinnerStop')
       },
-      hasFields(group) {
-        return group.custom_fields.some(field => {
-          const fieldValue = this.person[field.machine_name]
-          return fieldValue &&  fieldValue != '' && fieldValue != []
-        })
-      },
     },
   }
 </script>
 
 <style lang="scss">
   .people-section-details {
+    max-width: 1200px;
+
     @media screen and (min-width: 1200px) {
       display: flex;
       gap: 2rem;
@@ -256,23 +232,9 @@
         flex-grow: 1;
       }
     }
+  }
 
-    .people-section-details-data-item {
-      padding-bottom: 0.5rem;
-      margin-bottom: 0.5rem;
-      border-bottom: 1px solid #dbdbdb;
-      overflow-wrap: anywhere;
-
-      &:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        border-bottom: none;
-      }
-
-      .people-section-details-data-item-label {
-        font-weight: bold;
-        margin-bottom: 0.2rem;
-      }
-    }
+  .people-section-details-last-updated {
+    max-width: 1200px;
   }
 </style>

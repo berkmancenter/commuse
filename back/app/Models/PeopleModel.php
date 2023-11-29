@@ -68,10 +68,10 @@ class PeopleModel extends Model
       ->get()
       ->getResultArray();
 
-      foreach ($usersData as &$userData) {
-        $matchingFields = array_values(array_filter($customFieldsData, function ($customFieldData) use ($userData) {
-          return $customFieldData['model_id'] === $userData['id'];
-        }));
+    foreach ($usersData as &$userData) {
+      $matchingFields = array_values(array_filter($customFieldsData, function ($customFieldData) use ($userData) {
+        return $customFieldData['model_id'] === $userData['id'];
+      }));
 
       if (!empty($matchingFields)) {
         $userCustomFields = [];
@@ -81,6 +81,10 @@ class PeopleModel extends Model
             $value = json_decode($customFieldRecord['value_json']);
           }
 
+          if ($customFieldRecord['input_type'] === 'long_text') {
+            $value = nl2br($customFieldRecord['value']);
+          }
+
           $userCustomFields[$customFieldRecord['machine_name']] = $value;
         }
 
@@ -88,6 +92,7 @@ class PeopleModel extends Model
       }
 
       $userData['image_url'] = $userData['image_url'] ? "profile_images/{$userData['image_url']}" : '';
+      $userData['bio'] = nl2br($userData['bio']);
     }
 
     return $usersData;
