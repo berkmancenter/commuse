@@ -50,28 +50,28 @@
           ></ProfileField>
 
           <ProfileField
-            label="First Name"
+            label="First name"
             type="short_text"
             v-bind:value="$store.state.app.userProfile.first_name"
             v-on:update:value="$store.state.app.userProfile.first_name = $event"
           ></ProfileField>
 
           <ProfileField
-            label="Middle Name"
+            label="Middle name"
             type="short_text"
             v-bind:value="$store.state.app.userProfile.middle_name"
             v-on:update:value="$store.state.app.userProfile.middle_name = $event"
           ></ProfileField>
 
           <ProfileField
-            label="Last Name"
+            label="Last name"
             type="short_text"
             v-bind:value="$store.state.app.userProfile.last_name"
             v-on:update:value="$store.state.app.userProfile.last_name = $event"
           ></ProfileField>
 
           <ProfileField
-            label="Preferred Pronouns"
+            label="Preferred pronouns"
             type="short_text"
             v-bind:value="$store.state.app.userProfile.preferred_pronouns"
             v-on:update:value="$store.state.app.userProfile.preferred_pronouns = $event"
