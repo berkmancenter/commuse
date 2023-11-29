@@ -14,6 +14,7 @@
     "animejs": "^3.2.1",
     "awesome-notifications": "^3.1.3",
     "bulma": "^0.9.4",
+    "floating-vue": "^2.0.0-beta.24",
     "hover.css": "^2.3.2",
     "ldbutton": "^2.0.1",
     "mitt": "^3.0.0",

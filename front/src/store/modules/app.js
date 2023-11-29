@@ -17,6 +17,7 @@ const state = {
   currentUser: {
     id: null,
     admin: false,
+    email: null,
   },
 }
 

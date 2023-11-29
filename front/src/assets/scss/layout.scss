@@ -40,8 +40,9 @@
   .top-nav-user-menu {
     display: flex;
 
-    a {
+    .top-nav-user-menu-toggler {
       display: flex;
+      cursor: pointer;
       align-items: center;
     }
 

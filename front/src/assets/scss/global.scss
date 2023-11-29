@@ -55,4 +55,8 @@ form.form-commuse-blocks {
   @media all and (max-width: 900px) {
     max-width: 100%;
   }
+
+  label {
+    user-select: none;
+  }
 }

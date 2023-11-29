@@ -17,10 +17,12 @@ class Users extends BaseController
   public function current()
   {
     $user = auth()->user();
-    $userId = auth()->id();
 
-    $userData['id'] = $userId;
-    $userData['admin'] = $user->inGroup('admin');
+    $userData = [
+      'id' => $user->id,
+      'email' => $user->email,
+      'admin' => $user->inGroup('admin'),
+    ];
 
     return $this->respond($userData);
   }
