@@ -1,7 +1,9 @@
 <template>
-  <div class="commuse-spinner" v-if="running">
-    <img :src="loaderGif">
-  </div>
+  <Transition name="commuse-spinner-fade">
+    <div class="commuse-spinner" v-if="running">
+      <div class="commuse-spinner-inner"></div>
+    </div>
+  </Transition>
 </template>
 
 <script>
@@ -44,11 +46,43 @@
 </script>
 
 <style lang="scss">
+  @keyframes spinner-slide {
+    0% {
+    transform:  translateX(0) scaleX(0);
+    }
+    40% {
+      transform:  translateX(0) scaleX(0.4);
+    }
+    100% {
+      transform:  translateX(100%) scaleX(0.5);
+    }
+  }
+
+  .commuse-spinner-fade-enter-active,
+  .commuse-spinner-fade-leave-active {
+    transition: opacity 0.5s ease;
+  }
+
+  .commuse-spinner-fade-enter-from,
+  .commuse-spinner-fade-leave-to {
+    opacity: 0;
+  }
+
   .commuse-spinner {
-    width: 2rem;
-    height: 2rem;
     position: fixed;
-    bottom: 2rem;
-    left: 2rem;
+    height: 5px;
+    background-color: var(--main-color);
+    top: 4.5rem;
+    left: 0;
+    right: 0;
+    width: 100%;
+
+    .commuse-spinner-inner {
+      width: 100%;
+      height: 100%;
+      background-color: var(--secondary-color);
+      animation: spinner-slide 2s infinite linear;
+      transform-origin: 0% 50%;
+    }
   }
 </style>
