@@ -88,7 +88,7 @@ class UserProfileStructure {
       ->getResultArray();
 
     foreach ($fieldUserValues as $fieldUserValue) {
-      $values = json_decode($fieldUserValue['value_json']);
+      $values = json_decode($fieldUserValue['value_json'], true);
 
       if (!empty($values)) {
         $existingValues = array_merge($existingValues, $values);
@@ -98,7 +98,9 @@ class UserProfileStructure {
     if (is_array($existingValues)) {
       $existingValues = array_unique($existingValues);
       asort($existingValues);
+      $existingValues = array_values($existingValues);
     }
+
 
     return $existingValues;
   }
