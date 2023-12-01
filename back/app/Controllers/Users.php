@@ -122,13 +122,14 @@ class Users extends BaseController
         users.last_active AS last_login,
         people.first_name,
         people.last_name,
+        people.id AS people_id,
         auth_identities.secret AS email,
         STRING_AGG(auth_groups_users.group, \',\') AS groups
       ')
       ->join('people', 'people.user_id = users.id', 'left')
       ->join('auth_identities', 'auth_identities.user_id = users.id', 'left')
       ->join('auth_groups_users', 'auth_groups_users.user_id = users.id', 'left')
-      ->groupBy('users.id, people.first_name, people.last_name, auth_identities.secret, auth_identities.last_used_at')
+      ->groupBy('users.id, people.first_name, people.last_name, auth_identities.secret, auth_identities.last_used_at, people.id')
       ->get();
 
     $users = $query->getResultArray();
@@ -261,6 +262,23 @@ class Users extends BaseController
             $userId = $usersProvider->getInsertID();
             $userSaved = $usersProvider->findById($userId);
             $userSaved->forcePasswordReset();
+
+            $customFieldsModel = model('CustomFieldModel');
+            $customFields = $customFieldsModel
+              ->select('machine_name')
+              ->whereIn('input_type', ['tags'])
+              ->findAll();
+
+            $customFieldsMachineNames = array_map(function ($customField) {
+              return $customField['machine_name'];
+            }, $customFields);
+
+            array_walk($record, function (&$recordField, $key) use ($customFieldsMachineNames) {
+              if (in_array($key, $customFieldsMachineNames)) {
+                $recordField = explode(',', $recordField);
+              }
+            });
+
             $userModel->saveProfileData($record, $userId);
             $count++;
           }
@@ -281,6 +299,29 @@ class Users extends BaseController
     } else {
       return $this->respond(['message' => 'Error importing users.'], 500);
     }
+  }
+
+  public function getUsersCsvImportTemplate() {
+    $csvImportFields = [];
+    $csvImportFields = array_merge($csvImportFields, array_diff(UserModel::BASE_FIELDS, ['public_profile']));
+
+    $customFieldsModel = model('CustomFieldModel');
+    $customFields = $customFieldsModel
+      ->select('machine_name')
+      ->whereIn('input_type', ['short_text', 'long_text', 'tags'])
+      ->findAll();
+
+    $customFieldsMachineNames = array_map(function ($customField) {
+      return $customField['machine_name'];
+    }, $customFields);
+    $csvImportFields = array_merge($csvImportFields, $customFieldsMachineNames);
+
+    $textData = join(',', $csvImportFields);
+
+    $response = service('response');
+    $response->setContentType('text/csv');
+
+    return $response->download('users_import_template.csv', $textData);
   }
 
   public function changePasswordView()
