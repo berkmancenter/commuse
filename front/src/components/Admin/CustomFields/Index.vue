@@ -277,6 +277,7 @@
       transform: scale(2);
       cursor: pointer;
       margin-left: 1rem;
+      margin-bottom: 1rem
     }
   }
 
