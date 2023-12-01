@@ -60,7 +60,8 @@ $frontRoutes = [
   'account',
   'people/(:num)',
   'admin/users',
-  'admin/invitations'
+  'admin/invitations',
+  'admin/custom_fields',
 ];
 
 foreach ($frontRoutes as $route) {
