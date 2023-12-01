@@ -86,6 +86,7 @@
   import usersMenuIcon from '@/assets/images/users.svg'
   import invitationsMenuIcon from '@/assets/images/invitations.svg'
   import shieldMenuIcon from '@/assets/images/shield.svg'
+  import fieldsMenuIcon from '@/assets/images/fields_menu.svg'
   import { isMobile } from '@/lib/mobile_utils.js'
   import Spinner from '@/components/Shared/Spinner.vue'
 
@@ -136,6 +137,11 @@
             href: '/admin/users',
             title: 'Users',
             icon: usersMenuIcon,
+          },
+          {
+            href: '/admin/custom_fields',
+            title: 'Custom fields',
+            icon: fieldsMenuIcon,
           },
         ],
       }

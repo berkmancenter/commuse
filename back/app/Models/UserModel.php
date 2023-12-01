@@ -6,6 +6,7 @@ namespace App\Models;
 
 use CodeIgniter\Shield\Models\UserModel as ShieldUserModel;
 use CodeIgniter\Shield\Traits\Resettable as Resettable;
+use App\Libraries\UserProfileStructure;
 
 class UserModel extends ShieldUserModel
 {
@@ -67,51 +68,8 @@ class UserModel extends ShieldUserModel
 
   public function getUserProfileStructure()
   {
-    $db = \Config\Database::connect();
-    $builder = $db->table('custom_field_groups');
-
-    $userProfileStructure = $builder
-      ->select('
-        custom_field_groups.machine_name AS group_machine_name,
-        custom_field_groups.title AS group_title,
-        custom_field_groups.description AS group_description,
-        custom_fields.machine_name AS field_machine_name,
-        custom_fields.title AS field_title,
-        custom_fields.description AS field_description,
-        custom_fields.metadata AS field_metadata,
-        custom_fields.input_type AS field_input_type
-      ')
-      ->join('custom_fields', 'custom_fields.group_id = custom_field_groups.id AND custom_fields.model_name = \'People\'', 'left')
-      ->orderBy('custom_field_groups.order ASC, custom_fields.order ASC')
-      ->get()
-      ->getResultArray();
-
-    $customFieldGroups = [];
-
-    foreach ($userProfileStructure as $row) {
-      if (!isset($customFieldGroups[$row['group_machine_name']])) {
-          $customFieldGroups[$row['group_machine_name']] = [
-            'machine_name' => $row['group_machine_name'],
-            'title' => $row['group_title'],
-            'description' => $row['group_description'],
-            'custom_fields' => [],
-          ];
-      }
-
-      if ($row['field_machine_name']) {
-        $customFieldGroups[$row['group_machine_name']]['custom_fields'][] = [
-          'machine_name' => $row['field_machine_name'],
-          'title' => $row['field_title'],
-          'description' => $row['field_description'],
-          'metadata' => json_decode($row['field_metadata'], true),
-          'input_type' => $row['field_input_type'],
-        ];
-      }
-    }
-
-    $customFieldGroups = array_values($customFieldGroups);
-
-    return $customFieldGroups;
+    $userProfileStructure = new UserProfileStructure();
+    return $userProfileStructure->getUserProfileStructure();
   }
 
   public function saveProfileData($requestData, $userId = null) {

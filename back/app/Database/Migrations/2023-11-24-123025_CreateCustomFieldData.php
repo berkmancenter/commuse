@@ -32,6 +32,16 @@ class CreateCustomFieldData extends Migration
                 'type'       => 'JSONB',
                 'default'    => '[]',
             ],
+            'created_at' => [
+                'type' => 'datetime',
+                'null'       => false,
+                'default' => 'NOW()',
+            ],
+            'updated_at' => [
+                'type' => 'datetime',
+                'null'       => false,
+                'default' => 'NOW()',
+            ],
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('custom_field_id', 'custom_fields', 'id', 'CASCADE', 'CASCADE');

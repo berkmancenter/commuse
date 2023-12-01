@@ -59,6 +59,14 @@ const router = createRouter({
         title: 'Invitations admin',
       },
     },
+    {
+      path: '/admin/custom_fields',
+      component: () => import('@/components/Admin/CustomFields/Index.vue'),
+      name: 'admin-custom-fields.index',
+      meta: {
+        title: 'Custom fields admin',
+      },
+    },
   ]
 })
 

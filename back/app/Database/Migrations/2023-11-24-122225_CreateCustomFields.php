@@ -53,6 +53,16 @@ class CreateCustomFields extends Migration
                 'default' => '{}',
                 'null' => false,
             ],
+            'created_at' => [
+                'type' => 'datetime',
+                'null'       => false,
+                'default' => 'NOW()',
+            ],
+            'updated_at' => [
+                'type' => 'datetime',
+                'null'       => false,
+                'default' => 'NOW()',
+            ],
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->createTable('custom_fields');

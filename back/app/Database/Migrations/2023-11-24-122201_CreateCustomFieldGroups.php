@@ -33,6 +33,16 @@ class CreateCustomFieldGroups extends Migration
                 'unsigned' => true,
                 'default' => 1,
             ],
+            'created_at' => [
+                'type' => 'datetime',
+                'null'       => false,
+                'default' => 'NOW()',
+            ],
+            'updated_at' => [
+                'type' => 'datetime',
+                'null'       => false,
+                'default' => 'NOW()',
+            ],
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->createTable('custom_field_groups');

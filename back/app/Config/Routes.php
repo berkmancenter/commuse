@@ -50,6 +50,8 @@ $routes->get('api/admin/users', 'Users::adminIndex');
 $routes->post('api/admin/users/delete', 'Users::delete');
 $routes->post('api/admin/users/changeRole', 'Users::changeRole');
 $routes->post('api/admin/users/importFromCsv', 'Users::importFromCsv');
+$routes->get('api/admin/customFields', 'CustomFields::index');
+$routes->post('api/admin/customFields/upsert', 'CustomFields::upsert');
 
 $frontRoutes = [
   '/',

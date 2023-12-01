@@ -14,7 +14,7 @@
               <input type="checkbox" ref="toggleAllCheckbox" @click="toggleAll()">
             </th>
             <th>Firstname</th>
-            <th>Lastname</th>
+            <th data-sort-default aria-sort="descending">Lastname</th>
             <th>Email</th>
             <th>Created</th>
             <th>Last login</th>

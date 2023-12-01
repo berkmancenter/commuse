@@ -83,9 +83,13 @@ class CreatePeopleTable extends Migration
             ],
             'created_at' => [
                 'type' => 'datetime',
+                'null'       => false,
+                'default' => 'NOW()',
             ],
             'updated_at' => [
                 'type' => 'datetime',
+                'null'       => false,
+                'default' => 'NOW()',
             ],
         ];
 

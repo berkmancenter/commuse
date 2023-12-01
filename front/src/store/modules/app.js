@@ -111,6 +111,12 @@ const actions = {
 
     return data
   },
+  async fetchCustomFields(context, id) {
+    const response = await fetchIt(`${apiUrl}/api/admin/customFields`)
+    const data = await response.json()
+
+    return data
+  },
   setNews(context, news) {
     context.commit('setNews', news)
   },
@@ -245,6 +251,20 @@ const actions = {
         'Content-Type': 'application/json',
       },
       body: formData,
+    })
+
+    return response
+  },
+  async saveCustomField(context, data) {
+    const response = await fetchIt(`${apiUrl}/api/admin/customFields/upsert`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        customField: data,
+      }),
     })
 
     return response

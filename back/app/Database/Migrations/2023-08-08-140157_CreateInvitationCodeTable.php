@@ -24,12 +24,14 @@ class CreateInvitationCodeTable extends Migration
                 'default'    => false,
             ],
             'created_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
+                'type' => 'datetime',
+                'null'       => false,
+                'default' => 'NOW()',
             ],
             'updated_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
+                'type' => 'datetime',
+                'null'       => false,
+                'default' => 'NOW()',
             ],
         ]);
 

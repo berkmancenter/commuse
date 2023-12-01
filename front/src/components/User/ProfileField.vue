@@ -18,11 +18,11 @@
       <div class="control">
         <VueMultiselect
           v-model="$store.state.app.userProfile[machineName]"
-          :multiple="true"
-          :taggable="true"
-          :options="[]"
+          :multiple="metadata.allowMultiple ?? false"
+          :taggable="metadata.allowNewValues ?? false"
+          :options="metadata.possibleValues ?? []"
           tag-placeholder="Add"
-          placeholder="Search or add new"
+          :placeholder="metadata.allowNewValues ? 'Search or add new' : 'Search'"
           @tag="addTag"
         >
         </VueMultiselect>
@@ -34,13 +34,13 @@
         <span title="Remove item" @click="removeTagRangeItem(index)"><Icon :src="minusIcon" /></span>
 
         <div>
-          <label class="label">{{ metadata.tag_title }}</label>
+          <label class="label">{{ metadata.tagName ?? 'Item name' }}</label>
           <div class="control">
             <div class="control">
               <VueMultiselect
                 v-model="item.tags"
                 :multiple="true"
-                :options="metadata.possible_values"
+                :options="metadata.possibleValues ?? []"
                 placeholder="Select"
               >
               </VueMultiselect>
@@ -128,6 +128,8 @@
         })
       },
       addTag (newOption) {
+        this.metadata.possibleValues.push(newOption)
+
         this.$store.dispatch('app/addTag', {
           key: this.machineName,
           newOption: newOption,
