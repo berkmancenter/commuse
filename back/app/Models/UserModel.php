@@ -103,7 +103,7 @@ class UserModel extends ShieldUserModel
 
     $record = $peopleModel->where('user_id', $userId)->first();
     if (!empty($record)) {
-      $this->saveCustomFieldsProfileData($requestData, $record['id']);
+      $this->saveCustomFieldsProfileData($requestData, $record['id'], $record);
     }
 
     $peopleModel->db->transComplete();
@@ -113,7 +113,8 @@ class UserModel extends ShieldUserModel
     return [$this->db->transStatus(), $message];
   }
 
-  private function saveCustomFieldsProfileData($requestData, $userId) {
+  private function saveCustomFieldsProfileData($requestData, $userId, $personBasicData) {
+    $peopleModel = new PeopleModel();
     $dataKeys = array_keys($requestData);
     $db = \Config\Database::connect();
     $builder = $db->table('custom_fields');
@@ -129,6 +130,7 @@ class UserModel extends ShieldUserModel
     $customFieldsData = [];
     foreach ($customFieldsToProcess as $customFieldToProcess) {
       $value = $requestData[$customFieldToProcess['machine_name']];
+      $fieldMetadata = json_decode($customFieldToProcess['metadata'], true);
 
       $fieldData = [
         'custom_field_id' => $customFieldToProcess['id'],
@@ -141,6 +143,17 @@ class UserModel extends ShieldUserModel
       } else {
         $fieldData['value'] = strip_tags($value);
         $fieldData['value_json'] = '[]';
+      }
+
+      if (!($personBasicData && $personBasicData['image_url']) &&
+        (isset($fieldMetadata['isImportProfileImageLink']) && $fieldMetadata['isImportProfileImageLink'] === true)
+      ) {
+        $dirPath = ROOTPATH . 'writable/uploads/profile_images';
+        if ($profileImageName = $this->downloadRemoteImage($value, $dirPath)) {
+          $peopleModel->update($personBasicData['id'], [
+            'image_url' => $profileImageName,
+          ]);
+        }
       }
 
       $customFieldsData[] = $fieldData;
@@ -156,5 +169,44 @@ class UserModel extends ShieldUserModel
     }
 
     return $result;
+  }
+
+  private function downloadRemoteImage($remoteURL, $localDirectory)
+  {
+    helper('filesystem');
+
+    try {
+      $imageData = file_get_contents($remoteURL);
+
+      if ($imageData !== false) {
+        $remoteURLParts = explode('?', $remoteURL);
+        $extension = pathinfo($remoteURLParts[0], PATHINFO_EXTENSION);
+        $randomFileName = md5(uniqid('', true)) . '.' . $extension;
+        $tempFilePath = sys_get_temp_dir() . '/' . $randomFileName;
+
+        if (!write_file($tempFilePath, $imageData)) {
+          throw new \Exception("Couldn't save image {$tempFilePath}.");
+        }
+
+        $mime = mime_content_type($tempFilePath);
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp'];
+
+        if (!in_array($mime, $allowedMimeTypes)) {
+          unlink($tempFilePath);
+          throw new \Exception("Wrong mime type {$tempFilePath}.");
+        }
+
+        $localFilePath = $localDirectory . '/' . $randomFileName;
+        copy($tempFilePath, $localFilePath);
+        unlink($tempFilePath);
+
+        return $randomFileName;
+      } else {
+        throw new \Exception('Remote image contents empty.');
+      }
+    } catch (\Exception $e) {
+      log_message('error', "Couldn't fetch image {$remoteURL}.");
+      return false;
+    }
   }
 }

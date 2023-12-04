@@ -6,7 +6,7 @@
     <div class="panel-block">
       <div class="content">
         <template v-for="field in group.custom_fields">
-          <div class="people-section-details-data-item" v-if="person[field.machine_name] && person[field.machine_name] != '' && person[field.machine_name] != []">
+          <div class="people-section-details-data-item" v-if="person[field.machine_name] && person[field.machine_name] != '' && person[field.machine_name] != [] && !field?.metadata?.isImportProfileImageLink">
             <div class="people-section-details-data-item-label">{{ field.title }}</div>
             <div v-if="!Array.isArray(person[field.machine_name])">
               <div v-if="!field.metadata.isLink">{{ person[field.machine_name] }}</div>
