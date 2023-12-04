@@ -48,6 +48,7 @@ class CustomFields extends BaseController
         'allowMultiple'=> $requestData['metadata']['allowMultiple'] ?? false,
         'allowNewValues'=> $requestData['metadata']['allowNewValues'] ?? false,
         'shareUserValues'=> $requestData['metadata']['shareUserValues'] ?? false,
+        'isImportProfileImageLink'=> $requestData['metadata']['isImportProfileImageLink'] ?? false,
         'possibleValues'=> preg_split('/\R/u', $requestData['metadata']['possibleValues'] ?? ''),
         'tagName' => $requestData['metadata']['tagName'] ?? '',
       ]),

@@ -125,6 +125,15 @@
                 </div>
               </div>
             </div>
+
+            <div class="field">
+              <label class="label">Is import profile image link</label>
+              <div class="control">
+                <div class="control">
+                  <input class="checkbox" type="checkbox" name="admin-custom-fields-form-is-import-profile-image-link">
+                </div>
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -234,6 +243,7 @@
         updateFormField('admin-custom-fields-form-share-users-values', customField.metadata?.shareUserValues)
         updateFormField('admin-custom-fields-form-possible-values', customField.metadata?.possibleValues?.join('\n') || '', false)
         updateFormField('admin-custom-fields-form-tag-name', customField.metadata?.tagName || '', false)
+        updateFormField('admin-custom-fields-form-is-import-profile-image-link', customField.metadata?.isImportProfileImageLink)
       },
       async submitEditFieldForm() {
         this.mitt.emit('spinnerStart')
@@ -255,6 +265,7 @@
             shareUserValues: getFormFieldValue('admin-custom-fields-form-share-users-values'),
             possibleValues: getFormFieldValue('admin-custom-fields-form-possible-values', false),
             tagName: getFormFieldValue('admin-custom-fields-form-tag-name', false),
+            isImportProfileImageLink: getFormFieldValue('admin-custom-fields-form-is-import-profile-image-link'),
           },
         })
 
