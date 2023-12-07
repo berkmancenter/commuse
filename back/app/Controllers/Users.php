@@ -9,6 +9,7 @@ use League\Csv\Reader;
 use League\Csv\Statement;
 use CodeIgniter\Shield\Entities\User;
 use App\Validation\ChangePasswordValidationRules;
+use \Gumlet\ImageResize;
 
 class Users extends BaseController
 {
@@ -89,6 +90,10 @@ class Users extends BaseController
       mkdir($dirPath);
     }
     $file->move($dirPath, $fileName);
+
+    $image = new ImageResize("{$dirPath}/{$fileName}");
+    $image->resizeToWidth(300);
+    $image->save("{$dirPath}/{$fileName}");
 
     $data = [
       'image_url'  => $fileName,

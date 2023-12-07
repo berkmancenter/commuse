@@ -7,6 +7,7 @@ namespace App\Models;
 use CodeIgniter\Shield\Models\UserModel as ShieldUserModel;
 use CodeIgniter\Shield\Traits\Resettable as Resettable;
 use App\Libraries\UserProfileStructure;
+use \Gumlet\ImageResize;
 
 class UserModel extends ShieldUserModel
 {
@@ -199,6 +200,10 @@ class UserModel extends ShieldUserModel
         $localFilePath = $localDirectory . '/' . $randomFileName;
         copy($tempFilePath, $localFilePath);
         unlink($tempFilePath);
+
+        $image = new ImageResize($localFilePath);
+        $image->resizeToWidth(300);
+        $image->save($localFilePath);
 
         return $randomFileName;
       } else {
