@@ -3,7 +3,8 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">Users</h3>
 
     <div class="mb-4">
-      <ActionButton buttonText="Import users from CSV" :onClick="importUsersFromCsv" :icon="fileIcon"></ActionButton>
+      <ActionButton classes="mr-2" buttonText="Import users from CSV" :onClick="importUsersFromCsv" :icon="fileIcon"></ActionButton>
+      <ActionButton buttonText="Remove users" :onClick="() => deleteUsers(selectedUsers)" :icon="minusIcon"></ActionButton>
     </div>
 
     <form class="form">
@@ -42,7 +43,7 @@
               <a title="Change role" @click.prevent="changeUserRole(user)">
                 <Icon :src="toggleAdminIcon" />
               </a>
-              <a title="Delete user" @click.prevent="deleteUser(user)">
+              <a title="Delete user" @click.prevent="deleteUsers([user])">
                 <Icon :src="minusIcon" />
               </a>
             </td>
@@ -136,6 +137,12 @@
     created() {
       this.initialDataLoad()
     },
+    computed: {
+      selectedUsers() {
+        return this.users
+          .filter(user => user.selected)
+      },
+    },
     methods: {
       initialDataLoad() {
         this.loadUsers()
@@ -152,19 +159,30 @@
       toggleAll() {
         const newStatus = this.$refs.toggleAllCheckbox.checked
 
-        this.users
-          .map((user) => {
-            user.selected = newStatus
-
-            return user
-          })
+        this.users.map(user => (user.selected = newStatus, user))
       },
-      deleteUser(user) {
+      deleteUsers(users) {
         const that = this
+        let confirmMessage = ''
+        let usersIds = []
+
+        if (users.length === 0) {
+          this.awn.warning('No users selected.')
+
+          return
+        }
+
+        if (users.length > 1) {
+          confirmMessage = `Are you sure to remove <strong>${users.length}</strong> users?`
+        } else {
+          confirmMessage = `Are you sure to remove <strong>${users[0].email}</strong>?`
+        }
+
+        usersIds = users.map(user => user.id)
 
         Swal.fire({
-          title: 'Removing user',
-          html: `Are you sure to remove <strong>${user.email}</strong>?`,
+          title: 'Removing users',
+          html: confirmMessage,
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: this.colors.main,
@@ -172,7 +190,7 @@
           if (result.isConfirmed) {
             this.mitt.emit('spinnerStart')
 
-            const response = await this.$store.dispatch('app/deleteUsers', [user.id])
+            const response = await this.$store.dispatch('app/deleteUsers', usersIds)
             const data = await response.json()
 
             if (response.ok) {
@@ -181,6 +199,9 @@
             } else {
               this.awn.warning(data.message)
             }
+
+            this.$refs.toggleAllCheckbox.checked = false
+            this.users.map(user => (user.selected = false, user))
 
             this.mitt.emit('spinnerStop')
           }

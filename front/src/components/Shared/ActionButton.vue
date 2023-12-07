@@ -1,7 +1,7 @@
 <template>
-  <a class="button" @click="handleClick">
+  <a :class="`commuse-action-button button ${classes}`" @click="handleClick">
     <Icon :src="icon" :interactive="false" />
-    {{ buttonText }}
+    <div>{{ buttonText }}</div>
   </a>
 </template>
 
@@ -17,6 +17,7 @@
       icon: String,
       buttonText: String,
       onClick: Function,
+      classes: String,
     },
     methods: {
       handleClick() {
@@ -29,4 +30,11 @@
 </script>
 
 <style>
+  .commuse-action-button {
+    padding: 0.5rem 0.5rem;
+
+    > * {
+      height: 100%;
+    }
+  }
 </style>

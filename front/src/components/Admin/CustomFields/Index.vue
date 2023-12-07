@@ -6,9 +6,9 @@
       <admin-table :tableClasses="['admin-custom-fields-table']">
         <thead>
           <tr class="no-select">
-            <th data-sort-method="none" class="no-sort">
+            <!-- <th data-sort-method="none" class="no-sort">
               <input type="checkbox" ref="toggleAllCheckbox" @click="toggleAll()">
-            </th>
+            </th> -->
             <th data-sort-default aria-sort="descending">Title</th>
             <th>Model</th>
             <th>Type</th>
@@ -18,9 +18,9 @@
         </thead>
         <tbody>
           <tr v-for="customField in customFields" :key="customField.id" class="no-break">
-            <td class="admin-table-selector">
+            <!-- <td class="admin-table-selector">
               <input type="checkbox" v-model="customField.selected">
-            </td>
+            </td> -->
             <td>{{ customField.title }}</td>
             <td>{{ customField.model_name }}</td>
             <td>{{ customField.input_type }}</td>

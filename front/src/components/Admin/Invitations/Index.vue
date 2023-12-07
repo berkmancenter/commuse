@@ -10,9 +10,9 @@
       <admin-table :tableClasses="['admin-invitations-table']">
         <thead>
           <tr class="no-select">
-            <th data-sort-method="none" class="no-sort">
+            <!-- <th data-sort-method="none" class="no-sort">
               <input type="checkbox" ref="toggleAllCheckbox" @click="toggleAll()">
-            </th>
+            </th> -->
             <th>Code</th>
             <th>Valid</th>
             <th>Type</th>
@@ -23,9 +23,9 @@
         </thead>
         <tbody>
           <tr v-for="invitation in invitations" :key="invitation.id" class="no-break">
-            <td class="admin-table-selector">
+            <!-- <td class="admin-table-selector">
               <input type="checkbox" v-model="invitation.selected">
-            </td>
+            </td> -->
             <td class="admin-invitations-table-code"><a class="button is-light" title="Click to copy invitation url" @click="copyCodeUrlToClipboard(invitation.code)">{{ invitation.code }} <Icon :src="clipboardIcon" /></a></td>
             <td class="admin-invitations-table-used"><Booler :value="isValid(invitation)" /></td>
             <td class="no-break admin-invitations-table-type">{{ invitation.type }}</td>

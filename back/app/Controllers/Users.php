@@ -58,7 +58,7 @@ class Users extends BaseController
   public function saveProfile()
   {
     $userModel = new UserModel();
-    $requestData = json_decode(file_get_contents('php://input'), true);
+    $requestData = $this->request->getJSON(true);
 
     list($result, $message) = $userModel->saveProfileData($requestData);
 
@@ -149,12 +149,19 @@ class Users extends BaseController
   public function delete()
   {
     $this->checkAdminAccess();
-
     $result = false;
     $usersProvider = auth()->getProvider();
     $peopleModel = model('PeopleModel');
-    $requestData = json_decode(file_get_contents('php://input'), true);
+    $requestData = $this->request->getJSON(true);
     $userIds = $requestData['users'] ?? [];
+    $userIds = array_map('intval', $userIds);
+    $userIds = array_diff($userIds, [auth()->id()]);
+
+    if (count($userIds) === 0) {
+      $okMessage = 'Users have been removed successfully.';
+    } else {
+      $okMessage = 'User has been removed successfully.';
+    }
 
     if (!empty($userIds)) {
       try {
@@ -169,7 +176,7 @@ class Users extends BaseController
     }
 
     if ($result) {
-      return $this->respond(['message' => 'Users have been removed successfully.'], 200);
+      return $this->respond(['message' => $okMessage], 200);
     } else {
       return $this->respond(['message' => 'Error removing users.'], 500);
     }
@@ -180,7 +187,7 @@ class Users extends BaseController
     $this->checkAdminAccess();
 
     $result = false;
-    $requestData = json_decode(file_get_contents('php://input'), true);
+    $requestData = $this->request->getJSON(true);
     $userIds = $requestData['users'] ?? [];
     $role = $requestData['role'] ?? [];
     $db = \Config\Database::connect();
