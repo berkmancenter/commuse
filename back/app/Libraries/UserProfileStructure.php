@@ -69,6 +69,10 @@ class UserProfileStructure {
       $metadata['possibleValues'] = $this->getFieldUserValues($row['field_id'], $metadata['possibleValues']);
     }
 
+    if (isset($metadata['possibleValues']) === false) {
+      $metadata['possibleValues'] = [];
+    }
+
     return [
       'machine_name' => $row['field_machine_name'],
       'title' => $row['field_title'],
