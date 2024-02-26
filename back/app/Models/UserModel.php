@@ -94,6 +94,21 @@ class UserModel extends ShieldUserModel
     $data['public_profile'] = $requestData['public_profile'] ?? false;
     $data['user_id'] = $userId;
 
+    $data['full_text_search'] = array_map(function ($field) {
+      if (is_array($field)) {
+        return json_encode($field);
+      }
+
+      return $field;
+    }, $requestData);
+    $data['full_text_search'] = strtolower(
+      str_replace(
+        ['"', '[', ']', '{', '}'],
+        '',
+        join(' ', $data['full_text_search']
+      )
+    ));
+
     $peopleModel->db->transStart();
 
     if ($existingPerson) {
@@ -139,6 +154,18 @@ class UserModel extends ShieldUserModel
       ];
 
       if (in_array($customFieldToProcess['input_type'], ['tags_range', 'tags'])) {
+        if ($customFieldToProcess['input_type'] === 'tags_range') {
+          if (is_array($value)) {
+            $value = array_map(function ($v) {
+              if (isset($v['tags']) && is_array($v['tags']) === false) {
+                $v['tags'] = [$v['tags']];
+              }
+
+              return $v;
+            }, $value);
+          }
+        }
+
         $fieldData['value_json'] = json_encode($value);
         $fieldData['value'] = '';
       } else {

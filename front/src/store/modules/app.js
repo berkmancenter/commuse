@@ -19,6 +19,9 @@ const state = {
     admin: false,
     email: null,
   },
+  peopleSearchTerm: '',
+  peopleFilters: [],
+  peopleActiveFilters: {},
 }
 
 const mutations = {
@@ -64,7 +67,18 @@ const actions = {
     return data
   },
   async fetchPeople(context) {
-    const response = await fetchIt(`${apiUrl}/api/people`)
+    const response = await fetchIt(`${apiUrl}/api/people`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        q: context.state.peopleSearchTerm,
+        filters: context.state.peopleActiveFilters,
+      }),
+    })
+
     const data = await response.json()
 
     return data
@@ -83,6 +97,12 @@ const actions = {
   },
   async fetchProfileStructure(context) {
     const response = await fetchIt(`${apiUrl}/api/users/profileStructure`)
+    const data = await response.json()
+
+    return data
+  },
+  async fetchPeopleFilters(context) {
+    const response = await fetchIt(`${apiUrl}/api/people/filters`)
     const data = await response.json()
 
     return data

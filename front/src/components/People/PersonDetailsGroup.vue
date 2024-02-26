@@ -25,6 +25,8 @@
 </template>
 
 <script>
+  import { flatten, compact } from 'lodash'
+
   export default {
     name: 'PersonDetailsGroup',
     data() {
@@ -47,8 +49,13 @@
     methods: {
       hasFields(group) {
         return group.custom_fields.some(field => {
-          const fieldValue = this.person[field.machine_name]
-          return fieldValue &&  fieldValue != '' && fieldValue != []
+          if (field?.metadata?.isImportProfileImageLink) {
+            return false
+          }
+
+          const fieldValue = compact(flatten([this.person[field.machine_name]]))
+
+          return fieldValue.length > 0
         })
       },
     },

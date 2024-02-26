@@ -10,12 +10,26 @@ class UserProfileStructure {
   }
 
   public function getUserProfileStructure() {
-    $userProfileData = $this->getUserProfileStructureData();
+    $userProfileData = $this->getUserProfileGroupsAndFields();
 
     return $this->formatUserProfileStructure($userProfileData);
   }
 
-  private function getUserProfileStructureData() {
+  public function getFiltersWithValues() {
+    $userProfileTagFields = $this->getUserProfileGroupsAndFields([ 'custom_fields.input_type' => 'tags' ]);
+
+    foreach ($userProfileTagFields as &$userProfileTagField) {
+      $userProfileTagField['values'] = $this->getFieldUserValues($userProfileTagField['field_id'], []);
+    }
+
+    usort($userProfileTagFields, function($a, $b) {
+      return $a['field_title'] <=> $b['field_title'];
+    });
+
+    return $userProfileTagFields;
+  }
+
+  private function getUserProfileGroupsAndFields($additionalConditions = []) {
     $builder = $this->db->table('custom_field_groups');
 
     return $builder
@@ -32,6 +46,7 @@ class UserProfileStructure {
       ')
       ->join('custom_fields', 'custom_fields.group_id = custom_field_groups.id AND custom_fields.model_name = \'People\'', 'left')
       ->orderBy('custom_field_groups.order ASC, custom_fields.order ASC')
+      ->where($additionalConditions)
       ->get()
       ->getResultArray();
   }

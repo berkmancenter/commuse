@@ -3,25 +3,75 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">People</h3>
 
     <div class="people-section-filters mb-4">
-      <div>
+      <div class="people-section-filters-search">
         <input
           type="text"
-          v-model="searchTerm"
-          placeholder="Filter by text"
-          class="input mb-4"
+          v-model="$store.state.app.peopleSearchTerm"
+          placeholder="Search"
+          class="input"
+          @keyup="reloadView()"
         >
+        <span><img :src="searchIcon"></span>
       </div>
+
+      <div class="mt-4 mb-2">
+        <ActionButton buttonText="Filters" :icon="filterIcon" @click="openFiltersModal()"></ActionButton>
+      </div>
+
+      <div v-if="anyActiveFilters">
+        <div class="people-section-active-filters-header">Active filters</div>
+
+        <div class="people-section-active-filters mt-2 ml-4">
+          <template v-for="(activeFilterValues, fieldMachineName) in $store.state.app.peopleActiveFilters">
+            <div class="people-section-active-filter" v-if="activeFilterValues.length > 0">
+              <div class="people-section-active-filter-title mt-1">
+                <span>></span>
+                {{ fieldTitle(fieldMachineName) }}
+              </div>
+              <div class="people-section-active-filter-values">
+                <div class="people-section-active-filter-value" v-for="(activeFilterValue) in activeFilterValues">{{ activeFilterValue }}</div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <div class="mt-2 people-section-counted-users">{{ countedUsers }}</div>
     </div>
+
+    <hr>
 
     <div class="content people-section-content">
       <Person
-        v-for="(person, index) in filteredPeople"
+        v-for="(person, index) in this.$store.state.app.people"
         :key="person.id"
         :person="person"
         :ref="'personRef_' + index"
       ></Person>
     </div>
   </div>
+
+  <Modal
+    v-model="filtersModalStatus"
+    title="Filter people"
+    :focusOnConfirm="false"
+    :centerVertically="false"
+    :showConfirmButton="false"
+    cancelButtonTitle="Close"
+    @cancel="filtersModalStatus = false"
+  >
+    <template v-for="filter in $store.state.app.peopleFilters">
+      <div class="mb-2">{{ filter.field_title }}</div>
+
+      <VueMultiselect
+        class="mb-2"
+        v-model="$store.state.app.peopleActiveFilters[filter.field_machine_name]"
+        :multiple="true"
+        :options="filter.values"
+      >
+      </VueMultiselect>
+    </template>
+  </Modal>
 </template>
 
 <script>
@@ -29,53 +79,62 @@
   import Person from '@/components/People/Person.vue'
   import profileFallbackImage from '@/assets/images/profile_fallback.png'
   import VueMultiselect from 'vue-multiselect'
+  import searchIcon from '@/assets/images/search.svg'
+  import filterIcon from '@/assets/images/filter.svg'
+  import ActionButton from '@/components/Shared/ActionButton.vue'
+  import Modal from '@/components/Shared/Modal.vue'
+  import { some } from 'lodash'
 
   export default {
     name: 'PeopleIndex',
     components: {
       Person,
       VueMultiselect,
+      ActionButton,
+      Modal,
     },
     data() {
       return {
         lazyLoadInstance: null,
-        searchTerm: '',
         profileFallbackImage: profileFallbackImage,
-        interests: [],
-        allInterests: [],
+        searchIcon,
+        filterIcon,
+        filtersModalStatus: false,
       }
-    },
-    computed: {
-      filteredPeople() {
-        const searchTerm = this.searchTerm.toLowerCase()
-
-        return this.$store.state.app.people.filter((person) => {
-          const searchText = `${person.first_name} ${person.last_name} ${person.bio}`.toLowerCase()
-
-          const hasSearchTerm = searchText.includes(searchTerm)
-
-          return hasSearchTerm
-        })
-      },
     },
     created() {
       const that = this
 
       this.mitt.emit('spinnerStart')
-      this.mitt.on('setInterestActive', (interest) => that.setInterestActive(interest))
-      this.initialDataLoad()
+
+      this.loadPeople()
+      this.loadFilters()
       this.initLazyLoad()
+
+      this.mitt.emit('spinnerStop')
     },
-    mounted() {},
+    computed: {
+      countedUsers() {
+        const count = this.$store.state.app.people.length
+
+        if (count === 1) {
+          return `Found 1 user`
+        } else {
+          return `Found ${count} users`
+        }
+      },
+      anyActiveFilters() {
+        return some(this.$store.state.app.peopleActiveFilters, filter => filter.length > 0)
+      },
+    },
     methods: {
-      async initialDataLoad() {
+      async loadPeople() {
         const people = await this.$store.dispatch('app/fetchPeople')
 
         this.$store.dispatch('app/setPeople', people)
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
         })
-        this.mitt.emit('spinnerStop')
       },
       initLazyLoad() {
         this.lazyLoadInstance = new LazyLoad({
@@ -87,24 +146,37 @@
         })
         this.lazyLoadInstance.update()
       },
-      setInterestActive(interest) {
-        if (!this.interests.includes(interest)) {
-          this.interests.push(interest)
-
-          document.querySelector('body').scrollIntoView()
-        }
+      reloadView() {
+        this.loadPeople()
+      },
+      openFiltersModal() {
+        this.filtersModalStatus = true
+      },
+      async loadFilters() {
+        this.$store.state.app.peopleFilters = await this.$store.dispatch('app/fetchPeopleFilters')
+      },
+      applyFilters() {
+        this.reloadView()
+        this.filtersModalStatus = false
+      },
+      fieldTitle(fieldMachineName) {
+        return this.$store.state.app.peopleFilters.filter(filter => filter.field_machine_name === fieldMachineName)[0].field_title
       },
     },
     watch: {
-      searchTerm() {
+      '$store.state.app.peopleSearchTerm': function() {
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
         })
       },
-      interests() {
-        this.$nextTick(() => {
-          this.lazyLoadInstance.update()
-        })
+      '$store.state.app.peopleActiveFilters': {
+        handler: function() {
+          this.$nextTick(() => {
+            this.lazyLoadInstance.update()
+            this.reloadView()
+          })
+        },
+        deep: true,
       },
     },
   }
@@ -146,14 +218,67 @@
     }
 
     .people-section-filters {
-      display: flex;
-
       > div {
         margin-right: 1rem;
       }
 
+      input {
+        border-bottom: 2px solid var(--main-color);
+        border-radius: 0;
+      }
+
       input::placeholder {
-        color: rgba(54, 54, 54, 0.3);
+        color: rgba(54, 54, 54, 0.8);
+      }
+
+      .people-section-filters-search {
+        position: relative;
+        max-width: 300px;
+
+        span {
+          display: block;
+          width: 1.5rem;
+          height: 1.5rem;
+          position: absolute;
+          top: 0;
+          right: 0.5rem;
+          height: 100%;
+          display: flex;
+          pointer-events: none;
+        }
+      }
+    }
+
+    .people-section-active-filters-header,
+    .people-section-counted-users {
+      border-bottom: 2px solid var(--main-color);
+      display: inline-block;
+    }
+
+    .people-section-active-filters {
+      .people-section-active-filter {
+        .people-section-active-filter-values {
+          display: flex;
+
+          .people-section-active-filter-value {
+            background-color: var(--secondary-color);
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            color: #ffffff;
+            margin-right: 1rem;
+            margin-top: 0.5rem;
+          }
+        }
+
+        .people-section-active-filter-title {
+          display: flex;
+          align-items: center;
+
+          span {
+            color: var(--main-color);
+            margin-right: 0.5rem;
+          }
+        }
       }
     }
   }
