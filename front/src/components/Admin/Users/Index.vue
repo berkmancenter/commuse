@@ -3,8 +3,8 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">Users</h3>
 
     <div class="mb-4">
-      <ActionButton classes="mr-2" buttonText="Import users from CSV" :onClick="importUsersFromCsv" :icon="fileIcon"></ActionButton>
-      <ActionButton buttonText="Remove users" :onClick="() => deleteUsers(selectedUsers)" :icon="minusIcon"></ActionButton>
+      <ActionButton classes="mr-2" buttonText="Import users from CSV" @click="importUsersFromCsvModalOpen()" :icon="fileIcon"></ActionButton>
+      <ActionButton buttonText="Remove users" @click="() => deleteUsersConfirm(selectedUsers)" :icon="minusIcon"></ActionButton>
     </div>
 
     <form class="form">
@@ -37,13 +37,13 @@
               <Booler :value="user.groups.includes('admin')" />
             </td>
             <td class="admin-table-actions">
-              <a title="Show user profile" @click.prevent="showUserProfile(user)">
+              <a title="Show user profile" :href="`/people/${user.people_id}`" target="_blank">
                 <Icon :src="userIcon" />
               </a>
-              <a title="Change role" @click.prevent="changeUserRole(user)">
+              <a title="Change role" @click.prevent="setUserRoleModalOpen(user)">
                 <Icon :src="toggleAdminIcon" />
               </a>
-              <a title="Delete user" @click.prevent="deleteUsers([user])">
+              <a title="Delete user" @click.prevent="deleteUsersConfirm([user])">
                 <Icon :src="minusIcon" />
               </a>
             </td>
@@ -56,45 +56,61 @@
     </form>
   </div>
 
-  <div ref="adminUserSetRoleTemplate" class="is-hidden">
-    <div class="content admin-users-set-role">
-      <div class="is-size-5 mb-4">Choose role to set</div>
+  <Modal
+    v-model="importUsersCsvModalStatus"
+    title="Import users from CSV"
+    :focusOnConfirm="true"
+    class="admin-users-import-csv"
+    @confirm="importUsersFromCsv()"
+    @cancel="importUsersCsvModalStatus = false"
+  >
+    <div><a target="_blank" :href="`${apiUrl}/api/admin/users/csvImportTemplate`">Download CSV import file structure</a></div>
 
-      <div class="field">
-        <div class="control" v-for="(option, index) in roles" :key="index">
-          <label class="radio">
-            <input
-              type="radio"
-              name="adminUserSetRole"
-              :value="option"
-              class="mb-2"
-            >
-            {{ option }}
-          </label>
+    <div class="field">
+      <div class="control">
+        <input type="file" accept=".csv" ref="importUsersCsvModalFileInput">
+        <div class="my-2">
+          <button class="button" type="button" @click="$refs.importUsersCsvModalFileInput.click()">
+            <Icon :src="fileIcon" :interactive="false" />
+            Choose file
+          </button>
         </div>
       </div>
     </div>
-  </div>
+  </Modal>
 
-  <div ref="adminUserImportCsvTemplate" class="is-hidden">
-    <div class="content admin-users-import-from-csv-form">
-      <div class="is-size-5 mb-4">Choose CSV file to import</div>
+  <Modal
+    v-model="setUserRoleModalStatus"
+    title="Set user role"
+    :focusOnConfirm="true"
+    @confirm="setUserRole()"
+    @cancel="setUserRoleModalStatus = false"
+  >
+    <div class="mb-2">Set a new user role for <span class="has-text-weight-bold">{{ setUserRoleModalCurrent.email }}</span>.</div>
 
-      <p><a target="_blank" :href="`${apiUrl}/api/admin/users/csvImportTemplate`">Download CSV import file structure</a></p>
-
-      <div class="field">
-        <div class="control">
-          <input ref="userProfileImageInput" type="file" accept=".csv" @change="runCsvImport()">
-          <div class="my-2">
-            <button class="button" type="button" @click="openUploadProfileImage()">
-              <Icon :src="fileIcon" :interactive="false" />
-              Choose file
-            </button>
-          </div>
-        </div>
+    <div class="field">
+      <div class="control" v-for="(option, index) in roles" :key="index">
+        <label class="radio">
+          <input
+            type="radio"
+            :value="option"
+            v-model="setUserRoleCurrentRole"
+            class="mb-2"
+          >
+          {{ option }}
+        </label>
       </div>
     </div>
-  </div>
+  </Modal>
+
+  <Modal
+    v-model="deleteUserModalStatus"
+    title="Delete user"
+    @confirm="deleteUsers()"
+    @cancel="deleteUserModalStatus = false"
+  >
+    Are you sure you delete <span class="has-text-weight-bold">{{ deleteUserModalCurrent.map((u) => u.email).join(', ') }}</span>?
+  </Modal>
 </template>
 
 <script>
@@ -106,9 +122,9 @@
   import toggleAdminIcon from '@/assets/images/toggle_admin.svg'
   import userIcon from '@/assets/images/user.svg'
   import fileIcon from '@/assets/images/file.svg'
-  import Swal from 'sweetalert2'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
+  import Modal from '@/components/Shared/Modal.vue'
 
   export default {
     name: 'AdminUsers',
@@ -117,6 +133,7 @@
       AdminTable,
       Booler,
       ActionButton,
+      Modal,
     },
     data() {
       return {
@@ -132,6 +149,12 @@
           'admin',
         ],
         apiUrl: import.meta.env.VITE_API_URL,
+        setUserRoleModalStatus: false,
+        setUserRoleModalCurrent: null,
+        setUserRoleCurrentRole: 'user',
+        importUsersCsvModalStatus: false,
+        deleteUserModalStatus: false,
+        deleteUserModalCurrent: [],
       }
     },
     created() {
@@ -161,129 +184,82 @@
 
         this.users.map(user => (user.selected = newStatus, user))
       },
-      deleteUsers(users) {
-        const that = this
-        let confirmMessage = ''
-        let usersIds = []
+      deleteUsersConfirm(users) {
+        this.deleteUserModalCurrent = users
+        this.deleteUserModalStatus = true
+      },
+      async deleteUsers(users) {
+        this.mitt.emit('spinnerStart')
 
-        if (users.length === 0) {
-          this.awn.warning('No users selected.')
+        const usersIds = this.deleteUserModalCurrent.map(user => user.id)
+        const response = await this.$store.dispatch('app/deleteUsers', usersIds)
+        const data = await response.json()
 
-          return
-        }
-
-        if (users.length > 1) {
-          confirmMessage = `Are you sure to remove <strong>${users.length}</strong> users?`
+        if (response.ok) {
+          this.awn.success(data.message)
+          this.loadUsers()
         } else {
-          confirmMessage = `Are you sure to remove <strong>${users[0].email}</strong>?`
+          this.awn.warning(data.message)
         }
 
-        usersIds = users.map(user => user.id)
+        this.$refs.toggleAllCheckbox.checked = false
+        this.users.map(user => (user.selected = false, user))
 
-        Swal.fire({
-          title: 'Removing users',
-          html: confirmMessage,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: this.colors.main,
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            this.mitt.emit('spinnerStart')
+        this.deleteUserModalStatus = false
+        this.mitt.emit('spinnerStop')
+      },
+      setUserRoleModalOpen(user) {
+        this.setUserRoleModalStatus = true
+        this.setUserRoleModalCurrent = user
+      },
+      async setUserRole() {
+        this.mitt.emit('spinnerStart')
 
-            const response = await this.$store.dispatch('app/deleteUsers', usersIds)
+        const response = await this.$store.dispatch('app/changeUserRole', {
+          users: [this.setUserRoleModalCurrent.id],
+          role: this.setUserRoleCurrentRole,
+        })
+
+        if (response.ok) {
+          this.awn.success('User role have been updated.')
+          this.loadUsers()
+        } else {
+          this.awn.warning('Something went wrong, try again.')
+        }
+
+        this.setUserRoleModalStatus = false
+        this.mitt.emit('spinnerStop')
+      },
+      importUsersFromCsvModalOpen() {
+        this.importUsersCsvModalStatus = true
+      },
+      async importUsersFromCsv() {
+        this.mitt.emit('spinnerStart')
+
+        const file = this.$refs.importUsersCsvModalFileInput.files[0]
+
+        if (file) {
+          const response = await this.$store.dispatch('app/importUsersFromCsv', file)
+
+          if (response.ok) {
+            this.loadUsers()
             const data = await response.json()
-
-            if (response.ok) {
-              this.awn.success(data.message)
-              that.loadUsers()
-            } else {
-              this.awn.warning(data.message)
-            }
-
-            this.$refs.toggleAllCheckbox.checked = false
-            this.users.map(user => (user.selected = false, user))
-
-            this.mitt.emit('spinnerStop')
+            this.awn.success(data.message)
+          } else {
+            this.awn.warning('Something went wrong, try again.')
           }
-        })
-      },
-      changeUserRole(user) {
-        const templateElementSelector = '.swal2-html-container .admin-users-set-role'
 
-        Swal.fire({
-          icon: null,
-          showCancelButton: true,
-          confirmButtonText: 'Set',
-          confirmButtonColor: this.colors.main,
-          html: this.$refs.adminUserSetRoleTemplate.innerHTML,
-          didOpen: () => {
-            document.querySelector(templateElementSelector).querySelector('input').checked = true
-          },
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            this.mitt.emit('spinnerStart')
+          this.importUsersCsvModalStatus = false
+        }
 
-            const response = await this.$store.dispatch('app/changeUserRole', {
-              users: [user.id],
-              role: document.querySelector(templateElementSelector).querySelector('input:checked').value,
-            })
-
-            if (response.ok) {
-              this.awn.success('User role have been updated.')
-              this.loadUsers()
-            } else {
-              this.awn.warning('Something went wrong, try again.')
-            }
-
-            this.mitt.emit('spinnerStop')
-          }
-        })
-      },
-      importUsersFromCsv() {
-        const templateElementSelector = '.swal2-html-container .admin-users-import-from-csv-form'
-
-        Swal.fire({
-          icon: null,
-          showCancelButton: true,
-          confirmButtonText: 'Import',
-          confirmButtonColor: this.colors.main,
-          html: this.$refs.adminUserImportCsvTemplate.innerHTML,
-          didOpen: () => {
-            document.querySelector(templateElementSelector).querySelector('.button').onclick = () => {
-              document.querySelector(templateElementSelector).querySelector('input').click()
-            }
-          },
-        }).then(async (result) => {
-          const fileInput = document.querySelector(templateElementSelector).querySelector('input')
-
-          if (result.isConfirmed) {
-            this.mitt.emit('spinnerStart')
-
-            if (fileInput.files[0]) {
-              const response = await this.$store.dispatch('app/importUsersFromCsv', fileInput.files[0])
-
-              if (response.ok) {
-                this.loadUsers()
-                const data = await response.json()
-                this.awn.success(data.message)
-              } else {
-                this.awn.warning('Something went wrong, try again.')
-              }
-            }
-
-            this.mitt.emit('spinnerStop')
-          }
-        })
-      },
-      showUserProfile(user) {
-        this.$router.push({ path: `/people/${user.people_id}` })
+        this.mitt.emit('spinnerStop')
       },
     },
   }
 </script>
 
 <style lang="scss">
-  .admin-users-import-from-csv-form {
+  .admin-users-import-csv {
     input {
       display: none;
     }

@@ -3,16 +3,13 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">Invitations</h3>
 
     <div class="mb-4">
-      <ActionButton buttonText="Create invitation" :onClick="openNewInvitationModal" :icon="addIcon"></ActionButton>
+      <ActionButton buttonText="Create invitation" @click="createInvitationModalOpen()" :icon="addIcon"></ActionButton>
     </div>
 
     <form class="form">
       <admin-table :tableClasses="['admin-invitations-table']">
         <thead>
           <tr class="no-select">
-            <!-- <th data-sort-method="none" class="no-sort">
-              <input type="checkbox" ref="toggleAllCheckbox" @click="toggleAll()">
-            </th> -->
             <th>Code</th>
             <th>Valid</th>
             <th>Type</th>
@@ -23,16 +20,13 @@
         </thead>
         <tbody>
           <tr v-for="invitation in invitations" :key="invitation.id" class="no-break">
-            <!-- <td class="admin-table-selector">
-              <input type="checkbox" v-model="invitation.selected">
-            </td> -->
             <td class="admin-invitations-table-code"><a class="button is-light" title="Click to copy invitation url" @click="copyCodeUrlToClipboard(invitation.code)">{{ invitation.code }} <Icon :src="clipboardIcon" /></a></td>
             <td class="admin-invitations-table-used"><Booler :value="isValid(invitation)" /></td>
             <td class="no-break admin-invitations-table-type">{{ invitation.type }}</td>
             <td>{{ formattedTimestamp(invitation.expire) }}</td>
             <td>{{ formattedTimestamp(invitation.created_at) }}</td>
             <td class="admin-table-actions">
-              <a title="Delete invitation" @click.prevent="deleteInvitation(invitation)">
+              <a title="Delete invitation" @click.prevent="deleteInvitationConfirm(invitation)">
                 <Icon :src="minusIcon" />
               </a>
             </td>
@@ -43,34 +37,45 @@
         </tbody>
       </admin-table>
     </form>
-
-    <div ref="saveInvitationTemplate" class="is-hidden">
-      <div class="content" onsubmit="return false">
-        <div class="is-size-5 mb-4">Create invitation</div>
-
-        <form class="form admin-invitations-form">
-          <div class="field">
-            <label class="label" for="type">Type</label>
-            <div class="control">
-              <div class="select">
-                <select id="form-invitation-type">
-                  <option value="single">Single</option>
-                  <option value="multiple">Multiple</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="field">
-            <label class="label" for="expire">Expire</label>
-            <div class="control">
-              <input class="input" type="text" id="form-invitation-expire">
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
   </div>
+
+  <Modal
+    v-model="deleteInvitationModalStatus"
+    title="Delete invitation"
+    @confirm="deleteInvitation()"
+    @cancel="deleteInvitationModalStatus = false"
+  >
+    Are you sure you delete the invitation?
+  </Modal>
+
+  <Modal
+    v-model="createInvitationModalStatus"
+    title="Create invitation"
+    :focusOnConfirm="false"
+    @confirm="createInvitation()"
+    @cancel="createInvitationModalStatus = false"
+  >
+    <form class="form admin-invitations-form">
+      <div class="field">
+        <label class="label" for="type">Type</label>
+        <div class="control">
+          <div class="select">
+            <select v-model="createInvitationCurrent.type">
+              <option value="single">Single</option>
+              <option value="multiple">Multiple</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="expire">Expire</label>
+        <div class="control">
+          <input class="input" type="text" ref="createInvitationCurrentExpire">
+        </div>
+      </div>
+    </form>
+  </Modal>
 </template>
 
 <script>
@@ -79,12 +84,13 @@
   import minusIcon from '@/assets/images/minus.svg'
   import clipboardIcon from '@/assets/images/clipboard.svg'
   import addIcon from '@/assets/images/add.svg'
-  import Swal from 'sweetalert2'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import AirDatepicker from 'air-datepicker'
   import localeEn from 'air-datepicker/locale/en'
   import { formattedTimestamp } from '@/lib/time_stuff'
   import ActionButton from '@/components/Shared/ActionButton.vue'
+  import Modal from '@/components/Shared/Modal.vue'
+  import { waitUntil } from '@/lib/wait_until'
 
   export default {
     name: 'AdminInvitations',
@@ -93,6 +99,7 @@
       AdminTable,
       Booler,
       ActionButton,
+      Modal,
     },
     data() {
       return {
@@ -102,6 +109,14 @@
         invitations: [],
         apiUrl: import.meta.env.VITE_API_URL,
         formattedTimestamp: formattedTimestamp,
+        deleteInvitationModalStatus: false,
+        deleteInvitationCurrent: null,
+        createInvitationModalStatus: false,
+        createInvitationCurrent: {},
+        createInvitationCurrent: {
+          type: 'single',
+          expire: '',
+        },
       }
     },
     created() {
@@ -120,39 +135,38 @@
 
         this.mitt.emit('spinnerStop')
       },
-      openNewInvitationModal() {
-        const templateElementSelector = '.swal2-html-container .admin-invitations-form'
+      async createInvitationModalOpen() {
+        this.createInvitationModalStatus = true
 
-        Swal.fire({
-          icon: null,
-          showCancelButton: true,
-          confirmButtonText: 'Save',
-          confirmButtonColor: this.colors.main,
-          html: this.$refs.saveInvitationTemplate.innerHTML,
-          didOpen: () => new AirDatepicker(`${templateElementSelector} #form-invitation-expire`, {
-            locale: localeEn,
-            timepicker: true,
-            minutesStep: 5,
-          }),
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            this.mitt.emit('spinnerStart')
-
-            const response = await this.$store.dispatch('app/saveInvitation', {
-              type: document.querySelector(templateElementSelector).querySelector('#form-invitation-type').value,
-              expire: document.querySelector(templateElementSelector).querySelector('#form-invitation-expire').value,
-            })
-
-            if (response.ok) {
-              this.awn.success('Invitation has been created.')
-              this.loadInvitations()
-            } else {
-              this.awn.warning('Something went wrong, try again.')
-            }
-
-            this.mitt.emit('spinnerStop')
-          }
+        await waitUntil(() => {
+          return this.$refs.createInvitationCurrentExpire
         })
+
+        new AirDatepicker(this.$refs.createInvitationCurrentExpire, {
+          locale: localeEn,
+          timepicker: true,
+          minutesStep: 5,
+        })
+      },
+      async createInvitation() {
+        this.mitt.emit('spinnerStart')
+
+        // FIXME: Vue doesn't seem to see value changes made by AirDatepicker
+        // therefore we can't use v-model on the expire input 😔
+        const response = await this.$store.dispatch('app/saveInvitation', {
+          type: this.createInvitationCurrent.type,
+          expire: this.$refs.createInvitationCurrentExpire.value,
+        })
+
+        if (response.ok) {
+          this.awn.success('Invitation has been created.')
+          this.loadInvitations()
+        } else {
+          this.awn.warning('Something went wrong, try again.')
+        }
+
+        this.createInvitationModalStatus = false
+        this.mitt.emit('spinnerStop')
       },
       toggleAll() {
         const newStatus = this.$refs.toggleAllCheckbox.checked
@@ -168,32 +182,25 @@
         window.navigator.clipboard.writeText(`${this.apiUrl}/register?ic=${code}`)
         this.awn.success('Invitation link has been copied to the clipboard.')
       },
-      deleteInvitation(invitation) {
-        const that = this
+      deleteInvitationConfirm(invitation) {
+        this.deleteInvitationModalStatus = true
+        this.deleteInvitationCurrent = invitation
+      },
+      async deleteInvitation() {
+        this.mitt.emit('spinnerStart')
 
-        Swal.fire({
-          title: 'Removing invitation',
-          html: `Are you sure to remove invitation <strong>${invitation.code}</strong>?`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: this.colors.main,
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            this.mitt.emit('spinnerStart')
+        const response = await this.$store.dispatch('app/deleteInvitations', [this.deleteInvitationCurrent.id])
+        const data = await response.json()
 
-            const response = await this.$store.dispatch('app/deleteInvitations', [invitation.id])
-            const data = await response.json()
+        if (response.ok) {
+          this.awn.success(data.message)
+          this.loadInvitations()
+        } else {
+          this.awn.warning(data.message)
+        }
 
-            if (response.ok) {
-              this.awn.success(data.message)
-              that.loadInvitations()
-            } else {
-              this.awn.warning(data.message)
-            }
-
-            this.mitt.emit('spinnerStop')
-          }
-        })
+        this.deleteInvitationModalStatus = false
+        this.mitt.emit('spinnerStop')
       },
       isValid(invitation) {
         if (invitation.expire && invitation.expire < Date.now()) {

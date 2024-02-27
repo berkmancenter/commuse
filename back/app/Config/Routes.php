@@ -31,9 +31,10 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 $routes->get('api/news', 'News::index');
 
-$routes->get('api/people', 'People::index');
+$routes->post('api/people', 'People::index');
 $routes->get('api/people/interests', 'People::interests');
 $routes->get('api/people/(:num)', 'People::person/$1');
+$routes->get('api/people/filters', 'People::filters');
 
 $routes->get('api/users/current', 'Users::current');
 $routes->get('api/users/currentProfile', 'Users::currentProfile');

@@ -22,8 +22,13 @@
           {{ address }}
         </div>
 
-        <div class="people-section-details-side-affiliation" v-if="person?.bkc_affiliation?.length > 0">
-          <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.bkc_affiliation">
+        <div class="is-flex is-align-items-center" v-if="currentAddress">
+          <img class="people-section-details-icon" :src="currentAddressIcon">
+          {{ currentAddress }}
+        </div>
+
+        <div class="people-section-details-side-affiliation" v-if="person?.affiliation?.length > 0">
+          <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.affiliation">
             <div class="people-section-details-side-affiliation-item-icon">
               <img class="people-section-details-icon" :src="affiliateIcon">
             </div>
@@ -68,6 +73,7 @@
   import homeIcon from '@/assets/images/home.svg'
   import profileFallbackImage from '@/assets/images/profile_fallback.png'
   import affiliateIcon from '@/assets/images/affiliate.svg'
+  import currentAddressIcon from '@/assets/images/marker_map.svg'
   import PersonDetailsGroup from '@/components/People/PersonDetailsGroup.vue'
 
   export default {
@@ -81,6 +87,7 @@
         homeIcon,
         profileFallbackImage,
         affiliateIcon,
+        currentAddressIcon,
         profileStructure: [],
       }
     },
@@ -90,6 +97,9 @@
     computed: {
       address() {
         return [this.person.home_city, this.person.home_state, this.person.home_country].filter(n => n).join(', ')
+      },
+      currentAddress() {
+        return [this.person.current_city, this.person.current_state, this.person.current_country].filter(n => n).join(', ')
       },
       imageSrc() {
         let src = this.profileFallbackImage
@@ -106,7 +116,7 @@
       },
       customGroups() {
         return this.profileStructure
-        ?.filter((group) => { return !['my_information', 'contact_information', 'bkc_affiliation'].includes(group['machine_name']) })
+        ?.filter((group) => { return !['my_information', 'contact_information', 'affiliation', 'location_current', 'location_information'].includes(group['machine_name']) })
       },
     },
     created() {

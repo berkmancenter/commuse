@@ -15,16 +15,16 @@
       </div>
     </router-link>
 
-    <div class="is-size-6" v-if="person.home_city">
-        {{ person.home_city }}
+    <div class="is-size-6" v-if="personAddress.city">
+        {{ personAddress.city }}
     </div>
 
-    <div class="is-size-6" v-if="person.home_state">
-        {{ person.home_state }}
+    <div class="is-size-6" v-if="personAddress.state">
+        {{ personAddress.state }}
     </div>
 
-    <div class="is-size-6" v-if="person.home_country">
-        {{ person.home_country }}
+    <div class="is-size-6" v-if="personAddress.country">
+        {{ personAddress.country }}
     </div>
 
     <div class="mt-2 person-section-social is-flex">
@@ -61,6 +61,23 @@
         required: true
       }
     },
+    computed: {
+      personAddress() {
+        if (this.person.current_city) {
+          return {
+            city: this.person.current_city,
+            state: this.person.current_state,
+            country: this.person.current_country,
+          }
+        } else {
+          return {
+            city: this.person.home_city,
+            state: this.person.home_state,
+            country: this.person.home_country,
+          }
+        }
+      }
+    }
   }
 </script>
 

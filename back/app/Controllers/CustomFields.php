@@ -21,6 +21,10 @@ class CustomFields extends BaseController
     $customFields = array_map(function ($customField) {
       $customField['metadata'] = json_decode($customField['metadata']);
 
+      if (isset($customField['metadata']->possibleValues)) {
+        $customField['metadata']->possibleValues = join("\n", $customField['metadata']->possibleValues);
+      }
+
       return $customField;
     }, $customFields);
 
