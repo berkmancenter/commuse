@@ -28,6 +28,8 @@ const fetchIt = async (url, options = {}) => {
 
     if (response) {
       resolve(response)
+    } else {
+      reject()
     }
   })
 

@@ -23,6 +23,7 @@
 
       this.mitt.on('spinnerStart', (stopsToStop = 1) => {
         that.stopsToStop = that.stopsToStop + parseInt(stopsToStop)
+        console.log(that.stopsToStop)
         that.start()
       })
 

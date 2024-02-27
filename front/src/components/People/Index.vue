@@ -105,13 +105,9 @@
     created() {
       const that = this
 
-      this.mitt.emit('spinnerStart')
-
       this.loadPeople()
       this.loadFilters()
       this.initLazyLoad()
-
-      this.mitt.emit('spinnerStop')
     },
     computed: {
       countedUsers() {
@@ -129,12 +125,22 @@
     },
     methods: {
       async loadPeople() {
-        const people = await this.$store.dispatch('app/fetchPeople')
+        this.mitt.emit('spinnerStart')
+
+        let people = null
+        try {
+          people = await this.$store.dispatch('app/fetchPeople')
+        } catch (error) {
+          this.mitt.emit('spinnerStop')
+          return
+        }
 
         this.$store.dispatch('app/setPeople', people)
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
         })
+
+        this.mitt.emit('spinnerStop')
       },
       initLazyLoad() {
         this.lazyLoadInstance = new LazyLoad({
@@ -153,7 +159,11 @@
         this.filtersModalStatus = true
       },
       async loadFilters() {
+        this.mitt.emit('spinnerStart')
+
         this.$store.state.app.peopleFilters = await this.$store.dispatch('app/fetchPeopleFilters')
+
+        this.mitt.emit('spinnerStop')
       },
       applyFilters() {
         this.reloadView()
