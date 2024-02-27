@@ -69,7 +69,9 @@ class PeopleModel extends Model
       ')
       ->join('custom_field_data', 'custom_field_data.model_id = people.id', 'left')
       ->join('custom_fields', 'custom_fields.id = custom_field_data.custom_field_id', 'left')
+      ->join('users', 'users.id = people.user_id', 'left')
       ->where('custom_fields.model_name', 'People')
+      ->where('users.id IS NOT NULL')
       ->where($extraConditions);
 
     if (empty($filters) === false) {
