@@ -177,7 +177,7 @@ class UserModel extends ShieldUserModel
         (isset($fieldMetadata['isImportProfileImageLink']) && $fieldMetadata['isImportProfileImageLink'] === true)
       ) {
         $dirPath = ROOTPATH . 'writable/uploads/profile_images';
-        if ($profileImageName = $this->downloadRemoteImage($value, $dirPath)) {
+        if ($value && $profileImageName = $this->downloadRemoteImage($value, $dirPath)) {
           $peopleModel->update($personBasicData['id'], [
             'image_url' => $profileImageName,
           ]);

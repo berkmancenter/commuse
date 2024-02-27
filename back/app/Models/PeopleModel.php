@@ -52,6 +52,8 @@ class PeopleModel extends Model
         people.image_url,
         people.bio,
         people.preferred_pronouns,
+        people.user_id,
+        people.public_profile,
         json_agg(
           json_build_object(
             \'input_type\',
@@ -112,7 +114,7 @@ class PeopleModel extends Model
         if (in_array($customField['input_type'], ['tags_range', 'tags'])) {
           $value = $customField['value_json'];
         }
-  
+
         if ($customField['input_type'] === 'long_text') {
           $value = nl2br($value);
         }
