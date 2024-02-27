@@ -54,6 +54,7 @@ class PeopleModel extends Model
         people.preferred_pronouns,
         people.user_id,
         people.public_profile,
+        people.updated_at,
         json_agg(
           json_build_object(
             \'input_type\',
