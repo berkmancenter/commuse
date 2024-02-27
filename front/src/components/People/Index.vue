@@ -162,15 +162,22 @@
       fieldTitle(fieldMachineName) {
         return this.$store.state.app.peopleFilters.filter(filter => filter.field_machine_name === fieldMachineName)[0].field_title
       },
+      abortFetchPeopleRequest() {
+        if (this.$store.state.app.peopleFetchController) {
+          this.$store.state.app.peopleFetchController.abort()
+        }
+      },
     },
     watch: {
       '$store.state.app.peopleSearchTerm': function() {
+        this.abortFetchPeopleRequest()
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
         })
       },
       '$store.state.app.peopleActiveFilters': {
         handler: function() {
+          this.abortFetchPeopleRequest()
           this.$nextTick(() => {
             this.lazyLoadInstance.update()
             this.reloadView()

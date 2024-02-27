@@ -22,6 +22,7 @@ const state = {
   peopleSearchTerm: '',
   peopleFilters: [],
   peopleActiveFilters: {},
+  peopleFetchController: null,
 }
 
 const mutations = {
@@ -67,12 +68,15 @@ const actions = {
     return data
   },
   async fetchPeople(context) {
+    context.state.peopleFetchController = new AbortController()
+
     const response = await fetchIt(`${apiUrl}/api/people`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
+      signal: context.state.peopleFetchController.signal,
       body: JSON.stringify({
         q: context.state.peopleSearchTerm,
         filters: context.state.peopleActiveFilters,
