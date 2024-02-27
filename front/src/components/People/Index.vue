@@ -126,11 +126,17 @@
     methods: {
       async loadPeople() {
         this.mitt.emit('spinnerStart')
+        const searchTermEntering = this.$store.state.app.peopleSearchTerm
 
         let people = null
         try {
           people = await this.$store.dispatch('app/fetchPeople')
         } catch (error) {
+          this.mitt.emit('spinnerStop')
+          return
+        }
+
+        if (this.$store.state.app.peopleSearchTerm !== searchTermEntering) {
           this.mitt.emit('spinnerStop')
           return
         }
