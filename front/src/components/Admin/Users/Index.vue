@@ -4,7 +4,7 @@
 
     <div class="mb-4">
       <ActionButton classes="mr-2" buttonText="Import users from CSV" @click="importUsersFromCsvModalOpen()" :icon="fileIcon"></ActionButton>
-      <ActionButton buttonText="Remove users" @click="() => deleteUsersConfirm(selectedUsers)" :icon="minusIcon"></ActionButton>
+      <ActionButton buttonText="Delete users" @click="() => deleteUsersConfirm(selectedUsers)" :icon="minusIcon"></ActionButton>
     </div>
 
     <form class="form">
@@ -185,6 +185,12 @@
         this.users.map(user => (user.selected = newStatus, user))
       },
       deleteUsersConfirm(users) {
+        if (users.length === 0) {
+          this.awn.warning('No users selected.')
+
+          return
+        }
+
         this.deleteUserModalCurrent = users
         this.deleteUserModalStatus = true
       },
