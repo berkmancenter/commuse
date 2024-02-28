@@ -68,7 +68,7 @@
           <label class="label">Allow add new values by users</label>
           <div class="control">
             <div class="control">
-              <input class="checkbox" type="checkbox" v-modal="fieldModalCurrent.metadata.allowNewValues">
+              <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.allowNewValues">
             </div>
           </div>
         </div>
