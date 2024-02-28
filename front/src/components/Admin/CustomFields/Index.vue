@@ -40,7 +40,7 @@
     @confirm="submitEditFieldForm()"
     @cancel="fieldModalVisible = false"
   >
-    <form class="form admin-custom-fields-form" v-if="fieldModalCurrent.title">
+    <form class="form admin-custom-fields-form">
       <div class="field">
         <label class="label">Title</label>
         <div class="control">
