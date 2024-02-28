@@ -39,9 +39,23 @@ class PeopleModel extends Model
   protected $beforeDelete   = [];
   protected $afterDelete  = [];
 
-  public function getPeopleWithCustomFields($extraConditions = [], $likeConditions = [], $filters = []) {
-    $db = \Config\Database::connect();
-    $builder = $db->table('people');
+  public function getPeopleWithCustomFields(
+    array $extraConditions = [],
+    array $likeConditions = [],
+    array $filters = []
+  ): array {
+    $people = $this->getPeople($extraConditions, $likeConditions, $filters);
+    $this->processData($people);
+
+    return $people;
+  }
+
+  private function getPeople(
+    array $extraConditions,
+    array $likeConditions,
+    array $filters
+  ) {
+    $builder = $this->db->table('people');
 
     $builder
       ->select('
@@ -72,50 +86,62 @@ class PeopleModel extends Model
       ->join('custom_fields', 'custom_fields.id = custom_field_data.custom_field_id', 'left')
       ->join('users', 'users.id = people.user_id', 'left')
       ->where('custom_fields.model_name', 'People')
-      ->where('users.id IS NOT NULL')
-      ->where($extraConditions);
+      ->where('users.id IS NOT NULL');
 
-    if (empty($filters) === false) {
-      $anyWithValues = false;
+    if (!empty($extraConditions)) {
+      $builder->where($extraConditions);
+    }
 
-      foreach ($filters as $filterValues) {
-        if (empty($filterValues) === false) {
-          $anyWithValues = true;
-          break;
-        }
-      }
+    if (!empty($likeConditions)) {
+      $builder->like($likeConditions);
+    }
 
-      if ($anyWithValues) {
-        $builder->groupStart();
+    $this->applyFilters($builder, $filters);
+    $builder->groupBy('people.id, custom_field_data.model_id');
+    $people = $builder->get()->getResultArray();
 
-        foreach ($filters as $filterKey => $filterValues) {
-          if (empty($filterValues) === true) {
-            continue;
-          }
+    return $people;
+  }
 
-          $builder->groupStart();
+  private function applyFilters($builder, array $filters) {
+    if (empty($filters)) {
+      return;
+    }
 
-          $jsonValues = json_encode($filterValues);
-          $builder->where('custom_fields.machine_name', $filterKey);
-          $builder->where("custom_field_data.value_json @> '{$jsonValues}'", false, false);
-
-          $builder->groupEnd();
-        }
-
-        $builder->groupEnd();
+    $anyWithValues = false;
+    foreach ($filters as $filterValues) {
+      if (!empty($filterValues)) {
+        $anyWithValues = true;
+        break;
       }
     }
 
-    $builder
-      ->like($likeConditions)
-      ->groupBy('people.id, custom_field_data.model_id');
+    if ($anyWithValues === false) {
+      return;
+    }
 
-    $people = $builder->get()->getResultArray();
+    $builder->groupStart();
+    foreach ($filters as $filterKey => $filterValues) {
+      if (empty($filterValues)) {
+        continue;
+      }
 
+      $builder->groupStart();
+      $jsonValues = json_encode($filterValues);
+      $builder
+        ->where('custom_fields.machine_name', $filterKey)
+        ->where("custom_field_data.value_json @> '{$jsonValues}'", false, false);
+      $builder->groupEnd();
+    }
+
+    $builder->groupEnd();
+  }
+
+  private function processData(array &$people) {
     foreach ($people as &$personData) {
       $personData['custom_fields'] = json_decode($personData['custom_fields'], true);
 
-      foreach ($personData['custom_fields'] as $customField) {
+      foreach ($personData['custom_fields'] as &$customField) {
         $value = $customField['value'];
 
         if (in_array($customField['input_type'], ['tags_range', 'tags'])) {
@@ -125,14 +151,12 @@ class PeopleModel extends Model
         if ($customField['input_type'] === 'long_text') {
           $value = nl2br($value);
         }
-  
+
         $personData[$customField['machine_name']] = $value;
       }
 
       $personData['image_url'] = $personData['image_url'] ? "profile_images/{$personData['image_url']}" : '';
       $personData['bio'] = nl2br($personData['bio']);
     }
-
-    return $people;
   }
 }
