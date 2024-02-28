@@ -16,6 +16,7 @@
 
       <div class="mt-4 mb-2">
         <ActionButton buttonText="Filters" :icon="filterIcon" @click="openFiltersModal()"></ActionButton>
+        <ActionButton class="ml-2" buttonText="Clear all filters" :icon="clearFiltersIcon" @click="$store.state.app.peopleActiveFilters = {}"></ActionButton>
       </div>
 
       <div v-if="anyActiveFilters">
@@ -85,6 +86,7 @@
   import searchIcon from '@/assets/images/search.svg'
   import filterIcon from '@/assets/images/filter.svg'
   import closeIcon from '@/assets/images/close.svg'
+  import clearFiltersIcon from '@/assets/images/filter_remove.svg'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
   import { some } from 'lodash'
@@ -104,6 +106,7 @@
         searchIcon,
         filterIcon,
         closeIcon,
+        clearFiltersIcon,
         filtersModalStatus: false,
       }
     },
