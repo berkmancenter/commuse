@@ -152,6 +152,7 @@ class Users extends BaseController
     $result = false;
     $usersProvider = auth()->getProvider();
     $peopleModel = model('PeopleModel');
+    $db = \Config\Database::connect();
     $requestData = $this->request->getJSON(true);
     $userIds = $requestData['users'] ?? [];
     $userIds = array_map('intval', $userIds);
@@ -168,7 +169,27 @@ class Users extends BaseController
         foreach ($userIds as $userId) {
           $usersProvider->delete($userId, true);
         }
+
         $peopleModel->whereIn('user_id', $userIds)->delete();
+        $customFieldsData = $db->table('custom_field_data')
+          ->select('custom_field_data.id')
+          ->join('custom_fields', 'custom_fields.id = custom_field_data.custom_field_id')
+          ->where('custom_fields.model_name', 'People')
+          ->whereIn('model_id', $userIds)
+          ->get()
+          ->getResultArray();
+
+        $customFieldsDataIds = array_map(function ($customFieldsDataItem) {
+          return $customFieldsDataItem['id'];
+        }, $customFieldsData);
+
+        if (empty($customFieldsDataIds) === false) {
+          $db
+            ->table('custom_field_data')
+            ->whereIn('id', $customFieldsDataIds)
+            ->delete();
+        }
+
         $result = true;
       } catch (\Throwable $exception) {
         error_log($exception->getMessage());
