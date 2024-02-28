@@ -29,7 +29,10 @@
                 {{ fieldTitle(fieldMachineName) }}
               </div>
               <div class="people-section-active-filter-values">
-                <div class="people-section-active-filter-value" v-for="(activeFilterValue) in activeFilterValues">{{ activeFilterValue }}</div>
+                <div class="people-section-active-filter-value" v-for="(activeFilterValue) in activeFilterValues">
+                  <span>{{ activeFilterValue }}</span>
+                  <img :src="closeIcon" @click="removeFilter(fieldMachineName, activeFilterValue)">
+                </div>
               </div>
             </div>
           </template>
@@ -81,6 +84,7 @@
   import VueMultiselect from 'vue-multiselect'
   import searchIcon from '@/assets/images/search.svg'
   import filterIcon from '@/assets/images/filter.svg'
+  import closeIcon from '@/assets/images/close.svg'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
   import { some } from 'lodash'
@@ -99,6 +103,7 @@
         profileFallbackImage: profileFallbackImage,
         searchIcon,
         filterIcon,
+        closeIcon,
         filtersModalStatus: false,
       }
     },
@@ -182,6 +187,9 @@
         if (this.$store.state.app.peopleFetchController) {
           this.$store.state.app.peopleFetchController.abort()
         }
+      },
+      removeFilter(fieldMachineName, activeFilterValue) {
+        this.$store.state.app.peopleActiveFilters[fieldMachineName] = this.$store.state.app.peopleActiveFilters[fieldMachineName].filter(filterValue => filterValue != activeFilterValue)
       },
     },
     watch: {
@@ -290,6 +298,16 @@
             color: #ffffff;
             margin-right: 1rem;
             margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+
+            img {
+              width: 1.5rem;
+              height: 1.5rem;
+              display: block;
+              margin-left: 0.5rem;
+              cursor: pointer;
+            }
           }
         }
 
