@@ -97,7 +97,7 @@ class UserProfileStructure {
     ];
   }
 
-  private function getFieldUserValues($fieldId, $existingValues) {
+  private function getFieldUserValues($fieldId, $existingValues = []) {
     $builder = $this->db->table('custom_field_data');
     $fieldUserValues = $builder
       ->select('value_json')
@@ -114,12 +114,11 @@ class UserProfileStructure {
       }
     }
 
-    if (is_array($existingValues)) {
-      $existingValues = array_unique($existingValues);
-      asort($existingValues);
-      $existingValues = array_values($existingValues);
-    }
-
+    $existingValues = array_filter($existingValues);
+    $existingValues = array_map('trim', $existingValues);
+    $existingValues = array_unique($existingValues);
+    asort($existingValues);
+    $existingValues = array_values($existingValues);
 
     return $existingValues;
   }
