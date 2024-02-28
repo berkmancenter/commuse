@@ -96,8 +96,9 @@ class PeopleModel extends Model
       $builder->like($likeConditions);
     }
 
-    $this->applyFilters($builder, $filters);
     $builder->groupBy('people.id, custom_field_data.model_id');
+    $this->applyFilters($builder, $filters);
+
     $people = $builder->get()->getResultArray();
 
     return $people;
@@ -120,21 +121,29 @@ class PeopleModel extends Model
       return;
     }
 
-    $builder->groupStart();
+    $havingFilters = [];
     foreach ($filters as $filterKey => $filterValues) {
       if (empty($filterValues)) {
         continue;
       }
 
-      $builder->groupStart();
       $jsonValues = json_encode($filterValues);
-      $builder
-        ->where('custom_fields.machine_name', $filterKey)
-        ->where("custom_field_data.value_json @> '{$jsonValues}'", false, false);
-      $builder->groupEnd();
+      $havingFilters[] = "WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN custom_field_data.value_json @> '{$jsonValues}' ";
     }
 
-    $builder->groupEnd();
+    if (empty($havingFilters) === false) {
+      $havingFiltersJoined = join(' ', $havingFilters);
+
+      $having = <<<EOD
+        bool_and(
+          CASE
+            $havingFiltersJoined
+          END
+        )
+      EOD;
+
+      $builder->having($having);
+    }
   }
 
   private function processData(array &$people) {
