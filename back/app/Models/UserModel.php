@@ -166,6 +166,16 @@ class UserModel extends ShieldUserModel
           }
         }
 
+        if ($customFieldToProcess['input_type'] === 'tags') {
+          if (is_array($value)) {
+            $value = array_map(function ($v) {
+              $v = trim($v);
+
+              return $v;
+            }, $value);
+          }
+        }
+
         $fieldData['value_json'] = json_encode($value);
         $fieldData['value'] = '';
       } else {
