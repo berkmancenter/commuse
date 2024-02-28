@@ -89,6 +89,10 @@ class PeopleModel extends Model
         $builder->groupStart();
 
         foreach ($filters as $filterKey => $filterValues) {
+          if (empty($filterValues) === true) {
+            continue;
+          }
+
           $builder->groupStart();
 
           $jsonValues = json_encode($filterValues);
