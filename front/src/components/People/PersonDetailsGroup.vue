@@ -14,7 +14,7 @@
             </div>
             <div v-if="Array.isArray(person[field.machine_name])">
               <div class="tags are-medium">
-                <div class="tag" v-for="value in person[field.machine_name]">{{ value }}</div>
+                <div @click="activatePeopleFilter(field.machine_name, value)" class="tag is-clickable" v-for="value in person[field.machine_name]">{{ value }}</div>
               </div>
             </div>
           </div>
@@ -25,7 +25,7 @@
 </template>
 
 <script>
-  import { flatten, compact } from 'lodash'
+  import { flatten, compact, some } from 'lodash'
 
   export default {
     name: 'PersonDetailsGroup',
@@ -58,6 +58,21 @@
           return fieldValue.length > 0
         })
       },
+      activatePeopleFilter(fieldMachineName, value) {
+        const hasValue = some(this.$store.state.app.peopleActiveFilters[fieldMachineName], filterValue => filterValue === value)
+
+        if (hasValue === false) {
+          if (!this.$store.state.app.peopleActiveFilters[fieldMachineName]) {
+            this.$store.state.app.peopleActiveFilters[fieldMachineName] = [];
+          }
+
+          this.$store.state.app.peopleActiveFilters[fieldMachineName].push(value)
+        }
+
+        this.$router.push({
+          name: 'people.index',
+        })
+      }
     },
   }
 </script>
