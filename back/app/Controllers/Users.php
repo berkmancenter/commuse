@@ -326,6 +326,11 @@ class Users extends BaseController
     }
 
     if ($result) {
+      if ($count > 0) {
+        $cache = \Config\Services::cache();
+        $cache->delete('filters_with_values');
+      }
+
       return $this->respond([
         'message' => "Imported {$count} new users.",
       ], 200);

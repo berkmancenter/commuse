@@ -74,6 +74,9 @@ class UserModel extends ShieldUserModel
   }
 
   public function saveProfileData($requestData, $userId = null) {
+    $cache = \Config\Services::cache();
+    $cache->delete('filters_with_values');
+
     $peopleModel = new PeopleModel();
     if (is_null($userId)) {
       $userId = auth()->id();

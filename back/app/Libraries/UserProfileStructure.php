@@ -16,7 +16,14 @@ class UserProfileStructure {
   }
 
   public function getFiltersWithValues() {
-    $userProfileTagFields = $this->getUserProfileGroupsAndFields([ 'custom_fields.input_type' => 'tags' ]);
+    $cache = \Config\Services::cache();
+    $cachedData = $cache->get('filters_with_values');
+
+    if ($cachedData) {
+      return $cachedData;
+    }
+
+    $userProfileTagFields = $this->getUserProfileGroupsAndFields([], ['tags']);
 
     foreach ($userProfileTagFields as &$userProfileTagField) {
       $userProfileTagField['values'] = $this->getFieldUserValues($userProfileTagField['field_id'], []);
@@ -26,13 +33,15 @@ class UserProfileStructure {
       return $a['field_title'] <=> $b['field_title'];
     });
 
+    $cache->save('filters_with_values', $userProfileTagFields, 86400*365);
+
     return $userProfileTagFields;
   }
 
-  private function getUserProfileGroupsAndFields($additionalConditions = []) {
+  private function getUserProfileGroupsAndFields($additionalConditions = [], $fieldTypes = []) {
     $builder = $this->db->table('custom_field_groups');
 
-    return $builder
+    $groupsAndFieldsQuery = $builder
       ->select('
         custom_field_groups.machine_name AS group_machine_name,
         custom_field_groups.title AS group_title,
@@ -46,7 +55,13 @@ class UserProfileStructure {
       ')
       ->join('custom_fields', 'custom_fields.group_id = custom_field_groups.id AND custom_fields.model_name = \'People\'', 'left')
       ->orderBy('custom_field_groups.order ASC, custom_fields.order ASC')
-      ->where($additionalConditions)
+      ->where($additionalConditions);
+
+    if (empty($fieldTypes) === false) {
+      $groupsAndFieldsQuery->whereIn('custom_fields.input_type', $fieldTypes);
+    }
+
+    return $groupsAndFieldsQuery
       ->get()
       ->getResultArray();
   }
@@ -100,7 +115,11 @@ class UserProfileStructure {
   private function getFieldUserValues($fieldId, $existingValues = []) {
     $builder = $this->db->table('custom_field_data');
     $fieldUserValues = $builder
-      ->select('value_json')
+      ->select('
+        custom_field_data.value,
+        custom_field_data.value_json,
+        custom_fields.input_type
+      ')
       ->join('custom_fields', 'custom_fields.id = custom_field_data.custom_field_id', 'left')
       ->join('people', 'people.id = custom_field_data.model_id')
       ->where('custom_fields.id', $fieldId)
@@ -109,7 +128,24 @@ class UserProfileStructure {
       ->getResultArray();
 
     foreach ($fieldUserValues as $fieldUserValue) {
-      $values = json_decode($fieldUserValue['value_json'], true);
+      switch ($fieldUserValue['input_type']) {
+        case 'short_text':
+          $values = [$fieldUserValue['value']];
+          break;
+        case 'tags':
+          $values = json_decode($fieldUserValue['value_json'], true);
+          break;
+        case 'tags_range':
+          $rangeData = json_decode($fieldUserValue['value_json'], true);
+          $values = [];
+
+          foreach ($rangeData as $rangeDataItem) {
+            if (isset($rangeDataItem['tags']) && is_array($rangeDataItem['tags']) === true) {
+              $values = array_merge($values, $rangeDataItem['tags']);
+            }
+          }
+          break;
+      }
 
       if (!empty($values)) {
         $existingValues = array_merge($existingValues, $values);
