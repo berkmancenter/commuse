@@ -102,7 +102,9 @@ class UserProfileStructure {
     $fieldUserValues = $builder
       ->select('value_json')
       ->join('custom_fields', 'custom_fields.id = custom_field_data.custom_field_id', 'left')
+      ->join('people', 'people.id = custom_field_data.model_id')
       ->where('custom_fields.id', $fieldId)
+      ->where('people.public_profile', true)
       ->get()
       ->getResultArray();
 
