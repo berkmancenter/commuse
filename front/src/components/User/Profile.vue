@@ -1,8 +1,13 @@
 <template>
   <div class="user-profile">
-    <h3 class="is-size-3 has-text-weight-bold mb-4">My profile</h3>
-
     <form class="form-commuse-blocks" @submit.prevent="saveProfile">
+      <StickyElement visibleOnDirection="disabled" stickMode="element-start" class="user-profile-header">
+        <div class="is-flex is-align-items-center">
+          <h3 class="is-size-3 has-text-weight-bold">My profile</h3>
+          <button class="button ml-2 is-success">Save</button>
+        </div>
+      </StickyElement>
+
       <div class="panel">
         <p class="panel-heading">
           Profile Status
@@ -131,18 +136,13 @@
           ></ProfileField>
         </div>
       </div>
-
-      <div class="field is-grouped">
-        <div class="control">
-          <button class="button">Save</button>
-        </div>
-      </div>
     </form>
   </div>
 </template>
 
 <script>
   import ProfileField from './ProfileField.vue'
+  import StickyElement from 'vue-sticky-element'
 
   export default {
     name: 'UserProfile',
@@ -154,6 +154,7 @@
     },
     components: {
       ProfileField,
+      StickyElement,
     },
     created() {
       this.mitt.emit('spinnerStart', 2)
@@ -260,6 +261,25 @@
       transform: scale(2);
       margin-left: 0.5rem;
       cursor: pointer;
+    }
+
+    .user-profile-header {
+      .vue-sticky-element {
+        margin-top: 0rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--greyish-color);
+      }
+
+      .vue-sticky-element--stuck {
+        margin-top: 4rem;
+        padding: 1rem 0;
+        padding-left: 1rem;
+      }
+
+      .vue-sticky-element,
+      .vue-sticky-element--stuck {
+        background-color: #ffffff;
+      }
     }
   }
 </style>

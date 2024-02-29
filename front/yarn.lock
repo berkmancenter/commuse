@@ -3025,6 +3025,11 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==
 
+v-scroll-threshold@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/v-scroll-threshold/-/v-scroll-threshold-2.4.2.tgz#2e8122895b5bcd9bd65d90ed49bd504adc5b58b0"
+  integrity sha512-nKZoPVfy1gXfheqiN3DpxVEo7snMRWy9LlzJiO6MVDw/fghp0G/HWTP5u7DOhBF0fL8KKfrLmhfjhSeU6Hs0ZQ==
+
 vanilla-lazyload@^17.8.3:
   version "17.8.5"
   resolved "https://registry.yarnpkg.com/vanilla-lazyload/-/vanilla-lazyload-17.8.5.tgz#d63ce6ec9caeb57b5db54bedebce9cb6d464b7f6"
@@ -3086,6 +3091,13 @@ vue-router@^4.2.2:
   integrity sha512-DIUpKcyg4+PTQKfFPX88UWhlagBEBEfJ5A8XDXRJLUnZOvcpMF8o/dnL90vpVkGaPbjvXazV/rC1qBKrZlFugw==
   dependencies:
     "@vue/devtools-api" "^6.5.0"
+
+vue-sticky-element@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/vue-sticky-element/-/vue-sticky-element-1.7.0.tgz#dcc0df4d5f29406667f713d8b65ae0f84bf5a6e0"
+  integrity sha512-GvC3YVAefJWJpJ2LzYVeRPa2Huquki/+OvHR1rzWpIYknmyeORgpwn2tFs4OYDjsk24ruOskAd5Kc/e3DqNJBw==
+  dependencies:
+    v-scroll-threshold "^2.4.2"
 
 vue@^3.2.45:
   version "3.3.8"

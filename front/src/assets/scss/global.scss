@@ -57,3 +57,23 @@ form.form-commuse-blocks {
     cursor: pointer;
   }
 }
+
+.button.is-success {
+  background-color: var(--blue-stronger-color);
+
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: var(--blue-stronger-color) !important;
+  }
+}
+
+.button.is-info {
+  background-color: var(--grey-color);
+
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: var(--grey-color) !important;
+  }
+}
