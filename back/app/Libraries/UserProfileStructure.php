@@ -19,11 +19,11 @@ class UserProfileStructure {
     $cache = \Config\Services::cache();
     $cachedData = $cache->get('filters_with_values');
 
-    if ($cachedData) {
+    if ($cachedData && Cache::isCacheEnabled()) {
       return $cachedData;
     }
 
-    $userProfileTagFields = $this->getUserProfileGroupsAndFields([], ['tags']);
+    $userProfileTagFields = $this->getUserProfileGroupsAndFields([], ['tags', 'tags_range', 'short_text']);
 
     foreach ($userProfileTagFields as &$userProfileTagField) {
       $userProfileTagField['values'] = $this->getFieldUserValues($userProfileTagField['field_id'], []);

@@ -121,28 +121,53 @@ class PeopleModel extends Model
       return;
     }
 
+    $filtersMachineNames = array_keys($filters);
+    $dbFields = $this->db->table('custom_fields')
+      ->whereIn('machine_name', $filtersMachineNames)
+      ->get()->getResultArray();
+
     $havingFilters = [];
     foreach ($filters as $filterKey => $filterValues) {
-      if (empty($filterValues)) {
+      $fieldDb = current(
+        array_filter($dbFields, function ($dbField) use ($filterKey) {
+          return $dbField['machine_name'] === $filterKey;
+        })
+      );
+
+      if ($fieldDb === false || empty($filterValues)) {
         continue;
       }
 
       $jsonValues = json_encode($filterValues);
-      $havingFilters[] = "WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN custom_field_data.value_json @> '{$jsonValues}' ";
+
+      switch ($fieldDb['input_type']) {
+        case 'short_text':
+          $joinedInValues = implode(', ', array_map(function($filterValue) { return "'$filterValue'"; }, $filterValues));
+          $havingFilters[] = "bool_and( CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN custom_field_data.value IN ({$joinedInValues}) END)";
+          break;
+        case 'tags':
+          $havingFilters[] = "bool_and( CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN custom_field_data.value_json @> '{$jsonValues}' END)";
+          break;
+        case 'tags_range':
+          $tagHavingFilterStart = "WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN";
+          $tagHavingFilterParts = [];
+          foreach ($filterValues as $value) {
+            $tagHavingFilterParts[] = "
+              EXISTS (
+                SELECT 1
+                FROM jsonb_array_elements(custom_field_data.value_json) AS elem
+                WHERE elem->'tags' @> '[\"{$value}\"]'
+            )";
+          }
+          $tagHavingFilterPartsTogether = implode(' AND ', $tagHavingFilterParts);
+          $havingFilters[] = "bool_and( CASE {$tagHavingFilterStart} {$tagHavingFilterPartsTogether} END)";
+          break;
+      }
     }
 
     if (empty($havingFilters) === false) {
-      $havingFiltersJoined = join(' ', $havingFilters);
-
-      $having = <<<EOD
-        bool_and(
-          CASE
-            $havingFiltersJoined
-          END
-        )
-      EOD;
-
-      $builder->having($having);
+      $havingFiltersJoined = join(' AND ', $havingFilters);
+      $builder->having($havingFiltersJoined);
     }
   }
 
