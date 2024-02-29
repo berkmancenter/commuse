@@ -124,6 +124,8 @@
           </div>
         </div>
 
+        <hr>
+
         <div class="field">
           <label class="label">Is import profile image link</label>
           <div class="control">
@@ -133,6 +135,8 @@
           </div>
         </div>
       </div>
+
+      <hr>
 
       <div class="field">
         <label class="label">Is people filter</label>
