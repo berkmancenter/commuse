@@ -23,7 +23,9 @@ class UserProfileStructure {
       return $cachedData;
     }
 
-    $userProfileTagFields = $this->getUserProfileGroupsAndFields([], ['tags', 'tags_range', 'short_text']);
+    $userProfileTagFields = $this->getUserProfileGroupsAndFields([
+      "custom_fields.metadata->>'isPeopleFilter' = 'true'"
+    ], ['tags', 'tags_range', 'short_text']);
 
     foreach ($userProfileTagFields as &$userProfileTagField) {
       $userProfileTagField['values'] = $this->getFieldUserValues($userProfileTagField['field_id'], []);
@@ -54,8 +56,11 @@ class UserProfileStructure {
         custom_fields.input_type AS field_input_type
       ')
       ->join('custom_fields', 'custom_fields.group_id = custom_field_groups.id AND custom_fields.model_name = \'People\'', 'left')
-      ->orderBy('custom_field_groups.order ASC, custom_fields.order ASC')
-      ->where($additionalConditions);
+      ->orderBy('custom_field_groups.order ASC, custom_fields.order ASC');
+
+    foreach ($additionalConditions as $additionalCondition) {
+      $builder->where($additionalCondition, null, false);
+    }
 
     if (empty($fieldTypes) === false) {
       $groupsAndFieldsQuery->whereIn('custom_fields.input_type', $fieldTypes);

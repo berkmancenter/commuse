@@ -133,6 +133,15 @@
           </div>
         </div>
       </div>
+
+      <div class="field">
+        <label class="label">Is people filter</label>
+        <div class="control">
+          <div class="control">
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.isPeopleFilter">
+          </div>
+        </div>
+      </div>
     </form>
   </Modal>
 </template>

@@ -53,6 +53,7 @@ class CustomFields extends BaseController
         'allowNewValues'=> $requestData['metadata']['allowNewValues'] ?? false,
         'shareUserValues'=> $requestData['metadata']['shareUserValues'] ?? false,
         'isImportProfileImageLink'=> $requestData['metadata']['isImportProfileImageLink'] ?? false,
+        'isPeopleFilter'=> $requestData['metadata']['isPeopleFilter'] ?? false,
         'possibleValues'=> preg_split('/\R/u', $requestData['metadata']['possibleValues'] ?? ''),
         'tagName' => $requestData['metadata']['tagName'] ?? '',
       ]),
@@ -70,6 +71,9 @@ class CustomFields extends BaseController
     }
 
     if ($result) {
+      $cache = \Config\Services::cache();
+      $cache->delete('filters_with_values');
+
       return $this->respond(['message' => $message], 200);
     } else {
       return $this->respond(['message' => 'Error saving data.'], 500);
