@@ -206,8 +206,8 @@
         handler: function() {
           this.abortFetchPeopleRequest()
           this.$nextTick(() => {
-            this.lazyLoadInstance.update()
             this.reloadView()
+            this.lazyLoadInstance.update()
           })
         },
         deep: true,
