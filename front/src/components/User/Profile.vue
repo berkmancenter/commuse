@@ -4,7 +4,7 @@
       <StickyElement visibleOnDirection="disabled" stickMode="element-start" class="user-profile-header">
         <div class="is-flex is-align-items-center">
           <h3 class="is-size-3 has-text-weight-bold">My profile</h3>
-          <button class="button ml-2 is-success">Save</button>
+          <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true"></ActionButton>
         </div>
       </StickyElement>
 
@@ -143,6 +143,8 @@
 <script>
   import ProfileField from './ProfileField.vue'
   import StickyElement from 'vue-sticky-element'
+  import ActionButton from '@/components/Shared/ActionButton.vue'
+  import saveIcon from '@/assets/images/save.svg'
 
   export default {
     name: 'UserProfile',
@@ -150,11 +152,13 @@
       return {
         apiUrl: import.meta.env.VITE_API_URL,
         profileStructure: [],
+        saveIcon,
       }
     },
     components: {
       ProfileField,
       StickyElement,
+      ActionButton,
     },
     created() {
       this.mitt.emit('spinnerStart', 2)

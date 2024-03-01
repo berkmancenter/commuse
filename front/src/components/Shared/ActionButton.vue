@@ -1,8 +1,8 @@
 <template>
-  <a :class="`commuse-action-button button ${classes}`" @click="handleClick">
+  <component :is="tagName" class="commuse-action-button button" @click="handleClick">
     <Icon :src="icon" :interactive="false" />
     <div>{{ buttonText }}</div>
-  </a>
+  </component>
 </template>
 
 <script>
@@ -17,7 +17,20 @@
       icon: String,
       buttonText: String,
       onClick: Function,
-      classes: String,
+      button: {
+        type: Boolean,
+        required: false,
+        default: false,
+      },
+    },
+    computed: {
+      tagName() {
+        if (this.button) {
+          return 'button'
+        } else {
+          return 'a'
+        }
+      }
     },
     methods: {
       handleClick() {
