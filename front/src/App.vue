@@ -166,7 +166,6 @@
 <style lang="scss">
   @import '@/assets/scss/fonts/fonts.scss';
   @import '@/assets/scss/variables.scss';
-  @import '@/assets/scss/pace_theme.scss';
   @import '@/assets/scss/global.scss';
   @import '@/assets/scss/layout.scss';
   @import '@/assets/scss/helpers.scss';
