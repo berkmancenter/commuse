@@ -72,7 +72,7 @@
             Bio
           </p>
           <div class="panel-block">
-            <div class="content" v-html="person.bio"></div>
+            <ShowMore :text="person.bio"></ShowMore>
           </div>
         </div>
 
@@ -93,6 +93,7 @@
   import affiliateIcon from '@/assets/images/affiliate.svg'
   import currentAddressIcon from '@/assets/images/marker_map.svg'
   import PersonDetailsGroup from '@/components/People/PersonDetailsGroup.vue'
+  import ShowMore from '@/components/Shared/ShowMore.vue'
 
   export default {
     name: 'PersonDetails',
@@ -111,6 +112,7 @@
     },
     components: {
       PersonDetailsGroup,
+      ShowMore,
     },
     computed: {
       address() {
@@ -139,16 +141,20 @@
       affiliateFieldTitle() {
         let title = ''
 
-        this.profileStructure.forEach((group) => {
-          group.custom_fields.forEach((custom_field) => {
+        this.profileStructure.some((group) => {
+          return group.custom_fields.some((custom_field) => {
             if (custom_field.machine_name === 'affiliation') {
               title = custom_field.title
-            }
-          })
-        })
 
-        return title
-      },
+              return true
+            }
+
+            return false
+          });
+        });
+
+        return title;
+      }
     },
     created() {
       this.mitt.emit('spinnerStart', 2)
