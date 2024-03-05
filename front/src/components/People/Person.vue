@@ -15,17 +15,25 @@
       </div>
     </router-link>
 
-    <div class="is-size-6" v-if="personAddress.city">
-        {{ personAddress.city }}
-    </div>
+    <VTooltip distance="10" placement="left" class="people-section-person-location">
+      <div>
+        <div class="is-size-6" v-if="personAddress.city">
+          {{ personAddress.city }}
+        </div>
 
-    <div class="is-size-6" v-if="personAddress.state">
-        {{ personAddress.state }}
-    </div>
+        <div class="is-size-6" v-if="personAddress.state">
+          {{ personAddress.state }}
+        </div>
 
-    <div class="is-size-6" v-if="personAddress.country">
-        {{ personAddress.country }}
-    </div>
+        <div class="is-size-6" v-if="personAddress.country">
+          {{ personAddress.country }}
+        </div>
+      </div>
+
+      <template #popper>
+        {{ locationTooltipLabel }}
+      </template>
+    </VTooltip>
 
     <div class="mt-2 person-section-social is-flex">
       <div v-if="person.twitter_link" class="mr-2">
@@ -76,7 +84,14 @@
             country: this.person.home_country,
           }
         }
-      }
+      },
+      locationTooltipLabel() {
+        if (this.person.current_city) {
+          return 'Current Location'
+        } else {
+          return 'Permanent Residence'
+        }
+      },
     }
   }
 </script>
@@ -123,6 +138,10 @@
         cursor: pointer;
         user-select: none;
       }
+    }
+
+    .people-section-person-location {
+      display: inline-block;
     }
   }
 </style>

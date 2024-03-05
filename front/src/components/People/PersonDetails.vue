@@ -17,26 +17,44 @@
           </a>
         </div>
 
-        <div class="is-flex is-align-items-center" v-if="address">
-          <img class="people-section-details-icon" :src="homeIcon">
-          {{ address }}
-        </div>
+        <VTooltip distance="10" placement="left" v-if="address">
+          <div class="is-flex is-align-items-center">
+            <img class="people-section-details-icon" :src="homeIcon">
+            {{ address }}
+          </div>
 
-        <div class="is-flex is-align-items-center" v-if="currentAddress">
-          <img class="people-section-details-icon" :src="currentAddressIcon">
-          {{ currentAddress }}
-        </div>
+          <template #popper>
+            Permanent Residence
+          </template>
+        </VTooltip>
 
-        <div class="people-section-details-side-affiliation" v-if="person?.affiliation?.length > 0">
-          <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.affiliation">
-            <div class="people-section-details-side-affiliation-item-icon">
-              <img class="people-section-details-icon" :src="affiliateIcon">
-            </div>
-            <div>
-              {{ affiliationItem.tags.join(', ') }}, {{ affiliationItem.from }}-{{ affiliationItem.to }}
+        <VTooltip distance="10" placement="left" v-if="currentAddress">
+          <div class="is-flex is-align-items-center">
+            <img class="people-section-details-icon" :src="currentAddressIcon">
+            {{ currentAddress }}
+          </div>
+
+          <template #popper>
+            Current Location
+          </template>
+        </VTooltip>
+
+        <VTooltip distance="10" placement="left" v-if="person?.affiliation?.length > 0">
+          <div class="people-section-details-side-affiliation">
+            <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.affiliation">
+              <div class="people-section-details-side-affiliation-item-icon">
+                <img class="people-section-details-icon" :src="affiliateIcon">
+              </div>
+              <div>
+                {{ affiliationItem.tags.join(', ') }}, {{ affiliationItem.from }}-{{ affiliationItem.to }}
+              </div>
             </div>
           </div>
-        </div>
+
+          <template #popper>
+            {{ affiliateFieldTitle }}(s)
+          </template>
+        </VTooltip>
       </div>
     </div>
 
@@ -117,6 +135,19 @@
       customGroups() {
         return this.profileStructure
         ?.filter((group) => { return !['my_information', 'contact_information', 'affiliation', 'location_current', 'location_information'].includes(group['machine_name']) })
+      },
+      affiliateFieldTitle() {
+        let title = ''
+
+        this.profileStructure.forEach((group) => {
+          group.custom_fields.forEach((custom_field) => {
+            if (custom_field.machine_name === 'affiliation') {
+              title = custom_field.title
+            }
+          })
+        })
+
+        return title
       },
     },
     created() {
