@@ -40,8 +40,10 @@
               <VueMultiselect
                 v-model="item.tags"
                 :multiple="true"
+                :taggable="metadata.allowNewValues ?? false"
                 :options="metadata.possibleValues ?? []"
-                placeholder="Select"
+                @tag="addTagRange"
+                :placeholder="metadata.allowNewValues ? 'Select or add new' : 'Select'"
               >
               </VueMultiselect>
             </div>
@@ -131,6 +133,14 @@
         this.metadata.possibleValues.push(newOption)
 
         this.$store.dispatch('app/addTag', {
+          key: this.machineName,
+          newOption: newOption,
+        })
+      },
+      addTagRange (newOption) {
+        this.metadata.possibleValues.push(newOption)
+
+        this.$store.dispatch('app/addTagRange', {
           key: this.machineName,
           newOption: newOption,
         })

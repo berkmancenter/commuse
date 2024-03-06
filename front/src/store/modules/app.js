@@ -48,6 +48,17 @@ const mutations = {
 
     state.userProfile[data.key].push(data.newOption)
   },
+  addTagRange(state, data) {
+    if (!state.userProfile[data.key]) {
+      state.userProfile[data.key] = {}
+    }
+
+    if (!state.userProfile[data.key]['tags']) {
+      state.userProfile[data.key]['tags'] = []
+    }
+
+    state.userProfile[data.key]['tags'](data.newOption)
+  },
   addEmptyTagRangeItem(state, machineName) {
     if (!state.userProfile[machineName]) {
       state.userProfile[machineName] = []

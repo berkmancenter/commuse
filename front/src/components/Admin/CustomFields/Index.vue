@@ -65,17 +65,6 @@
         <hr>
 
         <div class="field">
-          <label class="label">Allow add new values by users</label>
-          <div class="control">
-            <div class="control">
-              <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.allowNewValues">
-            </div>
-          </div>
-        </div>
-
-        <hr>
-
-        <div class="field">
           <label class="label">Allow user values to be suggested to other users</label>
           <div class="control">
             <div class="control">
@@ -95,6 +84,17 @@
             <div class="control">
               <textarea class="textarea" v-model="fieldModalCurrent.metadata.possibleValues"></textarea>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="field">
+        <label class="label">Allow add new values by users</label>
+        <div class="control">
+          <div class="control">
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.allowNewValues">
           </div>
         </div>
       </div>

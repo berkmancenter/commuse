@@ -8,14 +8,21 @@
         <template v-for="field in group.custom_fields">
           <div class="people-section-details-data-item" v-if="person[field.machine_name] && person[field.machine_name] != '' && person[field.machine_name] != [] && !field?.metadata?.isImportProfileImageLink">
             <div class="people-section-details-data-item-label">{{ field.title }}</div>
-            <div v-if="!Array.isArray(person[field.machine_name])">
+            <div v-if="field.input_type === 'short_text' || field.input_type === 'long_text'">
               <div v-if="!field.metadata.isLink">{{ person[field.machine_name] }}</div>
               <div v-if="field.metadata.isLink"><a :href="person[field.machine_name]" target="_blank">{{ person[field.machine_name] }}</a></div>
             </div>
-            <div v-if="Array.isArray(person[field.machine_name])">
+            <div v-if="field.input_type === 'tags'">
               <div class="tags are-medium">
                 <div @click="activatePeopleFilter(field.machine_name, value)" class="tag is-clickable" v-for="value in person[field.machine_name]">{{ value }}</div>
               </div>
+            </div>
+            <div v-if="field.input_type === 'tags_range'">
+              <ul v-for="item in person[field.machine_name]">
+                <li>
+                  {{ item.tags.join(', ') }}, {{ item.from }}-{{ item.to }}
+                </li>
+              </ul>
             </div>
           </div>
         </template>
