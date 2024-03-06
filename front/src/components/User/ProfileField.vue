@@ -1,5 +1,5 @@
 <template>
-  <div class="field">
+  <div class="field user-profile-field" ref="fieldContainer">
     <label class="label">{{ label }}</label>
 
     <div class="control" v-if="type == 'short_text'">
@@ -55,7 +55,7 @@
               <VueMultiselect
                 v-model="item.from"
                 :multiple="false"
-                :options="rangeYearsOptions"
+                :options="rangeYearsOptionsFrom()"
                 placeholder="Select"
               >
               </VueMultiselect>
@@ -68,7 +68,7 @@
               <VueMultiselect
                 v-model="item.to"
                 :multiple="false"
-                :options="rangeYearsOptions"
+                :options="rangeYearsOptionsTo()"
                 placeholder="Select"
               >
               </VueMultiselect>
@@ -96,6 +96,7 @@
       machineName: String,
       metadata: Object,
       value: null,
+      fieldData: Object,
     },
     data() {
       return {
@@ -107,14 +108,6 @@
     components: {
       VueMultiselect,
       Icon,
-    },
-    created() {
-      
-    },
-    computed: {
-      rangeYearsOptions() {
-        return ['Now'].concat(Array.from(Array(new Date().getFullYear() - 1995 + 1), (_, index) => new Date().getFullYear() - index))
-      },
     },
     methods: {
       updateValue(ev) {
@@ -144,6 +137,52 @@
           key: this.machineName,
           newOption: newOption,
         })
+      },
+      rangeYearsOptionsFrom() {
+        return Array.from(Array(new Date().getFullYear() - 1995 + 1), (_, index) => new Date().getFullYear() - index)
+      },
+      rangeYearsOptionsTo() {
+        return ['Now', (new Date().getFullYear() + 1)].concat(this.rangeYearsOptionsFrom())
+      },
+      validate() {
+        if (this.type === 'tags_range') {
+          let errorMessages = []
+          let valid = true
+
+          this.$store.state.app.userProfile[this.machineName].forEach((fieldItem) => {
+            if (!fieldItem.to) {
+              valid = false
+              errorMessages.push(`<span class="has-text-weight-bold">To</span> value in the <span class="has-text-weight-bold">${this.label}</span> field must be set.`)
+            }
+
+            if (!fieldItem.from) {
+              valid = false
+              errorMessages.push(`<span class="has-text-weight-bold">From</span> value in the <span class="has-text-weight-bold">${this.label}</span> field must be set.`)
+            }
+
+            if (!fieldItem?.tags?.length) {
+              valid = false
+              errorMessages.push(`<span class="has-text-weight-bold">${this.fieldData?.metadata?.tagName}</span> value in the <span class="has-text-weight-bold">${this.label}</span> field must be set.`)
+            }
+          })
+
+          errorMessages = [...new Set(errorMessages)]
+
+          if (valid === false) {
+            return {
+              status: false,
+              message: errorMessages.join('<br>'),
+            }
+          }
+        }
+
+        return {
+          status: true,
+          message: '',
+        }
+      },
+      convertRemToPixels(rem) {
+        return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
       },
     },
   }

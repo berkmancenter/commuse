@@ -52,6 +52,7 @@
             type="short_text"
             v-bind:value="$store.state.app.userProfile.prefix"
             v-on:update:value="$store.state.app.userProfile.prefix = $event"
+            :ref="el => fields['prefix'] = el"
           ></ProfileField>
 
           <ProfileField
@@ -59,6 +60,7 @@
             type="short_text"
             v-bind:value="$store.state.app.userProfile.first_name"
             v-on:update:value="$store.state.app.userProfile.first_name = $event"
+            :ref="el => fields['first_name'] = el"
           ></ProfileField>
 
           <ProfileField
@@ -66,6 +68,7 @@
             type="short_text"
             v-bind:value="$store.state.app.userProfile.middle_name"
             v-on:update:value="$store.state.app.userProfile.middle_name = $event"
+            :ref="el => fields['middle_name'] = el"
           ></ProfileField>
 
           <ProfileField
@@ -73,6 +76,7 @@
             type="short_text"
             v-bind:value="$store.state.app.userProfile.last_name"
             v-on:update:value="$store.state.app.userProfile.last_name = $event"
+            :ref="el => fields['last_name'] = el"
           ></ProfileField>
 
           <ProfileField
@@ -80,6 +84,7 @@
             type="short_text"
             v-bind:value="$store.state.app.userProfile.preferred_pronouns"
             v-on:update:value="$store.state.app.userProfile.preferred_pronouns = $event"
+            :ref="el => fields['preferred_pronouns'] = el"
           ></ProfileField>
 
           <ProfileField
@@ -87,6 +92,7 @@
             type="long_text"
             v-bind:value="$store.state.app.userProfile.bio"
             v-on:update:value="$store.state.app.userProfile.bio = $event"
+            :ref="el => fields['bio'] = el"
           ></ProfileField>
 
           <ProfileField
@@ -94,6 +100,7 @@
             :type="customField.input_type"
             v-bind:value="$store.state.app.userProfile[customField.machine_name]"
             v-on:update:value="$store.state.app.userProfile[customField.machine_name] = $event"
+            :ref="el => fields[customField.machine_name] = el"
             v-for="customField in myInformationCustomFields"
           ></ProfileField>
         </div>
@@ -109,6 +116,7 @@
             type="short_text"
             v-bind:value="$store.state.app.userProfile.mobile_phone_number"
             v-on:update:value="$store.state.app.userProfile.mobile_phone_number = $event"
+            :ref="el => fields['mobile_phone_number'] = el"
           ></ProfileField>
 
           <ProfileField
@@ -116,6 +124,7 @@
             type="short_text"
             v-bind:value="$store.state.app.userProfile.email"
             v-on:update:value="$store.state.app.userProfile.email = $event"
+            :ref="el => fields['email'] = el"
           ></ProfileField>
         </div>
       </div>
@@ -130,8 +139,10 @@
             :type="customField.input_type"
             :machine-name="customField.machine_name"
             :metadata="customField.metadata"
+            :field-data="customField"
             v-bind:value="$store.state.app.userProfile[customField.machine_name]"
             v-on:update:value="$store.state.app.userProfile[customField.machine_name] = $event"
+            :ref="el => fields[customField.machine_name] = el"
             v-for="customField in customGroup.custom_fields"
           ></ProfileField>
         </div>
@@ -153,6 +164,7 @@
         apiUrl: import.meta.env.VITE_API_URL,
         profileStructure: [],
         saveIcon,
+        fields: {},
       }
     },
     components: {
@@ -177,6 +189,10 @@
     },
     methods: {
       async saveProfile() {
+        if (this.validate() === false) {
+          return
+        }
+
         this.mitt.emit('spinnerStart')
 
         const response = await this.$store.dispatch('app/saveProfile', this.$store.state.app.userProfile)
@@ -232,6 +248,25 @@
         this.profileStructure = profileStructure
 
         this.mitt.emit('spinnerStop')
+      },
+      validate() {
+        const errorMessages = []
+        let valid = true
+
+        for (const [key, el] of Object.entries(this.fields)) {
+          const result = el.validate()
+
+          if (result.status === false) {
+            valid = false
+            errorMessages.push(result.message)
+          }
+        }
+
+        if (valid === false) {
+          this.awn.warning(errorMessages.join('<br>'))
+        }
+
+        return valid
       },
     }
   }
