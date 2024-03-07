@@ -149,7 +149,7 @@
           let errorMessages = []
           let valid = true
 
-          this.$store.state.app.userProfile[this.machineName].forEach((fieldItem) => {
+          this.$store.state.app.userProfile[this.machineName]?.forEach((fieldItem) => {
             if (!fieldItem.to) {
               valid = false
               errorMessages.push(`<span class="has-text-weight-bold">To</span> value in the <span class="has-text-weight-bold">${this.label}</span> field must be set.`)
@@ -166,6 +166,7 @@
             }
           })
 
+          // Remove duplicates
           errorMessages = [...new Set(errorMessages)]
 
           if (valid === false) {
