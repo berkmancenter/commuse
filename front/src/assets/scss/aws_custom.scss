@@ -1,0 +1,15 @@
+.awn-toast-wrapper {
+  position: relative;
+
+    &::after {
+      content: '';
+      display: block;
+      background: url('@/assets/images/close_black.svg');
+      background-size:cover;
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 5px;
+      right: 5px;
+    }
+}

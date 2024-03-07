@@ -169,4 +169,5 @@
   @import '@/assets/scss/global.scss';
   @import '@/assets/scss/layout.scss';
   @import '@/assets/scss/helpers.scss';
+  @import '@/assets/scss/aws_custom.scss';
 </style>
