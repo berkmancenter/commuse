@@ -43,6 +43,12 @@
 
     <hr>
 
+    <div class="people-section-actions">
+      <ActionButton buttonText="Export" :icon="exportIcon" @click="openExportPeopleModal()"></ActionButton>
+    </div>
+
+    <hr>
+
     <div class="mt-2 people-section-sort-count mb-4">
       <div class="mt-2 people-section-counted-users">{{ countedUsers }}</div>
 
@@ -107,6 +113,35 @@
       </VueMultiselect>
     </template>
   </Modal>
+
+  <Modal
+    v-model="exportModalStatus"
+    title="Export people"
+    :focusOnConfirm="false"
+    :showConfirmButton="false"
+    cancelButtonTitle="Close"
+    @cancel="exportModalStatus = false"
+  >
+    Export people as:
+
+    <div class="mt-2">
+      <button class="button" @click="exportToCsv()">CSV (firstname, lastname, email)</button>
+      <button class="button mt-2" @click="exportToPlain()">Plain text list of emails</button>
+    </div>
+  </Modal>
+
+  <Modal
+    v-model="exportPlainModalStatus"
+    title="Exported people"
+    :focusOnConfirm="false"
+    :showConfirmButton="false"
+    cancelButtonTitle="Close"
+    @cancel="exportPlainModalStatus = false"
+  >
+    <ActionButton class="mb-4" buttonText="Copy to clipboard" :icon="filterIcon" @click="exportToPlainCopyToClipboard()"></ActionButton>
+
+    <textarea class="textarea" v-model="exportPlainList"></textarea>
+  </Modal>
 </template>
 
 <script>
@@ -120,9 +155,12 @@
   import arrowUpIcon from '@/assets/images/arrow_up.svg'
   import arrowDownIcon from '@/assets/images/arrow_down.svg'
   import clearFiltersIcon from '@/assets/images/filter_remove.svg'
+  import exportIcon from '@/assets/images/export.svg'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
   import { some, orderBy } from 'lodash'
+
+  const apiUrl = import.meta.env.VITE_API_URL
 
   export default {
     name: 'PeopleIndex',
@@ -140,6 +178,7 @@
         filterIcon,
         closeIcon,
         clearFiltersIcon,
+        exportIcon,
         filtersModalStatus: false,
         sortingOptions: [
           {
@@ -172,6 +211,9 @@
           },
         ],
         sortingActive: '',
+        exportModalStatus: false,
+        exportPlainModalStatus: false,
+        exportPlainList: '',
       }
     },
     created() {
@@ -260,6 +302,30 @@
       },
       removeFilter(fieldMachineName, activeFilterValue) {
         this.$store.state.app.peopleActiveFilters[fieldMachineName] = this.$store.state.app.peopleActiveFilters[fieldMachineName].filter(filterValue => filterValue != activeFilterValue)
+      },
+      exportToCsv() {
+        const peopleIdsToExport = this.$store.state.app.people.map((person) => person.id).join(',')
+        this.exportModalStatus = false
+        window.location.href = `${apiUrl}/api/people/export?format=csv&ids=${peopleIdsToExport}`
+      },
+      exportToPlain() {
+        this.exportModalStatus = false
+        this.exportPlainModalStatus = true
+        this.exportPlainList = this.$store.state.app.people
+          .filter((person) => person.email)
+          .map((person) => person.email).join('\n')
+      },
+      exportToPlainCopyToClipboard() {
+        window.navigator.clipboard.writeText(this.exportPlainList)
+        this.awn.success('The list of emails has been copied to the clipboard.')
+      },
+      openExportPeopleModal() {
+        if (this.$store.state.app.people.length === 0) {
+          this.awn.warning('The list of people is empty, nothing to export.')
+          return
+        }
+
+        this.exportModalStatus = true
       },
     },
     watch: {

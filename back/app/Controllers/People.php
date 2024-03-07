@@ -5,6 +5,7 @@ namespace App\Controllers;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\PeopleModel;
 use App\Libraries\UserProfileStructure;
+use League\Csv\Writer;
 
 class People extends BaseController
 {
@@ -57,5 +58,44 @@ class People extends BaseController
     $filters = $userProfileStructure->getFiltersWithValues();
 
     return $this->respond($filters);
+  }
+
+  public function export()
+  {
+    $requestedFormat = $this->request->getGet('format');
+    $listOfIds = $this->request->getGet('ids');
+    $idsArray = explode(',', $listOfIds);
+
+    if (empty($idsArray) === true) {
+      return $this->respond('Users list is empty.');
+    }
+
+    switch ($requestedFormat) {
+      case 'csv':
+        $result = $this->getExportedCsv($idsArray);
+        $formatted_datetime = date('Y-m-d_H-m-s');
+        $filename = "exported_people_{$formatted_datetime}.csv";
+
+        return $this->response->download($filename, $result);
+        break;
+    }
+
+    return $this->respond(['message' => 'Format not found.']);
+  }
+
+  private function getExportedCsv($idsArray = []) {
+    $peopleModel = new PeopleModel();
+
+    $people = $peopleModel
+      ->select('first_name, last_name, email')
+      ->whereIn('id', $idsArray)
+      ->orderBy('last_name', 'asc')
+      ->findAll();
+
+    $csv = Writer::createFromFileObject(new \SplTempFileObject());
+    $csv->insertOne(['firstname', 'lastname', 'email']);
+    $csv->insertAll($people);
+
+    return $csv;
   }
 }

@@ -35,6 +35,7 @@ $routes->post('api/people', 'People::index');
 $routes->get('api/people/interests', 'People::interests');
 $routes->get('api/people/(:num)', 'People::person/$1');
 $routes->get('api/people/filters', 'People::filters');
+$routes->get('api/people/export', 'People::export');
 
 $routes->get('api/users/current', 'Users::current');
 $routes->get('api/users/currentProfile', 'Users::currentProfile');
