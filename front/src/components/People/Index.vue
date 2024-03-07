@@ -39,15 +39,46 @@
           </template>
         </div>
       </div>
-
-      <div class="mt-2 people-section-counted-users">{{ countedUsers }}</div>
     </div>
 
     <hr>
 
+    <div class="mt-2 people-section-sort-count mb-4">
+      <div class="mt-2 people-section-counted-users">{{ countedUsers }}</div>
+
+      <VueMultiselect
+        v-model="sortingActive"
+        :multiple="false"
+        label="label"
+        track-by="key"
+        :options="sortingOptions"
+        deselectLabel=""
+        selectLabel=""
+        selectedLabel=""
+        :preselectFirst="true"
+        :allowEmpty="false"
+        :searchable="false"
+      >
+        <template v-slot:singleLabel="{ option }">
+          <span class="people-section-sort-option-container">
+            <span class="people-section-sort-option-label">{{ option.label }}</span>
+            <span class="people-section-sort-option-arrow"><img :src="option.arrow"></span>
+          </span>
+        </template>
+        <template v-slot:option="{ option }">
+          <span class="people-section-sort-option-container">
+            <span class="people-section-sort-option-label">{{ option.label }}</span>
+            <span class="people-section-sort-option-arrow"><img :src="option.arrow"></span>
+          </span>
+        </template>
+      </VueMultiselect>
+    </div>
+
+    <div class="is-clearfix"></div>
+
     <div class="content people-section-content">
       <Person
-        v-for="(person, index) in this.$store.state.app.people"
+        v-for="(person, index) in sortedPeople"
         :key="person.id"
         :person="person"
         :ref="'personRef_' + index"
@@ -86,10 +117,12 @@
   import searchIcon from '@/assets/images/search.svg'
   import filterIcon from '@/assets/images/filter.svg'
   import closeIcon from '@/assets/images/close.svg'
+  import arrowUpIcon from '@/assets/images/arrow_up.svg'
+  import arrowDownIcon from '@/assets/images/arrow_down.svg'
   import clearFiltersIcon from '@/assets/images/filter_remove.svg'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
-  import { some } from 'lodash'
+  import { some, orderBy } from 'lodash'
 
   export default {
     name: 'PeopleIndex',
@@ -108,6 +141,37 @@
         closeIcon,
         clearFiltersIcon,
         filtersModalStatus: false,
+        sortingOptions: [
+          {
+            label: 'Firstname',
+            arrow: arrowUpIcon,
+            key: 'firstname_asc',
+            field: 'first_name',
+            direction: 'asc',
+          },
+          {
+            label: 'Firstname',
+            arrow: arrowDownIcon,
+            key: 'firstname_desc',
+            field: 'first_name',
+            direction: 'desc',
+          },
+          {
+            label: 'Lastname',
+            arrow: arrowUpIcon,
+            key: 'lastname_asc',
+            field: 'last_name',
+            direction: 'asc',
+          },
+          {
+            label: 'Lastname',
+            arrow: arrowDownIcon,
+            key: 'lastname_desc',
+            field: 'last_name',
+            direction: 'desc',
+          },
+        ],
+        sortingActive: '',
       }
     },
     created() {
@@ -129,6 +193,9 @@
       },
       anyActiveFilters() {
         return some(this.$store.state.app.peopleActiveFilters, filter => filter.length > 0)
+      },
+      sortedPeople() {
+        return orderBy(this.$store.state.app.people, [this.sortingActive.field], [this.sortingActive.direction])
       },
     },
     methods: {
@@ -322,6 +389,40 @@
             color: var(--main-color);
             margin-right: 0.5rem;
           }
+        }
+      }
+    }
+
+    .people-section-sort-count {
+      display: flex;
+
+      > div {
+        max-width: 200px;
+      }
+
+      .multiselect {
+        margin-left: auto;
+      }
+
+      .multiselect__select {
+        display: none;
+      }
+
+      .multiselect__tags {
+        padding-right: 8px;
+      }
+
+      .people-section-sort-option-container {
+        display: flex;
+        align-items: center;
+
+        img {
+          height: 1.5rem;
+          width: 1.5rem;
+        }
+
+        .people-section-sort-option-arrow {
+          margin-left: auto;
         }
       }
     }
