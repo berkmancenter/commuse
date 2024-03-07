@@ -4,6 +4,7 @@ namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
 use CodeIgniter\Shield\Entities\User;
+use App\Models\UserModel;
 
 class PeopleSeeder extends Seeder
 {
@@ -12,6 +13,7 @@ class PeopleSeeder extends Seeder
         $faker = \Faker\Factory::create();
         $faker->addProvider(new \Faker\Provider\en_US\Address($faker));
         $users = auth()->getProvider();
+        $userModel = new UserModel();
 
         $topics = [
             'AI',
@@ -47,25 +49,25 @@ class PeopleSeeder extends Seeder
                 'active'   => true,
             ]);
             $users->save($user);
+            $userId = $users->getInsertID();
 
             copy(ROOTPATH . "app/Database/Seeds/assets/people/{$i}.jpg", ROOTPATH . "writable/uploads/profile_images/{$i}.jpg");
 
             $data = [
-                'first_name'         => $faker->firstName,
-                'last_name'          => $faker->lastName,
-                'image_url'          => $i . '.jpg',
-                'bio'                => $faker->paragraphs(2, true),
-                'public_profile'     => true,
-                'interested_in'      => json_encode($randomTopics),
-                'home_city'          => $faker->city,
-                'home_country'       => $faker->country,
-                'home_state_province'=> $faker->state,
-                'user_id'            => $users->getInsertID(),
-                'created_at'         => date('Y-m-d H:i:s'),
-                'updated_at'         => date('Y-m-d H:i:s'),
+                'first_name' => $faker->firstName,
+                'last_name' => $faker->lastName,
+                'bio' => $faker->paragraphs(2, true),
+                'public_profile' => true,
+                'issues_interested_exploring' => json_encode($randomTopics),
+                'current_city' => $faker->city,
+                'current_country' => $faker->country,
+                'current_state' => $faker->state,
+                'user_id' => $users->getInsertID(),
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
             ];
 
-            $this->db->table('people')->insert($data);
+            $userModel->saveProfileData($data, $userId);
         }
     }
 }
