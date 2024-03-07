@@ -3,8 +3,18 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">Users</h3>
 
     <div class="mb-4">
-      <ActionButton classes="mr-2" buttonText="Import users from CSV" @click="importUsersFromCsvModalOpen()" :icon="fileIcon"></ActionButton>
+      <ActionButton class="mr-2" buttonText="Import users from CSV" @click="importUsersFromCsvModalOpen()" :icon="fileIcon"></ActionButton>
       <ActionButton buttonText="Delete users" @click="() => deleteUsersConfirm(selectedUsers)" :icon="minusIcon"></ActionButton>
+    </div>
+
+    <div class="admin-users-search mb-4">
+      <input
+        type="text"
+        v-model="searchTerm"
+        placeholder="Search"
+        class="input"
+      >
+      <span><img :src="searchIcon"></span>
     </div>
 
     <form class="form">
@@ -17,6 +27,7 @@
             <th>Firstname</th>
             <th>Lastname</th>
             <th>Email</th>
+            <th>Invitation code</th>
             <th>Created</th>
             <th>Last login</th>
             <th>Admin</th>
@@ -24,13 +35,22 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in users" :key="user.id" class="no-break">
+          <tr v-for="user in filteredUsers" :key="user.id" class="no-break">
             <td class="admin-table-selector">
               <input type="checkbox" v-model="user.selected">
             </td>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
             <td>{{ user.email }}</td>
+            <td>
+              <VTooltip distance="10" placement="left" v-if="user.invitation_code">
+                <a class="button" @click="searchTerm = user.invitation_code">{{ user.invitation_code }}</a>
+
+                <template #popper>
+                  Click to filter by this code
+                </template>
+              </VTooltip>
+            </td>
             <td>{{ user.created_at }}</td>
             <td>{{ user.last_login }}</td>
             <td class="admin-users-table-is-admin">
@@ -122,6 +142,7 @@
   import toggleAdminIcon from '@/assets/images/toggle_admin.svg'
   import userIcon from '@/assets/images/user.svg'
   import fileIcon from '@/assets/images/file.svg'
+  import searchIcon from '@/assets/images/search.svg'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
@@ -143,6 +164,7 @@
         toggleAdminIcon,
         fileIcon,
         userIcon,
+        searchIcon,
         users: [],
         roles: [
           'user',
@@ -155,6 +177,7 @@
         importUsersCsvModalStatus: false,
         deleteUserModalStatus: false,
         deleteUserModalCurrent: [],
+        searchTerm: '',
       }
     },
     created() {
@@ -164,6 +187,15 @@
       selectedUsers() {
         return this.users
           .filter(user => user.selected)
+      },
+      filteredUsers() {
+        const searchTerm = this.searchTerm.toLowerCase();
+
+        return this.users.filter((user) => {
+          const searchText = `${user.first_name} ${user.last_name} ${user.email} ${user.invitation_code}`.toLowerCase()
+
+          return searchText.includes(searchTerm)
+        })
       },
     },
     methods: {
@@ -268,6 +300,32 @@
   .admin-users-import-csv {
     input {
       display: none;
+    }
+  }
+
+  .admin-users-search {
+    position: relative;
+    max-width: 300px;
+
+    span {
+      display: block;
+      width: 1.5rem;
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      right: 0.5rem;
+      display: flex;
+      pointer-events: none;
+      background-color: #ffffff;
+    }
+
+    input {
+      border-bottom: 2px solid var(--main-color);
+      border-radius: 0;
+    }
+
+    input::placeholder {
+      color: rgba(54, 54, 54, 0.8);
     }
   }
 </style>

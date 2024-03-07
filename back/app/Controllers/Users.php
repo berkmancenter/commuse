@@ -129,12 +129,14 @@ class Users extends BaseController
         people.last_name,
         people.id AS people_id,
         auth_identities.secret AS email,
+        invitation_codes.code as invitation_code,
         STRING_AGG(auth_groups_users.group, \',\') AS groups
       ')
       ->join('people', 'people.user_id = users.id', 'left')
       ->join('auth_identities', 'auth_identities.user_id = users.id', 'left')
       ->join('auth_groups_users', 'auth_groups_users.user_id = users.id', 'left')
-      ->groupBy('users.id, people.first_name, people.last_name, auth_identities.secret, auth_identities.last_used_at, people.id')
+      ->join('invitation_codes', 'invitation_codes.id = users.invitation_code_id', 'left')
+      ->groupBy('users.id, people.first_name, people.last_name, auth_identities.secret, auth_identities.last_used_at, people.id, invitation_codes.code')
       ->get();
 
     $users = $query->getResultArray();

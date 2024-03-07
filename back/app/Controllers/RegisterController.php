@@ -10,7 +10,7 @@ class RegisterController extends ShieldRegister
 {
   public function registerView()
   {
-    $invitationCode = $this->getInvitationCodeByCode($_GET['ic'] ?? '');
+    $invitationCode = $this->getActiveInvitationCodeByCode($_GET['ic'] ?? '');
 
     if (is_null($invitationCode) === true) {
       return redirect()->to('login')->with('errors', 'You need an invitation code to register.');
@@ -26,18 +26,19 @@ class RegisterController extends ShieldRegister
   {
     $session = \Config\Services::session();
 
-    $invitationCode = $this->getInvitationCodeByCode($_SESSION['invitation_code'] ?? '');
+    $invitationCode = $this->getActiveInvitationCodeByCode($_SESSION['invitation_code'] ?? '');
 
     if (is_null($invitationCode) === true) {
       return redirect()->to('login')->with('errors', 'You need an invitation code to register.');
     }
 
+    $session->set('invitation_code_id', $invitationCode['id']);
     $session->set('invitation_code_username', $_POST['username']);
 
     return parent::registerAction();
   }
 
-  private function getInvitationCodeByCode($code) {
+  private function getActiveInvitationCodeByCode($code) {
     $invitationCodeModel = new InvitationCodeModel();
     $invitationCode = $invitationCodeModel
       ->where('code', $code)
