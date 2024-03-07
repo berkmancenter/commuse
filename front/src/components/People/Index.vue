@@ -402,6 +402,7 @@
 
       .multiselect {
         margin-left: auto;
+        cursor: pointer;
       }
 
       .multiselect__select {
