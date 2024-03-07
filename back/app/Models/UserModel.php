@@ -135,6 +135,11 @@ class UserModel extends ShieldUserModel
   private function saveCustomFieldsProfileData($requestData, $userId, $personBasicData) {
     $peopleModel = new PeopleModel();
     $dataKeys = array_keys($requestData);
+
+    if (empty($dataKeys)) {
+      return false;
+    }
+
     $db = \Config\Database::connect();
     $builder = $db->table('custom_fields');
 
