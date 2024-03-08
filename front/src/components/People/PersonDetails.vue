@@ -13,66 +13,70 @@
       </div>
 
       <div class="people-section-details-side-content">
-        <div class="is-flex is-align-items-center" v-if="person.mobile_phone_number">
-          <img class="people-section-details-icon" :src="phoneIcon">
-          {{ person.mobile_phone_number }}
-        </div>
-
-        <div v-if="person.email">
-          <a :href="`mailto:${person.email}`" class="is-flex is-align-items-center">
-            <img class="people-section-details-icon" :src="emailIcon">
-            {{ person.email }}
-          </a>
-        </div>
-
-        <VTooltip distance="10" placement="left" v-if="address">
-          <div class="is-flex is-align-items-center">
-            <img class="people-section-details-icon" :src="homeIcon">
-            {{ address }}
+        <div class="people-section-details-side-content-items">
+          <div class="is-flex is-align-items-center" v-if="person.mobile_phone_number">
+            <img class="people-section-details-icon" :src="phoneIcon">
+            {{ person.mobile_phone_number }}
           </div>
 
-          <template #popper>
-            Permanent Residence
-          </template>
-        </VTooltip>
-
-        <VTooltip distance="10" placement="left" v-if="currentAddress">
-          <div class="is-flex is-align-items-center">
-            <img class="people-section-details-icon" :src="currentAddressIcon">
-            {{ currentAddress }}
+          <div v-if="person.email">
+            <a :href="`mailto:${person.email}`" class="is-flex is-align-items-center">
+              <img class="people-section-details-icon" :src="emailIcon">
+              {{ person.email }}
+            </a>
           </div>
 
-          <template #popper>
-            Current Location
-          </template>
-        </VTooltip>
+          <VTooltip distance="10" placement="left" v-if="address">
+            <div class="is-flex is-align-items-center">
+              <img class="people-section-details-icon" :src="homeIcon">
+              {{ address }}
+            </div>
 
-        <VTooltip distance="10" placement="left" v-if="person?.affiliation?.length > 0">
-          <div class="people-section-details-side-affiliation">
-            <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.affiliation">
-              <div class="people-section-details-side-affiliation-item-icon">
-                <img class="people-section-details-icon" :src="affiliateIcon">
-              </div>
-              <div>
-                {{ affiliationItem.tags.join(', ') }}, {{ affiliationItem.from }}-{{ affiliationItem.to }}
+            <template #popper>
+              Permanent Residence
+            </template>
+          </VTooltip>
+
+          <VTooltip distance="10" placement="left" v-if="currentAddress">
+            <div class="is-flex is-align-items-center">
+              <img class="people-section-details-icon" :src="currentAddressIcon">
+              {{ currentAddress }}
+            </div>
+
+            <template #popper>
+              Current Location
+            </template>
+          </VTooltip>
+
+          <VTooltip distance="10" placement="left" v-if="person?.affiliation?.length > 0">
+            <div class="people-section-details-side-affiliation">
+              <div class="people-section-details-side-affiliation-item" v-for="affiliationItem in person.affiliation">
+                <div class="people-section-details-side-affiliation-item-icon">
+                  <img class="people-section-details-icon" :src="affiliateIcon">
+                </div>
+                <div>
+                  {{ affiliationItem.tags.join(', ') }}, {{ affiliationItem.from }}-{{ affiliationItem.to }}
+                </div>
               </div>
             </div>
+
+            <template #popper>
+              {{ affiliateFieldTitle }}(s)
+            </template>
+          </VTooltip>
+
+          <div class="is-clearfix"></div>
+
+          <div class="people-section-details-side-links">
+            <div v-if="person.bio" class="people-section-details-side-link" @click="jumpToSection('group_bio')">Bio</div>
+            <div v-if="hasFields(myInformationGroup)" class="people-section-details-side-link" @click="jumpToSection('group_additional_information')">Additional Information</div>
+            <template v-for="group in customGroups" :key="group.machine_name">
+              <div v-if="hasFields(group)" class="people-section-details-side-link" @click="jumpToSection(`group_${group.machine_name}`)">{{ group.title }}</div>
+            </template>
           </div>
 
-          <template #popper>
-            {{ affiliateFieldTitle }}(s)
-          </template>
-        </VTooltip>
-
-        <div class="people-section-details-side-links">
-          <div v-if="person.bio" class="people-section-details-side-link" @click="jumpToSection('group_bio')">Bio</div>
-          <div v-if="hasFields(myInformationGroup)" class="people-section-details-side-link" @click="jumpToSection('group_additional_information')">Additional Information</div>
-          <template v-for="group in customGroups" :key="group.machine_name">
-            <div v-if="hasFields(group)" class="people-section-details-side-link" @click="jumpToSection(`group_${group.machine_name}`)">{{ group.title }}</div>
-          </template>
+          <div class="mt-2 people-section-details-last-updated">Last updated: {{ person.updated_at }} UTC</div>
         </div>
-
-        <div class="mt-2 people-section-details-last-updated">Last updated: {{ person.updated_at }} UTC</div>
       </div>
     </div>
 
@@ -265,6 +269,13 @@
             display: flex;
             align-content: center;
           }
+        }
+      }
+
+      .people-section-details-side-content-items {
+        .v-popper--theme-tooltip {
+          float: left;
+          clear: both;
         }
       }
     }
