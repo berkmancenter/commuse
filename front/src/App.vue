@@ -62,7 +62,7 @@
               </div>
               <hr class="dropdown-divider">
               <router-link class="dropdown-item" :to="'/profile'" v-close-popper>
-                My profile
+                Edit profile
               </router-link>
               <router-link class="dropdown-item" :to="'/account'" v-close-popper>
                 Account settings
