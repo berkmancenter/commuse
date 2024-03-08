@@ -61,6 +61,12 @@
                 <div>{{ $store.state.app.currentUser.email }}</div>
               </div>
               <hr class="dropdown-divider">
+              <router-link class="dropdown-item" :to="'/profile'" v-close-popper>
+                My profile
+              </router-link>
+              <router-link class="dropdown-item" :to="'/account'" v-close-popper>
+                Account settings
+              </router-link>
               <a class="dropdown-item" @click="logout" v-close-popper>
                 Logout
               </a>
@@ -118,12 +124,12 @@
           },
           {
             href: '/profile',
-            title: 'My profile',
+            title: 'Edit profile',
             icon: profileMenuIcon,
           },
           {
             href: '/account',
-            title: 'My account',
+            title: 'Account settings',
             icon: shieldMenuIcon,
           },
         ],
