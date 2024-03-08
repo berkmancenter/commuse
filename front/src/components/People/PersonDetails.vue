@@ -1,15 +1,17 @@
 <template>
   <div class="people-section-details">
     <div class="people-section-details-side">
-      <div class="is-size-4 mb-4 people-section-person-full-name">
-        <div>
-          {{ person.prefix }} {{ person.first_name }} {{ person.middle_name }} {{ person.last_name }}
+      <div class="people-section-details-side-name-image">
+        <div class="is-size-4 mb-4 people-section-person-full-name">
+          <div>
+            {{ person.prefix }} {{ person.first_name }} {{ person.middle_name }} {{ person.last_name }}
+          </div>
+          <div class="is-size-6" v-if="person.preferred_pronouns">({{ person.preferred_pronouns }})</div>
         </div>
-        <div class="is-size-6" v-if="person.preferred_pronouns">({{ person.preferred_pronouns }})</div>
-      </div>
 
-      <div class="people-section-details-side-image">
-        <img :src="imageSrc">
+        <div class="people-section-details-side-image">
+          <img :src="imageSrc">
+        </div>
       </div>
 
       <div class="people-section-details-side-content">
@@ -243,9 +245,15 @@
       height: calc(100vh - 8rem);
 
       @media screen and (max-width: 1200px) {
-        margin: 0 auto;
         position: static;
         height: auto;
+        width: 100%;
+        max-width: unset;
+        display: flex;
+      }
+
+      @media screen and (max-width: 768px) {
+        display: block;
       }
 
       .people-section-details-side-image {
@@ -276,6 +284,14 @@
         .v-popper--theme-tooltip {
           float: left;
           clear: both;
+        }
+
+        @media screen and (max-width: 1200px) {
+          margin-left: 2rem;
+        }
+
+        @media screen and (max-width: 768px) {
+          margin-left: 0;
         }
       }
     }
