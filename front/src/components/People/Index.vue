@@ -182,28 +182,28 @@
         filtersModalStatus: false,
         sortingOptions: [
           {
-            label: 'Firstname',
+            label: 'First name',
             arrow: arrowUpIcon,
             key: 'firstname_asc',
             field: 'first_name',
             direction: 'asc',
           },
           {
-            label: 'Firstname',
+            label: 'First name',
             arrow: arrowDownIcon,
             key: 'firstname_desc',
             field: 'first_name',
             direction: 'desc',
           },
           {
-            label: 'Lastname',
+            label: 'Last name',
             arrow: arrowUpIcon,
             key: 'lastname_asc',
             field: 'last_name',
             direction: 'asc',
           },
           {
-            label: 'Lastname',
+            label: 'Last name',
             arrow: arrowDownIcon,
             key: 'lastname_desc',
             field: 'last_name',

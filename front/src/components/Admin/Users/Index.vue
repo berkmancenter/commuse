@@ -24,8 +24,8 @@
             <th data-sort-method="none" class="no-sort">
               <input type="checkbox" ref="toggleAllCheckbox" @click="toggleAll()">
             </th>
-            <th>Firstname</th>
-            <th>Lastname</th>
+            <th>First name</th>
+            <th>Last name</th>
             <th>Email</th>
             <th>Invitation code</th>
             <th>Created</th>
