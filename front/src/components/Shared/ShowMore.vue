@@ -57,7 +57,7 @@
   .commuse-show-more-yes {
     .commuse-show-more-text {
       position: relative;
-      max-height: 6rem;
+      max-height: 10rem;
       overflow: hidden;
 
       &:after {
