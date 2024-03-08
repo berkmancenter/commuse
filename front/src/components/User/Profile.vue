@@ -1,150 +1,150 @@
 <template>
   <div class="user-profile">
     <form class="form-commuse-blocks" @submit.prevent="saveProfile">
-      <StickyElement visibleOnDirection="disabled" stickMode="element-start" class="user-profile-header">
-        <div class="is-flex is-align-items-center">
-          <h3 class="is-size-3 has-text-weight-bold">My profile</h3>
-          <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true"></ActionButton>
-        </div>
-      </StickyElement>
+      <div class="user-profile-header is-flex is-align-items-center">
+        <h3 class="is-size-3 has-text-weight-bold">My profile</h3>
+        <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true"></ActionButton>
+      </div>
 
-      <div class="panel">
-        <p class="panel-heading">
-          Profile Status
-        </p>
-        <div class="panel-block">
-          <div class="notification is-warning" v-if="!$store.state.app.userProfile.public_profile">
-            Your profile is currently set to private and will not show in the people page. To allow users of this platform to view your profile, please check the 'List my information in the people page' checkbox.
-          </div>
+      <div class="user-profile-form-fields">
+        <div class="panel">
+          <p class="panel-heading">
+            Profile Status
+          </p>
+          <div class="panel-block">
+            <div class="notification is-warning" v-if="!$store.state.app.userProfile.public_profile">
+              Your profile is currently set to private and will not show in the people page. To allow users of this platform to view your profile, please check the 'List my information in the people page' checkbox.
+            </div>
 
-          <div class="field">
-            <label class="label">List my information in the people page</label>
-            <div class="control">
+            <div class="field">
+              <label class="label">List my information in the people page</label>
               <div class="control">
-                <input type="checkbox" v-model="$store.state.app.userProfile.public_profile">
+                <div class="control">
+                  <input type="checkbox" v-model="$store.state.app.userProfile.public_profile">
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="panel">
-        <p class="panel-heading">
-          My Information
-        </p>
-        <div class="panel-block">
-          <div class="field user-profile-image">
-            <label class="label">Profile image</label>
-            <div class="control">
-              <img :src="`${apiUrl}/api/files/get/${$store.state.app.userProfile.image_url}`" v-if="$store.state.app.userProfile.image_url">
-              <input ref="userProfileImageInput" type="file" accept=".jpg, .png, .jpeg, .gif" @change="uploadProfileImage()">
-              <div class="my-2">
-                <button class="button" type="button" @click="openUploadProfileImage()">
-                  <img src="@/assets/images/profile_image.svg">
-                  Upload new profile image
-                </button>
+        <div class="panel">
+          <p class="panel-heading">
+            My Information
+          </p>
+          <div class="panel-block">
+            <div class="field user-profile-image">
+              <label class="label">Profile image</label>
+              <div class="control">
+                <img :src="`${apiUrl}/api/files/get/${$store.state.app.userProfile.image_url}`" v-if="$store.state.app.userProfile.image_url">
+                <input ref="userProfileImageInput" type="file" accept=".jpg, .png, .jpeg, .gif" @change="uploadProfileImage()">
+                <div class="my-2">
+                  <button class="button" type="button" @click="openUploadProfileImage()">
+                    <img src="@/assets/images/profile_image.svg">
+                    Upload new profile image
+                  </button>
+                </div>
               </div>
             </div>
+
+            <ProfileField
+              label="Prefix"
+              type="short_text"
+              v-bind:value="$store.state.app.userProfile.prefix"
+              v-on:update:value="$store.state.app.userProfile.prefix = $event"
+              :ref="el => fields['prefix'] = el"
+            ></ProfileField>
+
+            <ProfileField
+              label="First name"
+              type="short_text"
+              v-bind:value="$store.state.app.userProfile.first_name"
+              v-on:update:value="$store.state.app.userProfile.first_name = $event"
+              :ref="el => fields['first_name'] = el"
+            ></ProfileField>
+
+            <ProfileField
+              label="Middle name"
+              type="short_text"
+              v-bind:value="$store.state.app.userProfile.middle_name"
+              v-on:update:value="$store.state.app.userProfile.middle_name = $event"
+              :ref="el => fields['middle_name'] = el"
+            ></ProfileField>
+
+            <ProfileField
+              label="Last name"
+              type="short_text"
+              v-bind:value="$store.state.app.userProfile.last_name"
+              v-on:update:value="$store.state.app.userProfile.last_name = $event"
+              :ref="el => fields['last_name'] = el"
+            ></ProfileField>
+
+            <ProfileField
+              label="Preferred pronouns"
+              type="short_text"
+              v-bind:value="$store.state.app.userProfile.preferred_pronouns"
+              v-on:update:value="$store.state.app.userProfile.preferred_pronouns = $event"
+              :ref="el => fields['preferred_pronouns'] = el"
+            ></ProfileField>
+
+            <ProfileField
+              label="Bio"
+              type="long_text"
+              v-bind:value="$store.state.app.userProfile.bio"
+              v-on:update:value="$store.state.app.userProfile.bio = $event"
+              :ref="el => fields['bio'] = el"
+            ></ProfileField>
+
+            <ProfileField
+              :label="customField.title"
+              :type="customField.input_type"
+              v-bind:value="$store.state.app.userProfile[customField.machine_name]"
+              v-on:update:value="$store.state.app.userProfile[customField.machine_name] = $event"
+              :ref="el => fields[customField.machine_name] = el"
+              v-for="customField in myInformationCustomFields"
+            ></ProfileField>
           </div>
-
-          <ProfileField
-            label="Prefix"
-            type="short_text"
-            v-bind:value="$store.state.app.userProfile.prefix"
-            v-on:update:value="$store.state.app.userProfile.prefix = $event"
-            :ref="el => fields['prefix'] = el"
-          ></ProfileField>
-
-          <ProfileField
-            label="First name"
-            type="short_text"
-            v-bind:value="$store.state.app.userProfile.first_name"
-            v-on:update:value="$store.state.app.userProfile.first_name = $event"
-            :ref="el => fields['first_name'] = el"
-          ></ProfileField>
-
-          <ProfileField
-            label="Middle name"
-            type="short_text"
-            v-bind:value="$store.state.app.userProfile.middle_name"
-            v-on:update:value="$store.state.app.userProfile.middle_name = $event"
-            :ref="el => fields['middle_name'] = el"
-          ></ProfileField>
-
-          <ProfileField
-            label="Last name"
-            type="short_text"
-            v-bind:value="$store.state.app.userProfile.last_name"
-            v-on:update:value="$store.state.app.userProfile.last_name = $event"
-            :ref="el => fields['last_name'] = el"
-          ></ProfileField>
-
-          <ProfileField
-            label="Preferred pronouns"
-            type="short_text"
-            v-bind:value="$store.state.app.userProfile.preferred_pronouns"
-            v-on:update:value="$store.state.app.userProfile.preferred_pronouns = $event"
-            :ref="el => fields['preferred_pronouns'] = el"
-          ></ProfileField>
-
-          <ProfileField
-            label="Bio"
-            type="long_text"
-            v-bind:value="$store.state.app.userProfile.bio"
-            v-on:update:value="$store.state.app.userProfile.bio = $event"
-            :ref="el => fields['bio'] = el"
-          ></ProfileField>
-
-          <ProfileField
-            :label="customField.title"
-            :type="customField.input_type"
-            v-bind:value="$store.state.app.userProfile[customField.machine_name]"
-            v-on:update:value="$store.state.app.userProfile[customField.machine_name] = $event"
-            :ref="el => fields[customField.machine_name] = el"
-            v-for="customField in myInformationCustomFields"
-          ></ProfileField>
         </div>
-      </div>
 
-      <div class="panel">
-        <p class="panel-heading">
-          Contact Information
-        </p>
-        <div class="panel-block">
-          <ProfileField
-            label="Phone"
-            type="short_text"
-            v-bind:value="$store.state.app.userProfile.mobile_phone_number"
-            v-on:update:value="$store.state.app.userProfile.mobile_phone_number = $event"
-            :ref="el => fields['mobile_phone_number'] = el"
-          ></ProfileField>
+        <div class="panel">
+          <p class="panel-heading">
+            Contact Information
+          </p>
+          <div class="panel-block">
+            <ProfileField
+              label="Phone"
+              type="short_text"
+              v-bind:value="$store.state.app.userProfile.mobile_phone_number"
+              v-on:update:value="$store.state.app.userProfile.mobile_phone_number = $event"
+              :ref="el => fields['mobile_phone_number'] = el"
+            ></ProfileField>
 
-          <ProfileField
-            label="Email"
-            type="short_text"
-            v-bind:value="$store.state.app.userProfile.email"
-            v-on:update:value="$store.state.app.userProfile.email = $event"
-            :ref="el => fields['email'] = el"
-          ></ProfileField>
+            <ProfileField
+              label="Email"
+              type="short_text"
+              v-bind:value="$store.state.app.userProfile.email"
+              v-on:update:value="$store.state.app.userProfile.email = $event"
+              :ref="el => fields['email'] = el"
+            ></ProfileField>
+          </div>
         </div>
-      </div>
 
-      <div class="panel" v-for="customGroup in customGroups">
-        <p class="panel-heading">
-          {{ customGroup.title }}
-        </p>
-        <div class="panel-block">
-          <ProfileField
-            :label="customField.title"
-            :type="customField.input_type"
-            :machine-name="customField.machine_name"
-            :metadata="customField.metadata"
-            :field-data="customField"
-            v-bind:value="$store.state.app.userProfile[customField.machine_name]"
-            v-on:update:value="$store.state.app.userProfile[customField.machine_name] = $event"
-            :ref="el => fields[customField.machine_name] = el"
-            v-for="customField in customGroup.custom_fields"
-          ></ProfileField>
+        <div class="panel" v-for="customGroup in customGroups">
+          <p class="panel-heading">
+            {{ customGroup.title }}
+          </p>
+          <div class="panel-block">
+            <ProfileField
+              :label="customField.title"
+              :type="customField.input_type"
+              :machine-name="customField.machine_name"
+              :metadata="customField.metadata"
+              :field-data="customField"
+              v-bind:value="$store.state.app.userProfile[customField.machine_name]"
+              v-on:update:value="$store.state.app.userProfile[customField.machine_name] = $event"
+              :ref="el => fields[customField.machine_name] = el"
+              v-for="customField in customGroup.custom_fields"
+            ></ProfileField>
+          </div>
         </div>
       </div>
     </form>
@@ -268,6 +268,9 @@
 
         return valid
       },
+      sidebarStuck() {
+        console.log(123)
+      },
     }
   }
 </script>
@@ -276,6 +279,12 @@
   .user-profile {
     label {
       user-select: none;
+    }
+
+    .user-profile-form-fields {
+      position: relative;
+      padding-top: 5rem;
+      z-index: 1;
     }
 
     .user-profile-image {
@@ -303,22 +312,14 @@
     }
 
     .user-profile-header {
-      .vue-sticky-element {
-        margin-top: 0rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid var(--greyish-color);
-      }
-
-      .vue-sticky-element--stuck {
-        margin-top: 4rem;
-        padding: 1rem 0;
-        padding-left: 1rem;
-      }
-
-      .vue-sticky-element,
-      .vue-sticky-element--stuck {
-        background-color: #ffffff;
-      }
+      position: fixed;
+      background-color: #ffffff;
+      width: 100%;
+      z-index: 2;
+      margin-top: calc(-2rem + 8px);
+      padding: 1rem 0;
+      padding-left: 1rem;
+      border-bottom: 2px solid var(--greyish-color);
     }
   }
 </style>

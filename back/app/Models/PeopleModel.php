@@ -64,6 +64,7 @@ class PeopleModel extends Model
         people.middle_name,
         people.last_name,
         people.email,
+        people.mobile_phone_number,
         people.image_url,
         people.bio,
         people.preferred_pronouns,

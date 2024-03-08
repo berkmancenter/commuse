@@ -1,5 +1,5 @@
 <template>
-  <div class="panel people-section-details-group" v-if="hasFields(group)">
+  <div class="panel people-section-details-group">
     <p class="panel-heading">
       {{ customGroupTitle ?? group.title }}
     </p>
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-  import { flatten, compact, some } from 'lodash'
+  import { some } from 'lodash'
 
   export default {
     name: 'PersonDetailsGroup',
@@ -54,17 +54,6 @@
       },
     },
     methods: {
-      hasFields(group) {
-        return group.custom_fields.some(field => {
-          if (field?.metadata?.isImportProfileImageLink) {
-            return false
-          }
-
-          const fieldValue = compact(flatten([this.person[field.machine_name]]))
-
-          return fieldValue.length > 0
-        })
-      },
       activatePeopleFilter(fieldMachineName, value) {
         const hasValue = some(this.$store.state.app.peopleActiveFilters[fieldMachineName], filterValue => filterValue === value)
 
