@@ -35,7 +35,7 @@ class UserProfileStructure {
       return $a['field_title'] <=> $b['field_title'];
     });
 
-    $cache->save('filters_with_values', $userProfileTagFields, 86400*365);
+    $cache->save('filters_with_values', $userProfileTagFields, Cache::$defaultCacheExpiration);
 
     return $userProfileTagFields;
   }
@@ -108,12 +108,23 @@ class UserProfileStructure {
       $metadata['possibleValues'] = [];
     }
 
+    $childFieldsConfig = [];
+    if (isset($metadata['childFields']) && count($metadata['childFields']) > 0) {
+      $builder = $this->db->table('custom_fields');
+      $childFieldsConfig = $builder
+        ->select('*')
+        ->whereIn('id', array_map(fn($item) => $item['id'], $metadata['childFields']))
+        ->get()
+        ->getResultArray();
+    }
+
     return [
       'machine_name' => $row['field_machine_name'],
       'title' => $row['field_title'],
       'description' => $row['field_description'],
       'metadata' => $metadata,
       'input_type' => $row['field_input_type'],
+      'child_fields' => $childFieldsConfig,
     ];
   }
 

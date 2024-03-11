@@ -77,7 +77,6 @@ class People extends BaseController
         $filename = "exported_people_{$formatted_datetime}.csv";
 
         return $this->response->download($filename, $result);
-        break;
     }
 
     return $this->respond(['message' => 'Format not found.']);
