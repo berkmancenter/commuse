@@ -44,9 +44,7 @@
       <div class="field">
         <label class="label">Title</label>
         <div class="control">
-          <div class="control">
-            <input class="input" type="text" v-model="fieldModalCurrent.title">
-          </div>
+          <input class="input" type="text" v-model="fieldModalCurrent.title">
         </div>
       </div>
 
@@ -56,9 +54,7 @@
         <div class="field">
           <label class="label">Allow to set multiple values</label>
           <div class="control">
-            <div class="control">
-              <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.allowMultiple">
-            </div>
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.allowMultiple">
           </div>
         </div>
 
@@ -67,9 +63,7 @@
         <div class="field">
           <label class="label">Allow user values to be suggested to other users</label>
           <div class="control">
-            <div class="control">
-              <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.shareUserValues">
-            </div>
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.shareUserValues">
           </div>
         </div>
       </div>
@@ -81,9 +75,7 @@
           <label class="label">List of possible values</label>
           <p class="is-size-6">If "Allow user values to be suggested to other users" is selected these values will be added additionally. One value per line.</p>
           <div class="control">
-            <div class="control">
-              <textarea class="textarea" v-model="fieldModalCurrent.metadata.possibleValues"></textarea>
-            </div>
+            <textarea class="textarea" v-model="fieldModalCurrent.metadata.possibleValues"></textarea>
           </div>
         </div>
       </div>
@@ -93,9 +85,7 @@
       <div class="field">
         <label class="label">Allow add new values by users</label>
         <div class="control">
-          <div class="control">
-            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.allowNewValues">
-          </div>
+          <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.allowNewValues">
         </div>
       </div>
 
@@ -105,9 +95,7 @@
         <div class="field">
           <label class="label">Tag name</label>
           <div class="control">
-            <div class="control">
-              <input class="input" type="text" v-model="fieldModalCurrent.metadata.tagName">
-            </div>
+            <input class="input" type="text" v-model="fieldModalCurrent.metadata.tagName">
           </div>
         </div>
       </div>
@@ -118,9 +106,7 @@
         <div class="field">
           <label class="label">Is link</label>
           <div class="control">
-            <div class="control">
-              <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.isLink">
-            </div>
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.isLink">
           </div>
         </div>
 
@@ -129,9 +115,35 @@
         <div class="field">
           <label class="label">Is import profile image link</label>
           <div class="control">
-            <div class="control">
-              <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.isImportProfileImageLink">
-            </div>
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.isImportProfileImageLink">
+          </div>
+        </div>
+      </div>
+
+      <div v-if="['multi'].includes(fieldModalCurrent.input_type)">
+        <hr>
+
+        <div class="field">
+          <label class="label">Child fields</label>
+          <div class="control">
+            <VueMultiselect
+              v-model="fieldModalCurrent.metadata.childFields"
+              :multiple="true"
+              :taggable="false"
+              :options="customFields ?? []"
+              track-by="id"
+              label="title"
+            >
+            </VueMultiselect>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="field">
+          <label class="label">Is import profile image link</label>
+          <div class="control">
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.isImportProfileImageLink">
           </div>
         </div>
       </div>
@@ -141,9 +153,7 @@
       <div class="field">
         <label class="label">Is people filter</label>
         <div class="control">
-          <div class="control">
-            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.isPeopleFilter">
-          </div>
+          <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.isPeopleFilter">
         </div>
       </div>
     </form>

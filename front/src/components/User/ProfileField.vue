@@ -79,6 +79,27 @@
 
       <span title="Add more" @click="addEmptyTagRangeItem"><Icon :src="addIcon" /></span>
     </div>
+
+    <div v-if="type == 'multi'">
+      <div class="box" v-for="(item, index) in $store.state.app.userProfile[machineName]">
+        <span title="Remove item" @click="removeMultiItem(index)"><Icon :src="minusIcon" /></span>
+
+        <div>
+          <ProfileField
+            :label="childField.title"
+            :type="childField.input_type"
+            :machine-name="childField.machine_name"
+            :metadata="{}"
+            :field-data="childField"
+            v-bind:value="item[childField.machine_name]"
+            v-on:update:value="item[childField.machine_name] = $event"
+            v-for="childField in fieldData.child_fields"
+          ></ProfileField>
+        </div>
+      </div>
+
+      <span title="Add more" @click="addEmptyMultiItem"><Icon :src="addIcon" /></span>
+    </div>
   </div>
 </template>
 
@@ -116,8 +137,17 @@
       addEmptyTagRangeItem() {
         this.$store.dispatch('app/addEmptyTagRangeItem', this.machineName)
       },
+      addEmptyMultiItem() {
+        this.$store.dispatch('app/addEmptyMultiItem', this.machineName)
+      },
       removeTagRangeItem(index) {
         this.$store.dispatch('app/removeTagRangeItem', {
+          index: index,
+          machineName: this.machineName,
+        })
+      },
+      removeMultiItem(index) {
+        this.$store.dispatch('app/removeMultiItem', {
           index: index,
           machineName: this.machineName,
         })

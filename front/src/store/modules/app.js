@@ -66,7 +66,17 @@ const mutations = {
 
     state.userProfile[machineName].push(JSON.parse(JSON.stringify(defaultTagRange)))
   },
+  addEmptyMultiItem(state, machineName) {
+    if (!state.userProfile[machineName]) {
+      state.userProfile[machineName] = []
+    }
+
+    state.userProfile[machineName].push({})
+  },
   removeTagRangeItem(state, data) {
+    state.userProfile[data.machineName].splice(data.index, 1);
+  },
+  removeMultiItem(state, data) {
     state.userProfile[data.machineName].splice(data.index, 1);
   },
 }
@@ -257,8 +267,14 @@ const actions = {
   addEmptyTagRangeItem(context, machineName) {
     context.commit('addEmptyTagRangeItem', machineName)
   },
+  addEmptyMultiItem(context, machineName) {
+    context.commit('addEmptyMultiItem', machineName)
+  },
   removeTagRangeItem(context, data) {
     context.commit('removeTagRangeItem', data)
+  },
+  removeMultiItem(context, data) {
+    context.commit('removeMultiItem', data)
   },
   async importUsersFromCsv(context, file) {
     const formData = new FormData();

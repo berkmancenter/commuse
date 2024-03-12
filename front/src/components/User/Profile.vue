@@ -184,7 +184,7 @@
       },
       customGroups() {
         return this.profileStructure
-          ?.filter((group) => { return group['machine_name'] != 'my_information' && group['machine_name'] != 'contact_information' })
+          ?.filter((group) => { return group['machine_name'] != 'my_information' && group['machine_name'] != 'contact_information' && group['machine_name'] != 'multi_fields_group' })
       },
     },
     methods: {
@@ -267,9 +267,6 @@
         }
 
         return valid
-      },
-      sidebarStuck() {
-        console.log(123)
       },
     }
   }

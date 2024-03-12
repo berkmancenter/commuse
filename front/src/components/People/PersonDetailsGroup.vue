@@ -18,9 +18,16 @@
               </div>
             </div>
             <div v-if="field.input_type === 'tags_range'">
-              <ul v-for="item in person[field.machine_name]">
-                <li>
+              <ul>
+                <li v-for="item in person[field.machine_name]">
                   {{ item.tags.join(', ') }}, {{ item.from }}-{{ item.to }}
+                </li>
+              </ul>
+            </div>
+            <div v-if="field.input_type === 'multi'">
+              <ul>
+                <li v-for="item in multiFieldValue(field)">
+                  <span v-for="(itemPart, index) in item">{{ itemPart }}<span v-if="index != item.length - 1">, </span></span>
                 </li>
               </ul>
             </div>
@@ -68,6 +75,25 @@
         this.$router.push({
           name: 'people.index',
         })
+      },
+      multiFieldValue(field) {
+        const values = []
+
+        field?.child_fields?.forEach(childField => {
+          const childFieldValues = this.person.custom_fields.filter((customField) => {
+            return customField.machine_name === childField.machine_name && customField.parent_field_value_index !== null
+          })
+
+          childFieldValues.forEach((childFieldValue) => {
+            if (values[childFieldValue.parent_field_value_index] === undefined) {
+              values[childFieldValue.parent_field_value_index] = []
+            }
+
+            values[childFieldValue.parent_field_value_index].push(childFieldValue.value)
+          })
+        })
+
+        return values
       }
     },
   }

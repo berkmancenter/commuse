@@ -45,6 +45,13 @@ class CustomFields extends BaseController
 
     $requestData = $requestData['customField'];
 
+    if (isset($requestData['metadata']['childFields']) && count($requestData['metadata']['childFields']) > 0) {
+      $requestData['metadata']['childFields'] = array_map(fn($item) => [
+        'id' => $item['id'],
+        'title' => $item['title'],
+      ], $requestData['metadata']['childFields']);
+    }
+
     $data = [
       'title' => $requestData['title'],
       'metadata' => json_encode([
@@ -56,10 +63,20 @@ class CustomFields extends BaseController
         'isPeopleFilter'=> $requestData['metadata']['isPeopleFilter'] ?? false,
         'possibleValues'=> preg_split('/\R/u', $requestData['metadata']['possibleValues'] ?? ''),
         'tagName' => $requestData['metadata']['tagName'] ?? '',
+        'childFields' => $requestData['metadata']['childFields'] ?? [],
       ]),
     ];
 
     $id = $requestData['id'] ?? null;
+
+    if (isset($requestData['metadata']['childFields']) && count($requestData['metadata']['childFields']) > 0) {
+      $childrenIds = array_map(fn($item) => $item['id'], $requestData['metadata']['childFields']);
+      $customFieldsModelChildren = model('CustomFieldModel');
+      $customFieldsModelChildren
+        ->set('parent_field_id', $id)
+        ->whereIn('id', $childrenIds)
+        ->update();
+    }
 
     if ($id) {
       $existingCustomField = $customFieldsModel->where('id', $id)->first();

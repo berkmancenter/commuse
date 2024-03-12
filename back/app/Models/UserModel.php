@@ -43,7 +43,14 @@ class UserModel extends ShieldUserModel
       $userData = array_merge($userData, $baseUserData);
 
       $customFieldsData = $builder
-        ->select('custom_field_data.value, custom_field_data.value_json, custom_fields.machine_name, custom_fields.input_type')
+        ->select('
+          custom_field_data.value,
+          custom_field_data.value_json,
+          custom_fields.machine_name,
+          custom_fields.input_type,
+          custom_field_data.parent_field_value_index,
+          custom_fields.metadata
+        ')
         ->join('custom_field_data', 'custom_field_data.model_id = people.id', 'left')
         ->join('custom_fields', 'custom_fields.id = custom_field_data.custom_field_id', 'left')
         ->where('custom_fields.model_name = \'People\'')
@@ -56,6 +63,31 @@ class UserModel extends ShieldUserModel
         $value = $customFieldRecord['value'];
         if (in_array($customFieldRecord['input_type'], ['tags_range', 'tags'])) {
           $value = json_decode($customFieldRecord['value_json']);
+        }
+
+        if ($customFieldRecord['input_type'] === 'multi') {
+          $multiValues = [];
+          $fieldMetadata = json_decode($customFieldRecord['metadata'], true);
+          $childFieldsIds = array_map(fn($childField) => $childField['id'], $fieldMetadata['childFields']);
+          $customFieldsModel = model('CustomFieldModel');
+          $customFields = $customFieldsModel
+            ->select('id, machine_name')
+            ->whereIn('id', $childFieldsIds)
+            ->findAll();
+
+          foreach ($customFields as $customField) {
+            $childFieldValues = array_filter($customFieldsData, fn($customFieldData) => $customFieldData['machine_name'] === $customField['machine_name'] && $customFieldData['parent_field_value_index'] !== null);
+
+            foreach ($childFieldValues as $childFieldValue) {
+              if (isset($multiValues[$childFieldValue['parent_field_value_index']]) === false) {
+                $multiValues[$childFieldValue['parent_field_value_index']] = [];
+              }
+
+              $multiValues[$childFieldValue['parent_field_value_index']][$childFieldValue['machine_name']] = $childFieldValue['value'];
+            }
+          }
+
+          $value = $multiValues;
         }
 
         $userCustomFields[$customFieldRecord['machine_name']] = $value;
@@ -147,6 +179,7 @@ class UserModel extends ShieldUserModel
       ->select('
         custom_fields.*
       ')
+      ->where('parent_field_id IS NULL')
       ->whereIn('machine_name', $dataKeys)
       ->get()
       ->getResultArray();
@@ -161,34 +194,89 @@ class UserModel extends ShieldUserModel
         'model_id' => $userId,
       ];
 
-      if (in_array($customFieldToProcess['input_type'], ['tags_range', 'tags'])) {
-        if ($customFieldToProcess['input_type'] === 'tags_range') {
-          if (is_array($value)) {
-            $value = array_map(function ($v) {
-              if (isset($v['tags']) && is_array($v['tags']) === false) {
-                $v['tags'] = [$v['tags']];
+      switch ($customFieldToProcess['input_type']) {
+        case 'tags':
+        case 'tags_range':
+          if ($customFieldToProcess['input_type'] === 'tags_range') {
+            if (is_array($value)) {
+              $value = array_map(function ($v) {
+                if (isset($v['tags']) && is_array($v['tags']) === false) {
+                  $v['tags'] = [$v['tags']];
+                }
+
+                return $v;
+              }, $value);
+            }
+          }
+
+          if ($customFieldToProcess['input_type'] === 'tags') {
+            if (is_array($value)) {
+              $value = array_map(function ($v) {
+                $v = trim($v);
+
+                return $v;
+              }, $value);
+            }
+          }
+
+          $fieldData['value_json'] = json_encode($value);
+          $fieldData['value'] = '';
+
+          break;
+        case 'multi':
+          if (isset($fieldMetadata['childFields']) && count($fieldMetadata['childFields']) > 0) {
+            $childFieldsData = [];
+            $childFieldsIds = array_map(fn($childField) => $childField['id'], $fieldMetadata['childFields']);
+            $customFieldsModel = model('CustomFieldModel');
+            $customFields = $customFieldsModel
+              ->select('id, machine_name')
+              ->whereIn('id', $childFieldsIds)
+              ->findAll();
+
+            $db
+              ->table('custom_field_data')
+              ->whereIn('custom_field_id', $childFieldsIds)
+              ->where('model_id', $userId)
+              ->delete();
+
+            foreach ($value as $index => $itemData) {
+              foreach ($itemData as $machineName => $itemDataValue) {
+                $itemFieldId = current(array_filter($customFields, fn($customFieldsItem) => $customFieldsItem['machine_name'] === $machineName));
+
+                if (!isset($itemFieldId['id'])) {
+                  continue;
+                }
+
+                $childFieldsData[] = [
+                  'custom_field_id' => $itemFieldId['id'],
+                  'model_id' => $userId,
+                  'parent_field_value_index' => $index,
+                  'value' => $itemDataValue,
+                  'value_json' => '[]',
+                ];
               }
+            }
 
-              return $v;
-            }, $value);
+            if (!empty($childFieldsData)) {
+              $builder = $db->table('custom_field_data');
+              $result = $builder
+                ->onConstraint(['custom_field_id', 'model_id', 'parent_field_value_index'])
+                ->upsertBatch($childFieldsData);
+
+              $fieldData['value'] = '';
+              $fieldData['value_json'] = '[true]';
+            } else {
+              $fieldData['value'] = '';
+              $fieldData['value_json'] = '[]';
+            }
           }
-        }
 
-        if ($customFieldToProcess['input_type'] === 'tags') {
-          if (is_array($value)) {
-            $value = array_map(function ($v) {
-              $v = trim($v);
+          break;
+        default:
+          $fieldData['value'] = strip_tags($value);
+          $fieldData['value_json'] = '[]';
 
-              return $v;
-            }, $value);
-          }
-        }
-
-        $fieldData['value_json'] = json_encode($value);
-        $fieldData['value'] = '';
-      } else {
-        $fieldData['value'] = strip_tags($value);
-        $fieldData['value_json'] = '[]';
+          break;
       }
 
       if (!($personBasicData && $personBasicData['image_url']) &&
@@ -208,7 +296,7 @@ class UserModel extends ShieldUserModel
     if (!empty($customFieldsData)) {
       $builder = $db->table('custom_field_data');
       $result = $builder
-        ->onConstraint(['custom_field_id', 'model_id'])
+        ->onConstraint(['custom_field_id', 'model_id', 'parent_field_value_index'])
         ->upsertBatch($customFieldsData);
     } else {
       $result = true;

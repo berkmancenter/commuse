@@ -80,7 +80,9 @@ class PeopleModel extends Model
             \'value_json\',
             custom_field_data.value_json,
             \'machine_name\',
-            custom_fields.machine_name
+            custom_fields.machine_name,
+            \'parent_field_value_index\',
+            custom_field_data.parent_field_value_index
           )
         ) AS custom_fields
       ')
@@ -98,7 +100,7 @@ class PeopleModel extends Model
       $builder->like($likeConditions);
     }
 
-    $builder->groupBy('people.id, custom_field_data.model_id');
+    $builder->groupBy('people.id');
     $this->applyFilters($builder, $filters);
 
     $people = $builder->get()->getResultArray();
@@ -145,7 +147,7 @@ class PeopleModel extends Model
       switch ($fieldDb['input_type']) {
         case 'short_text':
           $joinedInValues = implode(', ', array_map(function($filterValue) { return "'$filterValue'"; }, $filterValues));
-          $havingFilters[] = "bool_and( CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN custom_field_data.value IN ({$joinedInValues}) END)";
+          $havingFilters[] = "MAX(CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' AND custom_field_data.value IN ({$joinedInValues}) THEN 1 ELSE 0 END) = 1";
           break;
         case 'tags':
           $havingFilters[] = "bool_and( CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN custom_field_data.value_json @> '{$jsonValues}' END)";
@@ -180,7 +182,7 @@ class PeopleModel extends Model
       foreach ($personData['custom_fields'] as &$customField) {
         $value = $customField['value'];
 
-        if (in_array($customField['input_type'], ['tags_range', 'tags'])) {
+        if (in_array($customField['input_type'], ['tags_range', 'tags', 'multi'])) {
           $value = $customField['value_json'];
         }
 

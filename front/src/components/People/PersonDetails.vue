@@ -161,7 +161,7 @@
       },
       customGroups() {
         return this.profileStructure
-        ?.filter((group) => { return !['my_information', 'contact_information', 'affiliation', 'location_current', 'location_information'].includes(group['machine_name']) })
+        ?.filter((group) => { return !['my_information', 'contact_information', 'affiliation', 'location_current', 'location_information', 'multi_fields_group'].includes(group['machine_name']) })
       },
       affiliateFieldTitle() {
         let title = ''
@@ -203,7 +203,7 @@
         this.mitt.emit('spinnerStop')
       },
       hasFields(group) {
-        return group.custom_fields.some(field => {
+        return group?.custom_fields?.some(field => {
           if (field?.metadata?.isImportProfileImageLink) {
             return false
           }
