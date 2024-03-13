@@ -111,11 +111,19 @@ class UserProfileStructure {
     $childFieldsConfig = [];
     if (isset($metadata['childFields']) && count($metadata['childFields']) > 0) {
       $builder = $this->db->table('custom_fields');
+      $childFieldsIds = array_map(fn($item) => $item['id'], $metadata['childFields']);
       $childFieldsConfig = $builder
         ->select('*')
-        ->whereIn('id', array_map(fn($item) => $item['id'], $metadata['childFields']))
+        ->whereIn('id', $childFieldsIds)
+        ->orderBy('order')
         ->get()
         ->getResultArray();
+
+        usort($childFieldsConfig, function($a, $b) use ($childFieldsIds) {
+          $index_a = array_search($a['id'], $childFieldsIds);
+          $index_b = array_search($b['id'], $childFieldsIds);
+          return $index_a - $index_b;
+      });
     }
 
     return [
