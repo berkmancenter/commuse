@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-const basePath = import.meta.env.VITE_BASE_PATH
+const basePath = import.meta.env.VITE_BASE_URL
 const appTitle = import.meta.env.VITE_APP_TITLE
 
 const router = createRouter({
