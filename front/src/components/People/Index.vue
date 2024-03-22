@@ -237,7 +237,7 @@
         return some(this.$store.state.app.peopleActiveFilters, filter => filter.length > 0)
       },
       sortedPeople() {
-        return orderBy(this.$store.state.app.people, [this.sortingActive.field], [this.sortingActive.direction])
+        return orderBy(this.$store.state.app.people, [person => person[this.sortingActive.field].toLowerCase()], [this.sortingActive.direction])
       },
     },
     methods: {
