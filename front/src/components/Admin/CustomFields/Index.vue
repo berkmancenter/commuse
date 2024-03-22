@@ -78,14 +78,14 @@
             <textarea class="textarea" v-model="fieldModalCurrent.metadata.possibleValues"></textarea>
           </div>
         </div>
-      </div>
 
-      <hr>
+        <hr>
 
-      <div class="field">
-        <label class="label">Allow add new values by users</label>
-        <div class="control">
-          <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.allowNewValues">
+        <div class="field">
+          <label class="label">Allow add new values by users</label>
+          <div class="control">
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.allowNewValues">
+          </div>
         </div>
       </div>
 
