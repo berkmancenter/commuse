@@ -171,6 +171,12 @@ class UserProfileStructure {
           break;
       }
 
+      # FIXME This shouldn't be possible to have a string here, just a quick fix
+      # until we figure out how it's possible to enter a string here into the db
+      if (is_string($values)) {
+        $values = [$values];
+      }
+
       if (!empty($values)) {
         $existingValues = array_merge($existingValues, $values);
       }
