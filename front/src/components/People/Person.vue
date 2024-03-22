@@ -71,7 +71,7 @@
     },
     computed: {
       personAddress() {
-        if (this.person.current_city) {
+        if (this.person.current_city || this.person.current_state || this.person.current_country) {
           return {
             city: this.person.current_city,
             state: this.person.current_state,
@@ -86,7 +86,7 @@
         }
       },
       locationTooltipLabel() {
-        if (this.person.current_city) {
+        if (this.person.current_city || this.person.current_state || this.person.current_country) {
           return 'Current Location'
         } else {
           return 'Permanent Residence'
