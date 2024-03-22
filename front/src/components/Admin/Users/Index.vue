@@ -57,9 +57,9 @@
               <Booler :value="user.groups.includes('admin')" />
             </td>
             <td class="admin-table-actions">
-              <a title="Show user profile" :href="`/people/${user.people_id}`" target="_blank">
+              <router-link :to="{ name: 'people.details', params: { id: user.people_id } }" target="_blank" title="Show user profile">
                 <Icon :src="userIcon" />
-              </a>
+              </router-link>
               <a title="Change role" @click.prevent="setUserRoleModalOpen(user)">
                 <Icon :src="toggleAdminIcon" />
               </a>
