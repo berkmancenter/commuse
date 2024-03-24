@@ -2,6 +2,8 @@
 
 namespace App\Libraries;
 
+use Stringy\Stringy as S;
+
 class UserProfileStructure {
   private $db;
 
@@ -182,9 +184,13 @@ class UserProfileStructure {
       }
     }
 
+    $existingValues = array_map('strtolower', $existingValues);
     $existingValues = array_filter($existingValues);
     $existingValues = array_map('trim', $existingValues);
     $existingValues = array_unique($existingValues);
+    $existingValues = array_map(function($string) {
+      return S::create($string)->titleizeForHumans();
+    }, $existingValues);
     asort($existingValues);
     $existingValues = array_values($existingValues);
 

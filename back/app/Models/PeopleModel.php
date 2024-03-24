@@ -147,10 +147,10 @@ class PeopleModel extends Model
       switch ($fieldDb['input_type']) {
         case 'short_text':
           $joinedInValues = implode(', ', array_map(function($filterValue) { return "'$filterValue'"; }, $filterValues));
-          $havingFilters[] = "MAX(CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' AND custom_field_data.value IN ({$joinedInValues}) THEN 1 ELSE 0 END) = 1";
+          $havingFilters[] = "MAX(CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' AND custom_field_data.value ILIKE any(array[({$joinedInValues})]) THEN 1 ELSE 0 END) = 1";
           break;
         case 'tags':
-          $havingFilters[] = "bool_and( CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN custom_field_data.value_json @> '{$jsonValues}' END)";
+          $havingFilters[] = "bool_and( CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN lower(custom_field_data.value_json::text)::jsonb @> lower('{$jsonValues}')::jsonb END)";
           break;
         case 'tags_range':
           $tagHavingFilterStart = "WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN";
@@ -160,7 +160,7 @@ class PeopleModel extends Model
               EXISTS (
                 SELECT 1
                 FROM jsonb_array_elements(custom_field_data.value_json) AS elem
-                WHERE elem->'tags' @> '[\"{$value}\"]'
+                WHERE (lower(elem::text)::jsonb)->'tags' @> lower('[\"{$value}\"]')::jsonb
             )";
           }
           $tagHavingFilterPartsTogether = implode(' AND ', $tagHavingFilterParts);
