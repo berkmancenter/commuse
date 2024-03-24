@@ -77,3 +77,9 @@ form.form-commuse-blocks {
     background-color: var(--grey-color) !important;
   }
 }
+
+.tag:not(body) {
+  white-space: normal;
+  height: auto;
+  padding: 0.3rem 0.6rem;
+}
