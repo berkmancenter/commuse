@@ -114,6 +114,9 @@ class UserModel extends ShieldUserModel
       $userId = auth()->id();
     }
 
+    $cache = \Config\Services::cache();
+    $cache->delete("person_{$userId}");
+
     $existingPerson = $peopleModel->where('user_id', $userId)->first();
 
     $mappedData = [];

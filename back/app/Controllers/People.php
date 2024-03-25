@@ -5,6 +5,7 @@ namespace App\Controllers;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\PeopleModel;
 use App\Libraries\UserProfileStructure;
+use App\Libraries\Cache;
 use League\Csv\Writer;
 
 class People extends BaseController
@@ -31,6 +32,13 @@ class People extends BaseController
 
   public function person($id)
   {
+    $cache = \Config\Services::cache();
+    $cachedData = $cache->get("person_{$id}");
+
+    if ($cachedData && Cache::isCacheEnabled()) {
+      return $this->respond($cachedData);
+    }
+
     $peopleModel = new PeopleModel();
 
     if (auth()->user()->can('admin.access') === false) {
