@@ -11,7 +11,8 @@
       </div>
 
       <div class="people-section-avatar">
-        <img class="lazy" :data-src="`${apiUrl}/api/files/get/${person.image_url}`">
+        <img class="lazy" :data-src="`${apiUrl}/api/files/get/${person.image_url}`" v-if="person.image_url">
+        <img :src="profileFallbackImage" v-if="!person.image_url">
       </div>
     </router-link>
 
@@ -56,11 +57,14 @@
 </template>
 
 <script>
+  import profileFallbackImage from '@/assets/images/profile_fallback.png'
+
   export default {
     name: 'Person',
     data() {
       return {
         apiUrl: import.meta.env.VITE_API_URL,
+        profileFallbackImage,
       }
     },
     props: {
