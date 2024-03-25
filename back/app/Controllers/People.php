@@ -14,8 +14,20 @@ class People extends BaseController
 
   public function index()
   {
-    $peopleModel = new PeopleModel();
     $requestData = json_decode(file_get_contents('php://input'), true);
+    $query = $requestData['q'];
+    $filters = $requestData['filters'];
+    ksort($filters);
+    $searchMd5 = md5(json_encode($filters) . $query);
+
+    $cache = \Config\Services::cache();
+    $cachedData = $cache->get("people_{$searchMd5}");
+
+    if ($cachedData && Cache::isCacheEnabled()) {
+      return $this->respond(json_decode($cachedData));
+    }
+
+    $peopleModel = new PeopleModel();
 
     $people = $peopleModel->getPeopleWithCustomFields(
       [
@@ -26,6 +38,8 @@ class People extends BaseController
       ],
       $requestData['filters'],
     );
+
+    $cache->save("people_{$searchMd5}", json_encode($people), Cache::$defaultCacheExpiration);
 
     return $this->respond($people);
   }
@@ -55,6 +69,8 @@ class People extends BaseController
     if (empty($person)) {
       return $this->respond(['message' => 'Person not found.'], 404);
     }
+
+    $cache->save("person_{$id}", $person, Cache::$defaultCacheExpiration);
 
     return $this->respond($person[0]);
   }
