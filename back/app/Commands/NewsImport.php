@@ -8,15 +8,14 @@ use App\DataImporters\NewsImporter;
 
 class NewsImport extends BaseCommand
 {
-    protected $group       = 'custom';
-    protected $name        = 'news_import';
+    protected $group = 'custom';
+    protected $name = 'news_import';
     protected $description = 'Imports news data';
 
-    public function run(array $params)
-    {
-        $newsImporter = new NewsImporter();
-        $newsImporter->fetchContentItems();
+    public function run(array $params) {
+      $newsImporter = new NewsImporter();
+      $newsImporter->fetchContentItems();
 
-        CLI::write('Done');
+      CLI::write('Done');
     }
 }

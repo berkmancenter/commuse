@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
+use App\Libraries\Cache;
 
 class News extends BaseController
 {
@@ -10,6 +11,13 @@ class News extends BaseController
 
   public function index()
   {
+    $cache = \Config\Services::cache();
+    $cachedData = $cache->get('news');
+
+    if ($cachedData && Cache::isCacheEnabled()) {
+      return $this->respond($cachedData);
+    }
+
     $newsModel = model('NewsModel');
 
     $news = $newsModel
@@ -20,6 +28,8 @@ class News extends BaseController
       $newsItem['title'] = html_entity_decode($newsItem['title']);
       $newsItem['short_description'] = html_entity_decode($newsItem['short_description']);
     }
+
+    $cache->save('news', $news, Cache::$defaultCacheExpiration);
 
     return $this->respond($news);
   }
