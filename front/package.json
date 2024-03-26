@@ -17,6 +17,7 @@
     "floating-vue": "^2.0.0-beta.24",
     "hover.css": "^2.3.2",
     "ldbutton": "^2.0.1",
+    "leaflet": "^1.9.4",
     "lodash": "^4.17.21",
     "mitt": "^3.0.0",
     "moment": "^2.29.4",

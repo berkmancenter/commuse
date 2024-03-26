@@ -76,8 +76,11 @@
     left: 0;
     right: 0;
     width: 100%;
+    z-index: 777;
 
     .commuse-spinner-inner {
+      z-index: 99999;
+      position: relative;
       width: 100%;
       height: 100%;
       background-color: var(--secondary-color);

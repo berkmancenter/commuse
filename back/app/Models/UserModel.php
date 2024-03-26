@@ -168,6 +168,30 @@ class UserModel extends ShieldUserModel
   }
 
   private function saveCustomFieldsProfileData($requestData, $userId, $personBasicData) {
+    // Let's try multiple times, the geocode API is limited to 1 request per second
+    for ($try = 1; $try <= 5; $try++) {
+      try {
+        if ($requestData['current_city']) {
+          $geoApiKey = $_ENV['geocode_maps_co_api.key'];
+          $geoQuery = "{$requestData['current_city']},{$requestData['current_state']},{$requestData['current_country']}";
+          $geoApiResponse = json_decode(file_get_contents("https://geocode.maps.co/search?q={$geoQuery}&api_key={$geoApiKey}"), true);
+    
+          if (count($geoApiResponse) > 0) {
+            $requestData['current_location_lat'] = $geoApiResponse[0]['lat'];
+            $requestData['current_location_lon'] = $geoApiResponse[0]['lon'];
+            break;
+          }
+        }
+      } catch (\Throwable $exception) {
+        error_log($exception->getMessage());
+      }
+    
+      // If it's not the last try, wait before the next attempt
+      if ($try < 5) {
+        sleep(2);
+      }
+    }
+
     $peopleModel = new PeopleModel();
     $dataKeys = array_keys($requestData);
 

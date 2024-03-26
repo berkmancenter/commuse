@@ -217,8 +217,6 @@
       }
     },
     created() {
-      const that = this
-
       this.loadPeople()
       this.loadFilters()
       this.initLazyLoad()

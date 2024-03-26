@@ -41,7 +41,6 @@
         <a class="side-menu-toggler hvr-grow">
           <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs></defs><title/><g data-name="70-Menu" id="_70-Menu"><rect class="cls-1" height="6" width="6" x="1" y="1"/><rect class="cls-1" height="6" width="6" x="25" y="1"/><rect class="cls-1" height="6" width="6" x="13" y="1"/><rect class="cls-1" height="6" width="6" x="1" y="13"/><rect class="cls-1" height="6" width="6" x="1" y="25"/><rect class="cls-1" height="6" width="6" x="25" y="25"/><rect class="cls-1" height="6" width="6" x="25" y="13"/><rect class="cls-1" height="6" width="6" x="13" y="13"/><rect class="cls-1" height="6" width="6" x="13" y="25"/></g></svg>
         </a>
-        <Spinner />
 
         <router-link :to="'/'" class="top-nav-name-link">
           <h3 class="is-size-4">{{ appTitle }}</h3>
@@ -82,6 +81,8 @@
       </div>
     </div>
   </div>
+
+  <Spinner />
 </template>
 
 <script>
@@ -93,6 +94,7 @@
   import invitationsMenuIcon from '@/assets/images/invitations.svg'
   import shieldMenuIcon from '@/assets/images/shield.svg'
   import fieldsMenuIcon from '@/assets/images/fields_menu.svg'
+  import worldIcon from '@/assets/images/world.svg'
   import { isMobile } from '@/lib/mobile_utils.js'
   import Spinner from '@/components/Shared/Spinner.vue'
 
@@ -121,6 +123,11 @@
             href: '/people',
             title: 'People',
             icon: peopleMenuIcon,
+          },
+          {
+            href: '/people_map',
+            title: 'People map',
+            icon: worldIcon,
           },
           {
             href: '/profile',

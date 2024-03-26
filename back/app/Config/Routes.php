@@ -62,6 +62,7 @@ $frontRoutes = [
   'profile',
   'account',
   'people/(:num)',
+  'people_map',
   'admin/users',
   'admin/invitations',
   'admin/custom_fields',

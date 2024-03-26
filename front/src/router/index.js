@@ -28,6 +28,11 @@ const router = createRouter({
       name: 'people.details',
     },
     {
+      path: '/people_map',
+      component: () => import('@/components/People/Map.vue'),
+      name: 'people.map',
+    },
+    {
       path: '/profile',
       component: () => import('@/components/User/Profile.vue'),
       name: 'user-profile.index',
