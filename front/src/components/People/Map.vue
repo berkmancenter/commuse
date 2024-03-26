@@ -6,7 +6,6 @@
 <script>
   import 'leaflet/dist/leaflet.css'
   import 'leaflet/dist/leaflet'
-  import { waitUntil } from '@/lib/wait_until'
 
   export default {
     name: 'Map',
