@@ -70,7 +70,7 @@ class People extends BaseController
       return $this->respond(['message' => 'Person not found.'], 404);
     }
 
-    $cache->save("person_{$id}", $person, Cache::$defaultCacheExpiration);
+    $cache->save("person_{$id}", $person[0], Cache::$defaultCacheExpiration);
 
     return $this->respond($person[0]);
   }
