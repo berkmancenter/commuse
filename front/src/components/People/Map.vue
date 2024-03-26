@@ -61,6 +61,7 @@
                 lon: person['current_location_lon'],
                 first_name: person['first_name'],
                 last_name: person['last_name'],
+                city: person['current_city'],
                 id: person['id'],
               }
             )
@@ -72,7 +73,7 @@
 
           cluster.forEach(markerData => {
             const marker = L.marker([markerData['lat'], markerData['lon']])
-            marker.bindPopup(`${markerData['first_name']} ${markerData['last_name']}<br><br><a href="${this.apiUrl}/people/${markerData['id']}" target="_blank">Click to see person profile</a>`)
+            marker.bindPopup(`${markerData['first_name']} ${markerData['last_name']}<br>${markerData['city']}<br><br><a href="${this.apiUrl}/people/${markerData['id']}" target="_blank">Click to see person profile</a>`)
             markersCluster.addLayer(marker)
           })
 
