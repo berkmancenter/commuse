@@ -48,7 +48,7 @@
           if (person['current_location_lat']) {
             const marker = L.marker([person['current_location_lat'], person['current_location_lon']]).addTo(map)
 
-            marker.bindPopup(`${person['first_name']} ${person['last_name']}<br><br><a href="${this.apiUrl}/person/${person['id']}" target="_blank">Click to see person profile</a>`)
+            marker.bindPopup(`${person['first_name']} ${person['last_name']}<br><br><a href="${this.apiUrl}/people/${person['id']}" target="_blank">Click to see person profile</a>`)
           }
         });
       },
