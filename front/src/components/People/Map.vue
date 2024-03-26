@@ -6,6 +6,9 @@
 <script>
   import 'leaflet/dist/leaflet.css'
   import 'leaflet/dist/leaflet'
+  import 'leaflet.markercluster/dist/MarkerCluster.css'
+  import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+  import 'leaflet.markercluster/dist/leaflet.markercluster.js'
 
   export default {
     name: 'Map',
@@ -44,13 +47,36 @@
           maxZoom: 19,
         }).addTo(map)
 
+        const clusters = {}
         this.$store.state.app.people.forEach(person => {
           if (person['current_location_lat']) {
-            const marker = L.marker([person['current_location_lat'], person['current_location_lon']]).addTo(map)
+            const clusterKey = person['current_location_lat'].replace(/\D/g,'') + '_' + person['current_location_lon'].replace(/\D/g,'')
 
-            marker.bindPopup(`${person['first_name']} ${person['last_name']}<br><br><a href="${this.apiUrl}/people/${person['id']}" target="_blank">Click to see person profile</a>`)
+            clusters[clusterKey] = clusters[clusterKey] || []
+
+            clusters[clusterKey].push(
+              {
+                lat: person['current_location_lat'],
+                lon: person['current_location_lon'],
+                first_name: person['first_name'],
+                last_name: person['last_name'],
+                id: person['id'],
+              }
+            )
           }
-        });
+        })
+
+        for (const [latlon, cluster] of Object.entries(clusters)) {
+          const markersCluster = L.markerClusterGroup()
+
+          cluster.forEach(markerData => {
+            const marker = L.marker([markerData['lat'], markerData['lon']])
+            marker.bindPopup(`${markerData['first_name']} ${markerData['last_name']}<br><br><a href="${this.apiUrl}/people/${markerData['id']}" target="_blank">Click to see person profile</a>`)
+            markersCluster.addLayer(marker)
+          })
+
+          map.addLayer(markersCluster)
+        }
       },
     },
   }
