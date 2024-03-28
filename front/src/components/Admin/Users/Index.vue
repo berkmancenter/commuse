@@ -245,6 +245,7 @@
 
         this.deleteUserModalStatus = false
         this.mitt.emit('spinnerStop')
+        this.$store.dispatch('app/setPeopleMarkReload', true)
       },
       setUserRoleModalOpen(user) {
         this.setUserRoleModalStatus = true
@@ -291,6 +292,7 @@
         }
 
         this.mitt.emit('spinnerStop')
+        this.$store.dispatch('app/setPeopleMarkReload', true)
       },
     },
   }

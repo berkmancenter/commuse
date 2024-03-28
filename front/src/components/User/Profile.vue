@@ -199,6 +199,8 @@
 
         this.mitt.emit('spinnerStop')
 
+        this.$store.dispatch('app/setPeopleMarkReload', true)
+
         if (response.ok) {
           this.awn.success('Your profile has been saved.')
         } else {

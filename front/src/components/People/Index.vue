@@ -217,9 +217,20 @@
       }
     },
     created() {
-      this.loadPeople()
-      this.loadFilters()
-      this.initLazyLoad()
+      if (this.$store.state.app.people.length === 0 || this.$store.state.app.peopleMarkReload) {
+        this.loadPeople()
+        this.$store.dispatch('app/setPeopleMarkReload', false)
+      }
+
+      if (this.$store.state.app.peopleFilters.length === 0) {
+        this.loadFilters()
+      }
+
+      this.initImgLazyLoad()
+    },
+    unmounted() {
+      this.lazyLoadInstance.destroy()
+      this.lazyLoadInstance = null
     },
     computed: {
       countedUsers() {
@@ -264,12 +275,14 @@
 
         this.$store.dispatch('app/setPeople', people)
         this.$nextTick(() => {
-          this.lazyLoadInstance.update()
+          if (this.lazyLoadInstance) {
+            this.lazyLoadInstance.update()
+          }
         })
 
         this.mitt.emit('spinnerStop')
       },
-      initLazyLoad() {
+      initImgLazyLoad() {
         this.lazyLoadInstance = new LazyLoad({
           callback_error: (img) => {
             img.setAttribute('src', this.profileFallbackImage)
@@ -277,7 +290,11 @@
           unobserve_entered: true,
           unobserve_completed: true,
         })
-        this.lazyLoadInstance.update()
+        this.$nextTick(() => {
+          if (this.lazyLoadInstance) {
+            this.lazyLoadInstance.update()
+          }
+        })
       },
       reloadView() {
         this.loadPeople()

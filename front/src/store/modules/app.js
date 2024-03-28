@@ -12,6 +12,7 @@ const defaultTagRange = {
 const state = {
   news: [],
   people: [],
+  peopleMarkReload: false,
   sideMenuStatus: false,
   userProfile: {},
   currentUser: {
@@ -31,6 +32,9 @@ const mutations = {
   },
   setPeople(state, people) {
     state.people = people
+  },
+  setPeopleMarkReload(state, value) {
+    state.peopleMarkReload = value
   },
   setSideMenuStatus(state, status) {
     state.sideMenuStatus = status
@@ -167,6 +171,9 @@ const actions = {
   },
   setPeople(context, people) {
     context.commit('setPeople', people)
+  },
+  setPeopleMarkReload(context, value) {
+    context.commit('setPeopleMarkReload', value)
   },
   setSideMenuStatus(context, status) {
     context.commit('setSideMenuStatus', status)
