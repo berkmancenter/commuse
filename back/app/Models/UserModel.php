@@ -173,7 +173,9 @@ class UserModel extends ShieldUserModel
       try {
         if ($requestData['current_city']) {
           $geoApiKey = $_ENV['geocode_maps_co_api.key'];
-          $geoQuery = "{$requestData['current_city']},{$requestData['current_state']},{$requestData['current_country']}";
+          $geoQueryArray = [$requestData['current_city'], $requestData['current_state'], $requestData['current_country']];
+          $geoQueryArray = array_filter($geoQueryArray);
+          $geoQuery = join(',', $geoQueryArray);
           $geoApiResponse = json_decode(file_get_contents("https://geocode.maps.co/search?q={$geoQuery}&api_key={$geoApiKey}"), true);
     
           if (count($geoApiResponse) > 0) {
