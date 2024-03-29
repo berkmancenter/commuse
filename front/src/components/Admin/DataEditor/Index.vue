@@ -17,9 +17,10 @@
       <admin-table :tableClasses="['admin-data-editor-table']">
         <thead>
           <tr class="no-select">
-            <th data-sort-default aria-sort="descending">Value</th>
-            <th data-sort-default aria-sort="descending">Value JSON</th>
-            <th>Model ID</th>
+            <th>Value</th>
+            <th>Value JSON</th>
+            <th>Field name</th>
+            <th data-sort-default aria-sort="descending">Model ID</th>
             <th>Model</th>
             <th data-sort-method="none" class="no-sort">Actions</th>
           </tr>
@@ -28,8 +29,9 @@
           <tr v-for="fieldsDataItem in fieldsData" :key="fieldsDataItem.id" class="no-break">
             <td class="admin-data-editor-table-value">{{ fieldsDataItem.value }}</td>
             <td class="admin-data-editor-table-value">{{ fieldsDataItem.value_json }}</td>
+            <td>{{ fieldsDataItem.field_title }}</td>
             <td class="admin-data-editor-table-model-id">{{ fieldsDataItem.model_id }}</td>
-            <td class="admin-data-editor-table-model-id">{{ fieldsDataItem.model_name }}</td>
+            <td>{{ fieldsDataItem.model_name }}</td>
             <td class="admin-table-actions admin-data-editor-table-model-actions">
               <a title="Edit custom field" @click.prevent="openEditModal(fieldsDataItem)">
                 <Icon :src="editIcon" />
@@ -94,6 +96,7 @@
       }
     },
     created() {
+      this.reloadView()
     },
     methods: {
       async loadData() {

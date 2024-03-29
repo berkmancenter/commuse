@@ -18,7 +18,7 @@ class DataEditor extends BaseController
     $builder = $db->table('custom_field_data cfd');
 
     $customFieldsData = $builder
-      ->select('cfd.value, cfd.value_json, cfd.id, cfd.model_id, cf.model_name')
+      ->select('cfd.value, cfd.value_json, cfd.id, cfd.model_id, cf.model_name, cf.title AS field_title')
       ->join('custom_fields cf', 'cf.id = cfd.custom_field_id', 'left')
       ->where("LOWER(value) ILIKE '%" . $query . "%'")
       ->orWhere("LOWER(value_json::text) ILIKE '%" . $query . "%'")
