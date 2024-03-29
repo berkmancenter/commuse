@@ -43,6 +43,7 @@ $routes->get('api/users/profileStructure', 'Users::profileStructure');
 $routes->post('api/users/saveProfile', 'Users::saveProfile');
 $routes->post('api/users/uploadProfileImage', 'Users::uploadProfileImage');
 
+
 $routes->get('api/files/get/(.+)', 'Files::get/$1');
 
 $routes->get('api/admin/invitations', 'Invitations::index');
@@ -55,6 +56,9 @@ $routes->post('api/admin/users/importFromCsv', 'Users::importFromCsv');
 $routes->get('api/admin/users/csvImportTemplate', 'Users::getUsersCsvImportTemplate');
 $routes->get('api/admin/customFields', 'CustomFields::index');
 $routes->post('api/admin/customFields/upsert', 'CustomFields::upsert');
+$routes->post('api/admin/dataEditor', 'DataEditor::index');
+$routes->post('api/admin/dataEditor/saveItem', 'DataEditor::saveItem');
+
 
 $frontRoutes = [
   '/',

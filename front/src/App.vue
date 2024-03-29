@@ -94,7 +94,8 @@
   import invitationsMenuIcon from '@/assets/images/invitations.svg'
   import shieldMenuIcon from '@/assets/images/shield.svg'
   import fieldsMenuIcon from '@/assets/images/fields_menu.svg'
-  import worldIcon from '@/assets/images/world.svg'
+  import worldMenuIcon from '@/assets/images/world.svg'
+  import dataMenuIcon from '@/assets/images/data.svg'
   import { isMobile } from '@/lib/mobile_utils.js'
   import Spinner from '@/components/Shared/Spinner.vue'
 
@@ -127,7 +128,7 @@
           {
             href: '/people_map',
             title: 'People map',
-            icon: worldIcon,
+            icon: worldMenuIcon,
           },
           {
             href: '/profile',
@@ -155,6 +156,11 @@
             href: '/admin/custom_fields',
             title: 'Custom fields',
             icon: fieldsMenuIcon,
+          },
+          {
+            href: '/admin/data_editor',
+            title: 'Data editor',
+            icon: dataMenuIcon,
           },
         ],
       }

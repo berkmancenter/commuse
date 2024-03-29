@@ -24,6 +24,8 @@ const state = {
   peopleFilters: [],
   peopleActiveFilters: {},
   peopleFetchController: null,
+  dataEditorFetchController: null,
+  dataEditorSearchQuery: '',
 }
 
 const mutations = {
@@ -162,6 +164,25 @@ const actions = {
   },
   async fetchCustomFields(context, id) {
     const response = await fetchIt(`${apiUrl}/api/admin/customFields`)
+    const data = await response.json()
+
+    return data
+  },
+  async fetchDataEditorData(context, id) {
+    context.state.dataEditorFetchController = new AbortController()
+
+    const response = await fetchIt(`${apiUrl}/api/admin/dataEditor`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      signal: context.state.dataEditorFetchController.signal,
+      body: JSON.stringify({
+        q: context.state.dataEditorSearchQuery,
+      }),
+    })
+
     const data = await response.json()
 
     return data
@@ -323,6 +344,18 @@ const actions = {
       body: JSON.stringify({
         customField: data,
       }),
+    })
+
+    return response
+  },
+  async saveDataEditorItem(context, itemData) {
+    const response = await fetchIt(`${apiUrl}/api/admin/dataEditor/saveItem`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(itemData),
     })
 
     return response

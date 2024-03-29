@@ -72,6 +72,14 @@ const router = createRouter({
         title: 'Custom fields admin',
       },
     },
+    {
+      path: '/admin/data_editor',
+      component: () => import('@/components/Admin/DataEditor/Index.vue'),
+      name: 'admin-data-editor.index',
+      meta: {
+        title: 'Data editor',
+      },
+    },
   ]
 })
 
