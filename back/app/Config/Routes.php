@@ -70,6 +70,7 @@ $frontRoutes = [
   'admin/users',
   'admin/invitations',
   'admin/custom_fields',
+  'admin/data_editor',
 ];
 
 foreach ($frontRoutes as $route) {
