@@ -1,6 +1,6 @@
 <template>
   <div class="admin-custom-fields">
-    <h3 class="is-size-3 has-text-weight-bold mb-4">Custom Fields</h3>
+    <h3 class="is-size-3 has-text-weight-bold mb-4">Custom fields</h3>
 
     <form class="form">
       <admin-table :tableClasses="['admin-custom-fields-table']">

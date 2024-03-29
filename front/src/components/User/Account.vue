@@ -1,6 +1,6 @@
 <template>
   <div class="account-section">
-    <h3 class="is-size-3 has-text-weight-bold mb-4">Account</h3>
+    <h3 class="is-size-3 has-text-weight-bold mb-4">Account settings</h3>
 
     <form class="form-commuse-blocks" @submit.prevent="changePassword">
       <div class="panel">

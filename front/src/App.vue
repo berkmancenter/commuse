@@ -87,7 +87,7 @@
 
 <script>
   import SwitMenu from '@/components/Shared/SwitMenu.vue'
-  import homeMenuIcon from '@/assets/images/home_menu.svg'
+  import newsMenuIcon from '@/assets/images/news.svg'
   import peopleMenuIcon from '@/assets/images/people_menu.svg'
   import profileMenuIcon from '@/assets/images/profile_menu.svg'
   import usersMenuIcon from '@/assets/images/users.svg'
@@ -117,8 +117,8 @@
         menu: [
           {
             href: '/',
-            title: 'Home',
-            icon: homeMenuIcon,
+            title: 'News & events',
+            icon: newsMenuIcon,
           },
           {
             href: '/people',

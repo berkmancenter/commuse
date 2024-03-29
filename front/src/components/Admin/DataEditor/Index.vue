@@ -1,6 +1,6 @@
 <template>
   <div class="admin-data-editor">
-    <h3 class="is-size-3 has-text-weight-bold mb-4">Data Editor</h3>
+    <h3 class="is-size-3 has-text-weight-bold mb-4">Data editor</h3>
 
     <div class="admin-data-editor-search mb-4">
       <input

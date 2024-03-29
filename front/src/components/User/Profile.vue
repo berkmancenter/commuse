@@ -2,7 +2,7 @@
   <div class="user-profile">
     <form class="form-commuse-blocks" @submit.prevent="saveProfile">
       <div class="user-profile-header is-flex is-align-items-center">
-        <h3 class="is-size-3 has-text-weight-bold">My profile</h3>
+        <h3 class="is-size-3 has-text-weight-bold">Edit profile</h3>
         <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true"></ActionButton>
       </div>
 
