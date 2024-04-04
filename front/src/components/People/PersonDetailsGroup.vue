@@ -66,12 +66,13 @@
 
         if (hasValue === false) {
           if (!this.$store.state.app.peopleActiveFilters[fieldMachineName]) {
-            this.$store.state.app.peopleActiveFilters[fieldMachineName] = [];
+            this.$store.state.app.peopleActiveFilters[fieldMachineName] = []
           }
 
           this.$store.state.app.peopleActiveFilters[fieldMachineName].push(value)
         }
 
+        this.$store.dispatch('app/setPeopleMarkReload', true)
         this.$router.push({
           name: 'people.index',
         })
