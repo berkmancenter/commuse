@@ -38,6 +38,7 @@ class DataEditor extends BaseController
     $fieldData = $requestData;
     unset($fieldData['id']);
     unset($fieldData['model_name']);
+    unset($fieldData['field_title']);
     $fieldData['updated_at'] = date('Y-m-d H:i:s');
     $builder->set($fieldData);
     $builder->where('id', $requestData['id']);
