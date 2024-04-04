@@ -291,13 +291,10 @@ class UserModel extends ShieldUserModel
               $result = $builder
                 ->onConstraint(['custom_field_id', 'model_id', 'parent_field_value_index'])
                 ->upsertBatch($childFieldsData);
-
-              $fieldData['value'] = '';
-              $fieldData['value_json'] = '[true]';
-            } else {
-              $fieldData['value'] = '';
-              $fieldData['value_json'] = '[]';
             }
+
+            $fieldData['value'] = '';
+            $fieldData['value_json'] = '[]';
           }
 
           break;
