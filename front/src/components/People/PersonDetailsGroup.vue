@@ -6,8 +6,8 @@
     <div class="panel-block">
       <div class="content">
         <template v-for="field in group.custom_fields">
-          <div class="people-section-details-data-item" v-if="person[field.machine_name] && person[field.machine_name] != '' && person[field.machine_name] != [] && !field?.metadata?.isImportProfileImageLink">
-            <div class="people-section-details-data-item-label">{{ field.title }}</div>
+          <div class="people-section-details-data-item" v-if="(person[field.machine_name] && person[field.machine_name] != '' && person[field.machine_name] != [] && !field?.metadata?.isImportProfileImageLink) || (field.input_type === 'multi' && multiFieldValue(field).length > 0)">
+            <div class="people-section-details-data-item-label" v-if="titleVisible(field)">{{ field.title }}</div>
             <div v-if="field.input_type === 'short_text' || field.input_type === 'long_text'">
               <div v-if="!field.metadata.isLink">{{ person[field.machine_name] }}</div>
               <div v-if="field.metadata.isLink"><a :href="person[field.machine_name]" target="_blank">{{ person[field.machine_name] }}</a></div>
@@ -90,12 +90,23 @@
               values[childFieldValue.parent_field_value_index] = []
             }
 
-            values[childFieldValue.parent_field_value_index].push(childFieldValue.value)
+            if (childField.input_type === 'tags') {
+              values[childFieldValue.parent_field_value_index].push(childFieldValue.value_json.join(', '))
+            } else {
+              values[childFieldValue.parent_field_value_index].push(childFieldValue.value)
+            }
           })
         })
 
         return values
-      }
+      },
+      titleVisible(field) {
+        if (field?.metadata && field.metadata.hideTitle) {
+          return false
+        }
+
+        return true
+      },
     },
   }
 </script>

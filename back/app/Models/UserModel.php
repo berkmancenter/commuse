@@ -23,8 +23,7 @@ class UserModel extends ShieldUserModel
     parent::initialize();
   }
 
-  public function getUserProfileData($id)
-  {
+  public function getUserProfileData($id) {
     $db = \Config\Database::connect();
     $builder = $db->table('people');
     $userData = [];
@@ -71,7 +70,7 @@ class UserModel extends ShieldUserModel
           $childFieldsIds = array_map(fn($childField) => $childField['id'], $fieldMetadata['childFields']);
           $customFieldsModel = model('CustomFieldModel');
           $customFields = $customFieldsModel
-            ->select('id, machine_name')
+            ->select('id, machine_name, input_type')
             ->whereIn('id', $childFieldsIds)
             ->findAll();
 
@@ -83,7 +82,11 @@ class UserModel extends ShieldUserModel
                 $multiValues[$childFieldValue['parent_field_value_index']] = [];
               }
 
-              $multiValues[$childFieldValue['parent_field_value_index']][$childFieldValue['machine_name']] = $childFieldValue['value'];
+              if ($customField['input_type'] === 'tags') {
+                $multiValues[$childFieldValue['parent_field_value_index']][$childFieldValue['machine_name']] = json_decode($childFieldValue['value_json']);
+              } else {
+                $multiValues[$childFieldValue['parent_field_value_index']][$childFieldValue['machine_name']] = $childFieldValue['value'];
+              }
             }
           }
 
@@ -99,8 +102,7 @@ class UserModel extends ShieldUserModel
     return $userData;
   }
 
-  public function getUserProfileStructure()
-  {
+  public function getUserProfileStructure() {
     $userProfileStructure = new UserProfileStructure();
     return $userProfileStructure->getUserProfileStructure();
   }
@@ -258,7 +260,7 @@ class UserModel extends ShieldUserModel
             $childFieldsIds = array_map(fn($childField) => $childField['id'], $fieldMetadata['childFields']);
             $customFieldsModel = model('CustomFieldModel');
             $customFields = $customFieldsModel
-              ->select('id, machine_name')
+              ->select('id, machine_name, input_type')
               ->whereIn('id', $childFieldsIds)
               ->findAll();
 
@@ -270,19 +272,29 @@ class UserModel extends ShieldUserModel
 
             foreach ($value as $index => $itemData) {
               foreach ($itemData as $machineName => $itemDataValue) {
-                $itemFieldId = current(array_filter($customFields, fn($customFieldsItem) => $customFieldsItem['machine_name'] === $machineName));
+                $itemField = current(array_filter($customFields, fn($customFieldsItem) => $customFieldsItem['machine_name'] === $machineName));
 
-                if (!isset($itemFieldId['id'])) {
+                if (!isset($itemField['id'])) {
                   continue;
                 }
 
-                $childFieldsData[] = [
-                  'custom_field_id' => $itemFieldId['id'],
-                  'model_id' => $userId,
-                  'parent_field_value_index' => $index,
-                  'value' => $itemDataValue,
-                  'value_json' => '[]',
-                ];
+                if ($itemField['input_type'] === 'tags') {
+                  $childFieldsData[] = [
+                    'custom_field_id' => $itemField['id'],
+                    'model_id' => $userId,
+                    'parent_field_value_index' => $index,
+                    'value' => '',
+                    'value_json' => json_encode($itemDataValue),
+                  ];
+                } else {
+                  $childFieldsData[] = [
+                    'custom_field_id' => $itemField['id'],
+                    'model_id' => $userId,
+                    'parent_field_value_index' => $index,
+                    'value' => $itemDataValue,
+                    'value_json' => '[]',
+                  ];
+                }
               }
             }
 
@@ -331,8 +343,7 @@ class UserModel extends ShieldUserModel
     return $result;
   }
 
-  private function downloadRemoteImage($remoteURL, $localDirectory)
-  {
+  private function downloadRemoteImage($remoteURL, $localDirectory) {
     helper('filesystem');
 
     try {

@@ -182,7 +182,7 @@ class PeopleModel extends Model
       foreach ($personData['custom_fields'] as &$customField) {
         $value = $customField['value'];
 
-        if (in_array($customField['input_type'], ['tags_range', 'tags', 'multi'])) {
+        if (in_array($customField['input_type'], ['tags_range', 'tags'])) {
           $value = $customField['value_json'];
         }
 

@@ -1,23 +1,24 @@
 <template>
   <div class="field user-profile-field" ref="fieldContainer">
-    <label class="label">{{ label }}</label>
+    <label class="label" v-if="titleVisible()">{{ label }}</label>
 
     <div class="control" v-if="type == 'short_text'">
       <div class="control">
-        <input type="text" class="input" :value="value" @input="updateValue">
+        <input type="text" class="input" :value="value" @input="updateSimpleValue">
       </div>
     </div>
 
     <div class="control" v-if="type == 'long_text'">
       <div class="control">
-        <textarea class="textarea" :value="value" @input="updateValue"></textarea>
+        <textarea class="textarea" :value="value" @input="updateSimpleValue"></textarea>
       </div>
     </div>
 
     <div class="control" v-if="type == 'tags'">
       <div class="control">
         <VueMultiselect
-          v-model="$store.state.app.userProfile[machineName]"
+          :model-value="value"
+          @update:modelValue="updateMultiValue"
           :multiple="metadata.allowMultiple ?? false"
           :taggable="metadata.allowNewValues ?? false"
           :options="metadata.possibleValues ?? []"
@@ -89,7 +90,7 @@
             :label="childField.title"
             :type="childField.input_type"
             :machine-name="childField.machine_name"
-            :metadata="{}"
+            :metadata="childField.metadata"
             :field-data="childField"
             v-bind:value="item[childField.machine_name]"
             v-on:update:value="item[childField.machine_name] = $event"
@@ -131,8 +132,15 @@
       Icon,
     },
     methods: {
-      updateValue(ev) {
+      updateSimpleValue(ev) {
         this.$emit('update:value', ev.target.value)
+      },
+      updateMultiValue(value) {
+        this.$emit('update:value', value)
+      },
+      removeMultiValue(option) {
+        let currentValue = this.value
+        this.$emit('update:value', currentValue.filter(item => item !== option))
       },
       addEmptyTagRangeItem() {
         this.$store.dispatch('app/addEmptyTagRangeItem', this.machineName)
@@ -214,6 +222,13 @@
       },
       convertRemToPixels(rem) {
         return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
+      },
+      titleVisible() {
+        if (this?.metadata && this.metadata.hideTitle) {
+          return false
+        }
+
+        return true
       },
     },
   }

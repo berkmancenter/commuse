@@ -56,6 +56,7 @@ class CustomFields extends BaseController
       'title' => $requestData['title'],
       'metadata' => json_encode([
         'isLink'=> $requestData['metadata']['isLink'] ?? false,
+        'hideTitle'=> $requestData['metadata']['hideTitle'] ?? false,
         'allowMultiple'=> $requestData['metadata']['allowMultiple'] ?? false,
         'allowNewValues'=> $requestData['metadata']['allowNewValues'] ?? false,
         'shareUserValues'=> $requestData['metadata']['shareUserValues'] ?? false,

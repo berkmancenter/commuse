@@ -115,17 +115,30 @@ class UserProfileStructure {
       $builder = $this->db->table('custom_fields');
       $childFieldsIds = array_map(fn($item) => $item['id'], $metadata['childFields']);
       $childFieldsConfig = $builder
-        ->select('*')
+        ->select('
+          custom_fields.machine_name AS field_machine_name,
+          custom_fields.id AS field_id,
+          custom_fields.title AS field_title,
+          custom_fields.description AS field_description,
+          custom_fields.metadata AS field_metadata,
+          custom_fields.input_type AS field_input_type
+        ')
         ->whereIn('id', $childFieldsIds)
         ->orderBy('order')
         ->get()
         ->getResultArray();
 
-        usort($childFieldsConfig, function($a, $b) use ($childFieldsIds) {
-          $index_a = array_search($a['id'], $childFieldsIds);
-          $index_b = array_search($b['id'], $childFieldsIds);
-          return $index_a - $index_b;
+      usort($childFieldsConfig, function($a, $b) use ($childFieldsIds) {
+        $index_a = array_search($a['field_id'], $childFieldsIds);
+        $index_b = array_search($b['field_id'], $childFieldsIds);
+        return $index_a - $index_b;
       });
+
+      $childFieldsConfig = array_map(function($childField) {
+        $childField = $this->processField($childField);
+
+        return $childField;
+      }, $childFieldsConfig);
     }
 
     return [

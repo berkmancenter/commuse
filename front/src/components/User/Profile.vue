@@ -139,8 +139,8 @@
               :machine-name="customField.machine_name"
               :metadata="customField.metadata"
               :field-data="customField"
-              v-bind:value="$store.state.app.userProfile[customField.machine_name]"
-              v-on:update:value="$store.state.app.userProfile[customField.machine_name] = $event"
+              :value="$store.state.app.userProfile[customField.machine_name]"
+              @update:value="$store.state.app.userProfile[customField.machine_name] = $event"
               :ref="el => fields[customField.machine_name] = el"
               v-for="customField in customGroup.custom_fields"
             ></ProfileField>

@@ -48,6 +48,15 @@
         </div>
       </div>
 
+      <hr>
+
+      <div class="field">
+        <label class="label">Hide title</label>
+        <div class="control">
+          <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.hideTitle">
+        </div>
+      </div>
+
       <div v-if="['tags'].includes(fieldModalCurrent.input_type)">
         <hr>
 
