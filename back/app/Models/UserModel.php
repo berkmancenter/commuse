@@ -115,7 +115,7 @@ class UserModel extends ShieldUserModel
     $cache->delete("person_{$userId}");
     $cache->delete('filters_with_values');
     $cachePeopleSearchPath = ROOTPATH . 'writable/cache/people_*';
-    exec("rm {$cachePeopleSearchPath}");
+    exec("rm {$cachePeopleSearchPath} > /dev/null 2> /dev/null");
 
     $existingPerson = $peopleModel->where('user_id', $userId)->first();
 
@@ -172,15 +172,15 @@ class UserModel extends ShieldUserModel
     for ($try = 1; $try <= 5; $try++) {
       try {
         if ($requestData['current_city']) {
-          $geoApiKey = $_ENV['geocode_maps_co_api.key'];
+          $geoApiKey = $_ENV['geocode_mapbox_api.key'];
           $geoQueryArray = [$requestData['current_city'], $requestData['current_state'], $requestData['current_country']];
           $geoQueryArray = array_filter($geoQueryArray);
-          $geoQuery = join(',', $geoQueryArray);
-          $geoApiResponse = json_decode(file_get_contents("https://geocode.maps.co/search?q={$geoQuery}&api_key={$geoApiKey}"), true);
-    
-          if (count($geoApiResponse) > 0) {
-            $requestData['current_location_lat'] = $geoApiResponse[0]['lat'];
-            $requestData['current_location_lon'] = $geoApiResponse[0]['lon'];
+          $geoQuery = urlencode(join(',', $geoQueryArray));
+          $geoApiResponse = json_decode(file_get_contents("https://api.mapbox.com/geocoding/v5/mapbox.places/{$geoQuery}.json?access_token={$geoApiKey}"), true);
+
+          if (count($geoApiResponse['features']) > 0) {
+            $requestData['current_location_lon'] = strval($geoApiResponse['features'][0]['center'][0]);
+            $requestData['current_location_lat'] = strval($geoApiResponse['features'][0]['center'][1]);
             break;
           }
         }

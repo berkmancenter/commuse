@@ -49,7 +49,7 @@ class DataEditor extends BaseController
       $cache->delete("person_{$requestData['model_id']}");
       $cache->delete('filters_with_values');
       $cachePeopleSearchPath = ROOTPATH . 'writable/cache/people_*';
-      exec("rm {$cachePeopleSearchPath}");
+      exec("rm {$cachePeopleSearchPath} > /dev/null 2> /dev/null");
     }
 
     if ($result) {
