@@ -6,7 +6,7 @@
     <div class="panel-block">
       <div class="content">
         <template v-for="field in group.custom_fields">
-          <div class="people-section-details-data-item" v-if="(person[field.machine_name] && person[field.machine_name] != '' && person[field.machine_name] != [] && !field?.metadata?.isImportProfileImageLink) || (field.input_type === 'multi' && multiFieldValue(field).length > 0)">
+          <div class="people-section-details-data-item" v-if="(person[field.machine_name] && person[field.machine_name] != '' && person[field.machine_name] != [] && !field?.metadata?.isImportProfileImageLink) || (field.input_type === 'multi' && getMultiFieldValue(field, person).length > 0)">
             <div class="people-section-details-data-item-label" v-if="titleVisible(field)">{{ field.title }}</div>
             <div v-if="field.input_type === 'short_text' || field.input_type === 'long_text'">
               <div v-if="!field.metadata.isLink">{{ person[field.machine_name] }}</div>
@@ -26,7 +26,7 @@
             </div>
             <div v-if="field.input_type === 'multi'">
               <ul>
-                <li v-for="item in multiFieldValue(field)">
+                <li v-for="item in getMultiFieldValue(field, person)">
                   <span v-for="(itemPart, index) in item">{{ itemPart }}<span v-if="index != item.length - 1">, </span></span>
                 </li>
               </ul>
@@ -40,11 +40,14 @@
 
 <script>
   import { some } from 'lodash'
+  import { getMultiFieldValue } from '@/lib/fields/multi.js'
 
   export default {
     name: 'PersonDetailsGroup',
     data() {
-      return {}
+      return {
+        getMultiFieldValue,
+      }
     },
     props: {
       group: {
@@ -76,29 +79,6 @@
         this.$router.push({
           name: 'people.index',
         })
-      },
-      multiFieldValue(field) {
-        const values = []
-
-        field?.child_fields?.forEach(childField => {
-          const childFieldValues = this.person.custom_fields.filter((customField) => {
-            return customField.machine_name === childField.machine_name && customField.parent_field_value_index !== null
-          })
-
-          childFieldValues.forEach((childFieldValue) => {
-            if (values[childFieldValue.parent_field_value_index] === undefined) {
-              values[childFieldValue.parent_field_value_index] = []
-            }
-
-            if (childField.input_type === 'tags') {
-              values[childFieldValue.parent_field_value_index].push(childFieldValue.value_json.join(', '))
-            } else {
-              values[childFieldValue.parent_field_value_index].push(childFieldValue.value)
-            }
-          })
-        })
-
-        return values
       },
       titleVisible(field) {
         if (field?.metadata && field.metadata.hideTitle) {

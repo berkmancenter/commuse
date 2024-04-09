@@ -119,6 +119,7 @@
   import PersonDetailsGroup from '@/components/People/PersonDetailsGroup.vue'
   import ShowMore from '@/components/Shared/ShowMore.vue'
   import { compact, flatten } from 'lodash'
+  import { getMultiFieldValue } from '@/lib/fields/multi.js'
 
   export default {
     name: 'PersonDetails',
@@ -133,6 +134,7 @@
         affiliateIcon,
         currentAddressIcon,
         profileStructure: [],
+        getMultiFieldValue,
       }
     },
     components: {
@@ -210,7 +212,7 @@
 
           let fieldValue = compact(flatten([this.person[field.machine_name]]))
           if (field.input_type === 'multi') {
-            fieldValue = this.multiFieldValue(field)
+            fieldValue = getMultiFieldValue(field, this.person)
           }
 
           return fieldValue.length > 0
@@ -229,29 +231,6 @@
           top: y,
           behavior: 'instant'
         })
-      },
-      multiFieldValue(field) {
-        const values = []
-
-        if (!this.person.custom_fields) {
-          return []
-        }
-
-        field?.child_fields?.forEach(childField => {
-          const childFieldValues = this.person.custom_fields.filter((customField) => {
-            return customField.machine_name === childField.machine_name && customField.parent_field_value_index !== null
-          })
-
-          childFieldValues.forEach((childFieldValue) => {
-            if (values[childFieldValue.parent_field_value_index] === undefined) {
-              values[childFieldValue.parent_field_value_index] = []
-            }
-
-            values[childFieldValue.parent_field_value_index].push(childFieldValue.value)
-          })
-        })
-
-        return values
       },
     },
   }
