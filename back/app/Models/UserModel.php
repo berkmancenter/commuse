@@ -247,6 +247,8 @@ class UserModel extends ShieldUserModel
 
                 return $v;
               }, $value);
+            } else {
+              $value = [$value];
             }
           }
 
