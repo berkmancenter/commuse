@@ -425,13 +425,15 @@ class Auth extends ShieldAuth
     public function registerRedirect(): string
     {
         // Set which invitation code is used to register
-        $db = \Config\Database::connect();
-        $builder = $db->table('users');
-        \Config\Services::session();
-        $builder
-          ->set('invitation_code_id', $_SESSION['invitation_code_id'])
-          ->where('id', auth()->id())
-          ->update();
+        if (isset($_SESSION['invitation_code_id'])) {
+          $db = \Config\Database::connect();
+          $builder = $db->table('users');
+          \Config\Services::session();
+          $builder
+            ->set('invitation_code_id', $_SESSION['invitation_code_id'])
+            ->where('id', auth()->id())
+            ->update();
+        }
 
         $url = base_url('profile');
 
