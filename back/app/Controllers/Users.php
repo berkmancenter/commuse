@@ -370,7 +370,7 @@ class Users extends BaseController
       return redirect()->to(config('Auth')->login());
     }
 
-    return view('\App\Views\Shield\changePassword');
+    return view('\App\Views\Shield\change_password');
   }
 
   public function changePassword()
