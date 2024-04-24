@@ -16,7 +16,7 @@
 
       <div class="mt-4 mb-2">
         <ActionButton buttonText="Filters" :icon="filterIcon" @click="openFiltersModal()"></ActionButton>
-        <ActionButton class="ml-2" buttonText="Clear all filters" :icon="clearFiltersIcon" @click="$store.state.app.peopleActiveFilters = {}"></ActionButton>
+        <ActionButton class="ml-2" buttonText="Clear all" :icon="clearFiltersIcon" @click="clearAllFilters()"></ActionButton>
       </div>
 
       <div v-if="anyActiveFilters">
@@ -347,6 +347,10 @@
         }
 
         this.exportModalStatus = true
+      },
+      clearAllFilters() {
+        this.$store.state.app.peopleSearchTerm = ''
+        this.$store.state.app.peopleActiveFilters = {}
       },
     },
     watch: {
