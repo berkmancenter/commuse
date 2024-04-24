@@ -170,34 +170,25 @@ class UserModel extends ShieldUserModel
   }
 
   private function saveCustomFieldsProfileData($requestData, $userId, $personBasicData) {
-    // Let's try multiple times, the geocode API is limited to 1 request per second
-    for ($try = 1; $try <= 5; $try++) {
-      try {
-        if ($requestData['current_city'] || $requestData['home_city']) {
-          $geoApiKey = $_ENV['geocode_mapbox_api.key'];
-          $geoQueryArray = [$requestData['current_city'], $requestData['current_state'], $requestData['current_country']];
+    try {
+      if ($requestData['current_city'] || $requestData['home_city']) {
+        $geoApiKey = $_ENV['geocode_mapbox_api.key'];
+        $geoQueryArray = [$requestData['current_city'], $requestData['current_state'], $requestData['current_country']];
+        $geoQueryArray = array_filter($geoQueryArray);
+        if (count($geoQueryArray) === 0) {
+          $geoQueryArray = [$requestData['home_city'], $requestData['home_state'], $requestData['home_country']];
           $geoQueryArray = array_filter($geoQueryArray);
-          if (count($geoQueryArray) === 0) {
-            $geoQueryArray = [$requestData['home_city'], $requestData['home_state'], $requestData['home_country']];
-            $geoQueryArray = array_filter($geoQueryArray);
-          }
-          $geoQuery = urlencode(join(',', $geoQueryArray));
-          $geoApiResponse = json_decode(file_get_contents("https://api.mapbox.com/geocoding/v5/mapbox.places/{$geoQuery}.json?access_token={$geoApiKey}"), true);
-
-          if (count($geoApiResponse['features']) > 0) {
-            $requestData['current_location_lon'] = strval($geoApiResponse['features'][0]['center'][0]);
-            $requestData['current_location_lat'] = strval($geoApiResponse['features'][0]['center'][1]);
-            break;
-          }
         }
-      } catch (\Throwable $exception) {
-        error_log($exception->getMessage());
+        $geoQuery = urlencode(join(',', $geoQueryArray));
+        $geoApiResponse = json_decode(file_get_contents("https://api.mapbox.com/geocoding/v5/mapbox.places/{$geoQuery}.json?access_token={$geoApiKey}"), true);
+
+        if (count($geoApiResponse['features']) > 0) {
+          $requestData['current_location_lon'] = strval($geoApiResponse['features'][0]['center'][0]);
+          $requestData['current_location_lat'] = strval($geoApiResponse['features'][0]['center'][1]);
+        }
       }
-    
-      // If it's not the last try, wait before the next attempt
-      if ($try < 5) {
-        sleep(2);
-      }
+    } catch (\Throwable $exception) {
+      error_log($exception->getMessage());
     }
 
     $peopleModel = new PeopleModel();
