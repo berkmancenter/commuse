@@ -173,10 +173,14 @@ class UserModel extends ShieldUserModel
     // Let's try multiple times, the geocode API is limited to 1 request per second
     for ($try = 1; $try <= 5; $try++) {
       try {
-        if ($requestData['current_city']) {
+        if ($requestData['current_city'] || $requestData['home_city']) {
           $geoApiKey = $_ENV['geocode_mapbox_api.key'];
           $geoQueryArray = [$requestData['current_city'], $requestData['current_state'], $requestData['current_country']];
           $geoQueryArray = array_filter($geoQueryArray);
+          if (count($geoQueryArray) === 0) {
+            $geoQueryArray = [$requestData['home_city'], $requestData['home_state'], $requestData['home_country']];
+            $geoQueryArray = array_filter($geoQueryArray);
+          }
           $geoQuery = urlencode(join(',', $geoQueryArray));
           $geoApiResponse = json_decode(file_get_contents("https://api.mapbox.com/geocoding/v5/mapbox.places/{$geoQuery}.json?access_token={$geoApiKey}"), true);
 
@@ -271,6 +275,10 @@ class UserModel extends ShieldUserModel
               ->whereIn('custom_field_id', $childFieldsIds)
               ->where('model_id', $userId)
               ->delete();
+
+            if (is_array($value) === false) {
+              continue 2;
+            }
 
             foreach ($value as $index => $itemData) {
               foreach ($itemData as $machineName => $itemDataValue) {
