@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "59770cdc036e1612b0e7e70596a2d67f",
+    "content-hash": "220593246cd9e283e6677b7ed6841030",
     "packages": [
         {
             "name": "codeigniter4/framework",
@@ -1375,6 +1375,49 @@
                 "source": "https://github.com/ralouphie/getallheaders/tree/develop"
             },
             "time": "2019-03-08T08:55:37+00:00"
+        },
+        {
+            "name": "rogervila/array-diff-multidimensional",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rogervila/array-diff-multidimensional.git",
+                "reference": "d5afb18bfc256bf9d792594fa998f7af68179db0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rogervila/array-diff-multidimensional/zipball/d5afb18bfc256bf9d792594fa998f7af68179db0",
+                "reference": "d5afb18bfc256bf9d792594fa998f7af68179db0",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Rogervila\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Roger Vilà",
+                    "email": "rogervila@me.com"
+                }
+            ],
+            "description": "Compare the difference between two multidimensional arrays",
+            "support": {
+                "issues": "https://github.com/rogervila/array-diff-multidimensional/issues",
+                "source": "https://github.com/rogervila/array-diff-multidimensional/tree/2.1.0"
+            },
+            "time": "2021-10-28T08:07:19+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",

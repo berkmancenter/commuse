@@ -8,6 +8,7 @@ use CodeIgniter\Shield\Models\UserModel as ShieldUserModel;
 use CodeIgniter\Shield\Traits\Resettable as Resettable;
 use App\Libraries\UserProfileStructure;
 use \Gumlet\ImageResize;
+use Rogervila\ArrayDiffMultidimensional;
 
 class UserModel extends ShieldUserModel
 {
@@ -23,6 +24,13 @@ class UserModel extends ShieldUserModel
     parent::initialize();
   }
 
+    /**
+   * Retrieves the profile data of a user.
+   *
+   * @param int $id      The ID of the user.
+   *
+   * @return array|null  The profile data of the user or null if not found.
+   */
   public function getUserProfileData($id) {
     $db = \Config\Database::connect();
     $builder = $db->table('people');
@@ -102,11 +110,24 @@ class UserModel extends ShieldUserModel
     return $userData;
   }
 
+  /**
+   * Retrieves the structure of the user profile.
+   *
+   * @return array  The structure of the user profile.
+   */
   public function getUserProfileStructure() {
     $userProfileStructure = new UserProfileStructure();
     return $userProfileStructure->getUserProfileStructure();
   }
 
+  /**
+   * Saves profile data to the database.
+   *
+   * @param array $requestData  The data containing profile fields to be saved.
+   * @param int   $userId       The ID of the user whose profile is being saved (optional).
+   *
+   * @return array              An array containing transaction status and a response message.
+   */
   public function saveProfileData($requestData, $userId = null) {
     $peopleModel = new PeopleModel();
     if (is_null($userId)) {
@@ -120,6 +141,10 @@ class UserModel extends ShieldUserModel
     exec("rm {$cachePeopleSearchPath} > /dev/null 2> /dev/null");
 
     $existingPerson = $peopleModel->where('user_id', $userId)->first();
+
+    if ($existingPerson) {
+      $oldProfileData = $this->getUserProfileData($userId);
+    }
 
     $mappedData = [];
     foreach (UserModel::BASE_FIELDS as $key) {
@@ -164,11 +189,43 @@ class UserModel extends ShieldUserModel
 
     $peopleModel->db->transComplete();
 
+    // Create audit record if needed
+    if ($existingPerson) {
+      $keysToSkip = ['updated_at', 'full_text_search'];
+      $newProfileData = $this->getUserProfileData($userId);
+      $newValues = ArrayDiffMultidimensional::compare($newProfileData, $oldProfileData, false);
+      $newValues = array_diff_key($newValues, array_flip($keysToSkip));
+      $oldValues = ArrayDiffMultidimensional::compare($oldProfileData, $newProfileData, false);
+      $oldValues = array_diff_key($oldValues, array_flip($keysToSkip));
+      if (count($newValues) > 0) {
+        $db = \Config\Database::connect();
+        $builder = $db->table('audit');
+        $builder->insert([
+          'audited_id' => $userId,
+          'model_name' => 'People',
+          'changed_user_id' => auth()->id(),
+          'changes' => json_encode([
+            'new' => $newValues,
+            'old' => $oldValues,
+          ]),
+        ]);
+      }
+    }
+
     $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';
 
     return [$this->db->transStatus(), $message];
   }
 
+  /**
+   * Saves custom fields profile data to the database.
+   *
+   * @param array  $requestData      The data containing custom fields to be saved.
+   * @param int    $userId           The ID of the user to whom the custom fields belong.
+   * @param array  $personBasicData  Basic data of the person (optional).
+   *
+   * @return bool                    Returns true on success or false on failure.
+   */
   private function saveCustomFieldsProfileData($requestData, $userId, $personBasicData) {
     try {
       if ($requestData['current_city'] || $requestData['home_city']) {
@@ -344,6 +401,14 @@ class UserModel extends ShieldUserModel
     return $result;
   }
 
+  /**
+   * Downloads a remote image and saves it to the local directory after resizing.
+   *
+   * @param string $remoteURL      The URL of the remote image.
+   * @param string $localDirectory The directory where the image will be saved locally.
+   *
+   * @return string|false          The filename of the saved image on success, or false on failure.
+   */
   private function downloadRemoteImage($remoteURL, $localDirectory) {
     helper('filesystem');
 

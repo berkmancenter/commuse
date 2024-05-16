@@ -11,6 +11,7 @@
         "gumlet/php-image-resize": "^2.0",
         "guzzlehttp/guzzle": "^7.7",
         "league/csv": "^9.15",
+        "rogervila/array-diff-multidimensional": "^2.1",
         "voku/stringy": "^6.5"
     },
     "require-dev": {
