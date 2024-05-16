@@ -38,7 +38,7 @@ $routes->get('api/people/filters', 'People::filters');
 $routes->get('api/people/export', 'People::export');
 
 $routes->get('api/users/current', 'Users::current');
-$routes->get('api/users/currentProfile', 'Users::currentProfile');
+$routes->get('api/users/profile/(:any)', 'Users::profile/$1');
 $routes->get('api/users/profileStructure', 'Users::profileStructure');
 $routes->post('api/users/saveProfile', 'Users::saveProfile');
 $routes->post('api/users/uploadProfileImage', 'Users::uploadProfileImage');
@@ -64,6 +64,7 @@ $frontRoutes = [
   '/',
   'people',
   'profile',
+  'profile/(:any)',
   'account',
   'people/(:num)',
   'people_map',

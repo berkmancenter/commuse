@@ -41,6 +41,14 @@ const router = createRouter({
       },
     },
     {
+      path: '/profile/:id',
+      component: () => import('@/components/User/Profile.vue'),
+      name: 'user-profile-admin.index',
+      meta: {
+        title: 'Profile',
+      },
+    },
+    {
       path: '/account',
       component: () => import('@/components/User/Account.vue'),
       name: 'user-account.index',

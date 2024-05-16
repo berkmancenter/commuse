@@ -120,8 +120,8 @@ const actions = {
 
     return data
   },
-  async fetchProfile(context) {
-    const response = await fetchIt(`${apiUrl}/api/users/currentProfile`)
+  async fetchProfile(context, id) {
+    const response = await fetchIt(`${apiUrl}/api/users/profile/${id}`)
     const data = await response.json()
 
     return data

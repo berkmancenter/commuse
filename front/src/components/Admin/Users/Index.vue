@@ -56,7 +56,10 @@
             <td class="admin-users-table-is-admin">
               <Booler :value="user.groups.includes('admin')" />
             </td>
-            <td class="admin-table-actions">
+            <td>
+              <router-link :to="{ name: 'user-profile-admin.index', params: { id: user.id } }" title="Edit user profile">
+                <Icon :src="editIcon" />
+              </router-link>
               <router-link :to="{ name: 'people.details', params: { id: user.people_id } }" target="_blank" title="Show user profile">
                 <Icon :src="userIcon" />
               </router-link>
@@ -142,6 +145,7 @@
   import toggleAdminIcon from '@/assets/images/toggle_admin.svg'
   import userIcon from '@/assets/images/user.svg'
   import fileIcon from '@/assets/images/file.svg'
+  import editIcon from '@/assets/images/edit.svg'
   import searchIcon from '@/assets/images/search.svg'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
@@ -164,6 +168,7 @@
         toggleAdminIcon,
         fileIcon,
         userIcon,
+        editIcon,
         searchIcon,
         users: [],
         roles: [

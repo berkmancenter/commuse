@@ -130,10 +130,18 @@ class UserModel extends ShieldUserModel
    */
   public function saveProfileData($requestData, $userId = null) {
     $peopleModel = new PeopleModel();
+
+    // Regular user editing
     if (is_null($userId)) {
       $userId = auth()->id();
     }
 
+    // Edit other user profile as admin
+    if (auth()->user()->can('admin.access') === true && $requestData['user_id']) {
+      $userId = $requestData['user_id'];
+    }
+
+    // Clear related caches
     $cache = \Config\Services::cache();
     $cache->delete("person_{$userId}");
     $cache->delete('filters_with_values');

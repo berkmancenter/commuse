@@ -202,7 +202,7 @@
         this.$store.dispatch('app/setPeopleMarkReload', true)
 
         if (response.ok) {
-          this.awn.success('Your profile has been saved.')
+          this.awn.success('Profile has been saved.')
         } else {
           this.awn.warning('Something went wrong, try again.')
         }
@@ -227,14 +227,20 @@
             const data = await response.json()
             profile.image_url = data.image
             this.$store.dispatch('app/setUserProfile', profile)
-            this.awn.success('Your profile image has been saved.')
+            this.awn.success('Profile image has been saved.')
           } else {
             this.awn.warning('Something went wrong, try again.')
           }
         }
       },
       async loadProfile() {
-        let profile = await this.$store.dispatch('app/fetchProfile')
+        let profileId = this.$route.params.id
+
+        if (!profileId) {
+          profileId = 'current'
+        }
+
+        let profile = await this.$store.dispatch('app/fetchProfile', profileId)
 
         this.mitt.emit('spinnerStop')
 

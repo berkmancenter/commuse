@@ -28,10 +28,16 @@ class Users extends BaseController
     return $this->respond($userData);
   }
 
-  public function currentProfile()
+  public function profile($id = null)
   {
     $usersModel = new UserModel();
+
     $userId = auth()->id();
+
+    if (auth()->user()->can('admin.access') === true && $id && $id !== 'current') {
+      $userId = $id;
+    }
+
     $userData = $usersModel->getUserProfileData($userId);
 
     if (!$userData) {
