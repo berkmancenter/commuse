@@ -276,7 +276,12 @@
 
         return valid
       },
-    }
+    },
+    watch: {
+      '$route.params.id': function() {
+        this.loadProfile()
+      },
+    },
   }
 </script>
 

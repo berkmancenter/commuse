@@ -130,6 +130,7 @@
 
   .multiselect__tag {
     background-color: var(--secondary-color);
+    min-height: 24px;
 
     .multiselect__tag-icon::after {
       color: #ffffff;

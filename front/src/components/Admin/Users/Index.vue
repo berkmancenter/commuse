@@ -56,7 +56,7 @@
             <td class="admin-users-table-is-admin">
               <Booler :value="user.groups.includes('admin')" />
             </td>
-            <td>
+            <td class="admin-table-actions">
               <router-link :to="{ name: 'user-profile-admin.index', params: { id: user.id } }" title="Edit user profile">
                 <Icon :src="editIcon" />
               </router-link>
