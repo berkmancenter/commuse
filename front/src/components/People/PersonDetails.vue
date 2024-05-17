@@ -78,6 +78,14 @@
           </div>
 
           <div class="mt-2 people-section-details-last-updated">Last updated: {{ person.updated_at }} UTC</div>
+
+          <div class="people-section-details-admin-actions" v-if="$store.state.app.currentUser.admin">
+            <hr>
+
+            <h4 class="is-size-5 mt-2">Admin</h4>
+
+            <ActionButton class="mt-2" buttonText="Edit profile" @click="$router.push({ name: 'user-profile-admin.index', params: { id: person.user_id } })" :icon="editIcon"></ActionButton>
+          </div>
         </div>
       </div>
     </div>
@@ -116,8 +124,10 @@
   import profileFallbackImage from '@/assets/images/profile_fallback.png'
   import affiliateIcon from '@/assets/images/affiliate.svg'
   import currentAddressIcon from '@/assets/images/marker_map.svg'
+  import editIcon from '@/assets/images/edit.svg'
   import PersonDetailsGroup from '@/components/People/PersonDetailsGroup.vue'
   import ShowMore from '@/components/Shared/ShowMore.vue'
+  import ActionButton from '@/components/Shared/ActionButton.vue'
   import { compact, flatten } from 'lodash'
   import { getMultiFieldValue } from '@/lib/fields/multi.js'
 
@@ -130,6 +140,7 @@
         phoneIcon,
         emailIcon,
         homeIcon,
+        editIcon,
         profileFallbackImage,
         affiliateIcon,
         currentAddressIcon,
@@ -140,6 +151,7 @@
     components: {
       PersonDetailsGroup,
       ShowMore,
+      ActionButton,
     },
     computed: {
       address() {
@@ -389,6 +401,12 @@
       &:hover {
         box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
       }
+    }
+  }
+
+  .people-section-details-admin-actions {
+    hr {
+      background-color: #4a4a4a;
     }
   }
 </style>
