@@ -75,12 +75,17 @@ class Users extends BaseController
     }
   }
 
-  public function uploadProfileImage()
+  public function uploadProfileImage($id = null)
   {
     helper('text');
 
     $peopleModel = new PeopleModel();
+
     $userId = auth()->id();
+
+    if (auth()->user()->can('admin.access') === true && $id && $id !== 'current') {
+      $userId = $id;
+    }
 
     $existingPerson = $peopleModel->where('user_id', $userId)->first();
 

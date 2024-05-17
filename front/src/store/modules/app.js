@@ -218,10 +218,10 @@ const actions = {
 
     return response
   },
-  async uploadProfileImage(context, file) {
+  async uploadProfileImage(context, data) {
     const formData = new FormData();
-    formData.append('image', file);
-    const response = await fetchIt(`${apiUrl}/api/users/uploadProfileImage`, {
+    formData.append('image', data.file);
+    const response = await fetchIt(`${apiUrl}/api/users/uploadProfileImage/${data.id}`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

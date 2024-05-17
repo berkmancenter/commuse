@@ -218,7 +218,16 @@
         if (this.$refs.userProfileImageInput.files[0]) {
           this.mitt.emit('spinnerStart')
 
-          const response = await this.$store.dispatch('app/uploadProfileImage', this.$refs.userProfileImageInput.files[0])
+          let profileId = this.$route.params.id
+
+          if (!profileId) {
+            profileId = 'current'
+          }
+
+          const response = await this.$store.dispatch('app/uploadProfileImage', { 
+            file: this.$refs.userProfileImageInput.files[0],
+            id: profileId,
+          })
 
           this.mitt.emit('spinnerStop')
 
@@ -227,6 +236,7 @@
             const data = await response.json()
             profile.image_url = data.image
             this.$store.dispatch('app/setUserProfile', profile)
+            this.$store.dispatch('app/setPeopleMarkReload', true)
             this.awn.success('Profile image has been saved.')
           } else {
             this.awn.warning('Something went wrong, try again.')
