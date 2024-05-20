@@ -88,6 +88,14 @@ const router = createRouter({
         title: 'Data editor',
       },
     },
+    {
+      path: '/admin/profile_data_audit',
+      component: () => import('@/components/Admin/ProfileDataAudit/Index.vue'),
+      name: 'admin-profile-data-audit.index',
+      meta: {
+        title: 'Profile data audit',
+      },
+    },
   ]
 })
 

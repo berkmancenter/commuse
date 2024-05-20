@@ -32,10 +32,12 @@
             <td>{{ fieldsDataItem.field_title }}</td>
             <td class="admin-data-editor-table-model-id">{{ fieldsDataItem.model_id }}</td>
             <td>{{ fieldsDataItem.model_name }}</td>
-            <td class="admin-table-actions admin-data-editor-table-model-actions">
-              <a title="Edit custom field" @click.prevent="openEditModal(fieldsDataItem)">
-                <Icon :src="editIcon" />
-              </a>
+            <td>
+              <div class="admin-table-actions">
+                <a title="Edit custom field" @click.prevent="openEditModal(fieldsDataItem)">
+                  <Icon :src="editIcon" />
+                </a>
+              </div>
             </td>
           </tr>
           <tr v-if="fieldsData.length === 0">

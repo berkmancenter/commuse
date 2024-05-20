@@ -96,6 +96,7 @@
   import fieldsMenuIcon from '@/assets/images/fields_menu.svg'
   import worldMenuIcon from '@/assets/images/world.svg'
   import dataMenuIcon from '@/assets/images/data.svg'
+  import magnifierMenuIcon from '@/assets/images/magnifier_menu.svg'
   import { isMobile } from '@/lib/mobile_utils.js'
   import Spinner from '@/components/Shared/Spinner.vue'
 
@@ -161,6 +162,11 @@
             href: '/admin/data_editor',
             title: 'Data editor',
             icon: dataMenuIcon,
+          },
+          {
+            href: '/admin/profile_data_audit',
+            title: 'Profile data audit',
+            icon: magnifierMenuIcon,
           },
         ],
       }

@@ -56,19 +56,21 @@
             <td class="admin-users-table-is-admin">
               <Booler :value="user.groups.includes('admin')" />
             </td>
-            <td class="admin-table-actions">
-              <router-link :to="{ name: 'user-profile-admin.index', params: { id: user.id } }" title="Edit user profile">
-                <Icon :src="editIcon" />
-              </router-link>
-              <router-link :to="{ name: 'people.details', params: { id: user.people_id } }" target="_blank" title="Show user profile">
-                <Icon :src="userIcon" />
-              </router-link>
-              <a title="Change role" @click.prevent="setUserRoleModalOpen(user)">
-                <Icon :src="toggleAdminIcon" />
-              </a>
-              <a title="Delete user" @click.prevent="deleteUsersConfirm([user])">
-                <Icon :src="minusIcon" />
-              </a>
+            <td>
+              <div class="admin-table-actions">
+                <router-link :to="{ name: 'user-profile-admin.index', params: { id: user.id } }" title="Edit user profile">
+                  <Icon :src="editIcon" />
+                </router-link>
+                <router-link :to="{ name: 'people.details', params: { id: user.people_id } }" target="_blank" title="Show user profile">
+                  <Icon :src="userIcon" />
+                </router-link>
+                <a title="Change role" @click.prevent="setUserRoleModalOpen(user)">
+                  <Icon :src="toggleAdminIcon" />
+                </a>
+                <a title="Delete user" @click.prevent="deleteUsersConfirm([user])">
+                  <Icon :src="minusIcon" />
+                </a>
+              </div>
             </td>
           </tr>
           <tr v-if="users.length === 0">

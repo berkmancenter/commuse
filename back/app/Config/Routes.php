@@ -58,7 +58,7 @@ $routes->get('api/admin/customFields', 'CustomFields::index');
 $routes->post('api/admin/customFields/upsert', 'CustomFields::upsert');
 $routes->post('api/admin/dataEditor', 'DataEditor::index');
 $routes->post('api/admin/dataEditor/saveItem', 'DataEditor::saveItem');
-
+$routes->get('api/admin/profileDataAudit', 'DataAudit::profileDataAudit');
 
 $frontRoutes = [
   '/',
@@ -72,6 +72,7 @@ $frontRoutes = [
   'admin/invitations',
   'admin/custom_fields',
   'admin/data_editor',
+  'admin/profile_data_audit',
 ];
 
 foreach ($frontRoutes as $route) {

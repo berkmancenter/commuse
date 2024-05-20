@@ -19,10 +19,12 @@
             <td>{{ customField.model_name }}</td>
             <td>{{ customField.input_type }}</td>
             <td>{{ formattedTimestamp(customField.created_at) }}</td>
-            <td class="admin-table-actions">
-              <a title="Edit custom field" @click.prevent="openEditFieldModal(customField)">
-                <Icon :src="editIcon" />
-              </a>
+            <td>
+              <div class="admin-table-actions">
+                <a title="Edit custom field" @click.prevent="openEditFieldModal(customField)">
+                  <Icon :src="editIcon" />
+                </a>
+              </div>
             </td>
           </tr>
           <tr v-if="customFields.length === 0">

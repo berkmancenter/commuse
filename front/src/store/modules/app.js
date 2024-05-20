@@ -168,6 +168,12 @@ const actions = {
 
     return data
   },
+  async fetchProfileDataAuditData(context, id) {
+    const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit`)
+    const data = await response.json()
+
+    return data
+  },
   async fetchDataEditorData(context, id) {
     context.state.dataEditorFetchController = new AbortController()
 
