@@ -115,6 +115,23 @@ class Users extends BaseController
 
     $message = $existingPerson ? 'Profile image updated successfully' : 'Profile image created successfully';
 
+    // Add audit record
+    $db = \Config\Database::connect();
+    $builder = $db->table('audit');
+    $builder->insert([
+      'audited_id' => $userId,
+      'model_name' => 'People',
+      'changed_user_id' => auth()->id(),
+      'changes' => json_encode([
+        'new' => [
+          'profile_image' => 'new profile image',
+        ],
+        'old' => [
+          'profile_image' => '',
+        ],
+      ]),
+    ]);
+
     if ($result) {
       return $this->respond([
         'message' => $message,
