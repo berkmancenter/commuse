@@ -16,8 +16,13 @@ class UserModel extends ShieldUserModel
 
   const BASE_FIELDS = [
     'first_name', 'middle_name', 'last_name', 'bio', 'public_profile', 'email',
-    'prefix', 'preferred_pronouns', 'mobile_phone_number',
+    'prefix', 'preferred_pronouns', 'mobile_phone_number', 'reintake',
   ];
+
+  const REINTAKE_STATUS_NOT_REQUIRED = 'not_required';
+  const REINTAKE_STATUS_REQUIRED = 'required';
+  const REINTAKE_STATUS_ACCEPTED = 'accepted';
+  const REINTAKE_STATUS_DENIED = 'denied';
 
   protected function initialize(): void
   {
@@ -69,7 +74,7 @@ class UserModel extends ShieldUserModel
       foreach ($customFieldsData as $customFieldRecord) {
         $value = $customFieldRecord['value'];
         if (in_array($customFieldRecord['input_type'], ['tags_range', 'tags'])) {
-          $value = json_decode($customFieldRecord['value_json']);
+          $value = json_decode($customFieldRecord['value_json'], true);
         }
 
         if ($customFieldRecord['input_type'] === 'multi') {

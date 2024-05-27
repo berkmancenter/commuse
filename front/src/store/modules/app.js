@@ -366,6 +366,21 @@ const actions = {
 
     return response
   },
+  async setReintakeStatus(context, data) {
+    const response = await fetchIt(`${apiUrl}/api/admin/users/setReintakeStatus`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        users: data.users,
+        status: data.status,
+      }),
+    })
+
+    return response
+  },
 }
 
 const getters = {}

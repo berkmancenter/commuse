@@ -156,6 +156,7 @@ class Users extends BaseController
         people.first_name,
         people.last_name,
         people.id AS people_id,
+        people.reintake,
         auth_identities.secret AS email,
         invitation_codes.code as invitation_code,
         STRING_AGG(auth_groups_users.group, \',\') AS groups
@@ -432,5 +433,84 @@ class Users extends BaseController
     } else {
       return redirect()->to(config('Auth')->registerRedirect());
     }
+  }
+
+  public function setReintakeStatus()
+  {
+    $this->checkAdminAccess();
+
+    try {
+      $requestData = $this->request->getJSON(true);
+      $userIds = $requestData['users'] ?? [];
+      $status = $requestData['status'] ?? 'not_required';
+      $usersModel = new UserModel();
+  
+      if (!empty($userIds)) {
+        foreach ($userIds as $userId) {
+          $userData = $usersModel->getUserProfileData($userId);
+          $userData['reintake'] = $status;
+          $usersModel->saveProfileData($userData, $userId);
+        }
+      }
+    } catch (\Throwable $th) {
+      return $this->respond(['message' => 'Error changing Reintake status.'], 500);
+    }
+
+    return $this->respond(['message' => 'Reintake status has been set successfully.'], 200);
+  }
+
+  public function reintakeView()
+  {
+    return view('\App\Views\Users\reintake');
+  }
+
+  public function reintakeAccept()
+  {
+    $this->reintakeSet(UserModel::REINTAKE_STATUS_ACCEPTED, 'accepted');
+
+    return redirect()->to(site_url('profile'));
+  }
+
+  public function reintakeDeny()
+  {
+    $this->reintakeSet(UserModel::REINTAKE_STATUS_DENIED, 'denied');
+    auth()->logout();
+
+    return redirect()->to(site_url());
+  }
+
+  private function reintakeSet($value, $status) {
+    $userId = auth()->id();
+    $usersModel = new UserModel();
+
+    $db = \Config\Database::connect();
+    $builder = $db->table('people p');
+    $person = $builder
+      ->select('*')
+      ->where('user_id', $userId)
+      ->get()
+      ->getResultArray();
+
+    if (count($person)) {
+      if ($person[0]['reintake'] === UserModel::REINTAKE_STATUS_REQUIRED) {
+        $userData = $usersModel->getUserProfileData($userId);
+        $userData['reintake'] = $status;
+        $usersModel->saveProfileData($userData, $userId);
+
+        $this->reintakeSendNotificationEmail($status, $person[0]);
+      }
+    }
+  }
+
+  private function reintakeSendNotificationEmail($status, $person) {
+    $email = \Config\Services::email();
+    $name = $person['first_name'] . ' ' . $person['last_name'];
+    $userEmail = $person['email'];
+
+    $email->setTo($_ENV['reintake.notificationEmails']);
+    $email->setSubject("Reintake {$status} by {$name} {$userEmail}");
+    $email->setMessage("Reintake has been {$status} by {$name} {$userEmail}.");
+
+    $email->send();
   }
 }

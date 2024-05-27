@@ -54,6 +54,7 @@ $routes->post('api/admin/users/delete', 'Users::delete');
 $routes->post('api/admin/users/changeRole', 'Users::changeRole');
 $routes->post('api/admin/users/importFromCsv', 'Users::importFromCsv');
 $routes->get('api/admin/users/csvImportTemplate', 'Users::getUsersCsvImportTemplate');
+$routes->post('api/admin/users/setReintakeStatus', 'Users::setReintakeStatus');
 $routes->get('api/admin/customFields', 'CustomFields::index');
 $routes->post('api/admin/customFields/upsert', 'CustomFields::upsert');
 $routes->post('api/admin/dataEditor', 'DataEditor::index');
@@ -82,6 +83,10 @@ foreach ($frontRoutes as $route) {
 $routes->get('register', 'RegisterController::registerView');
 $routes->post('register', 'RegisterController::registerAction');
 $routes->get('changePassword', 'Users::changePasswordView');
+$routes->get('reintake', 'Users::reintakeView');
+$routes->get('reintakeAccept', 'Users::reintakeAccept');
+$routes->get('reintakeDeny', 'Users::reintakeDeny');
+$routes->get('reintake', 'Users::reintakeView');
 $routes->post('changePassword', 'Users::changePassword');
 
 service('auth')->routes($routes);

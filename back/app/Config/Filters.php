@@ -9,6 +9,7 @@ use CodeIgniter\Filters\Honeypot;
 use CodeIgniter\Filters\InvalidChars;
 use CodeIgniter\Filters\SecureHeaders;
 use App\Filters\ForcePasswordChange;
+use App\Filters\ForceReintakeFilter;
 
 class Filters extends BaseConfig
 {
@@ -23,6 +24,7 @@ class Filters extends BaseConfig
         'invalidchars'          => InvalidChars::class,
         'secureheaders'         => SecureHeaders::class,
         'force_password_change' => ForcePasswordChange::class,
+        'force_reintake'        => ForceReintakeFilter::class,
     ];
 
     /**
@@ -33,6 +35,7 @@ class Filters extends BaseConfig
         'before' => [
             'session' => ['except' => ['login*', 'register', 'auth/a/*']],
             'force_password_change' => ['except' => ['login*', 'register', 'auth/a/*', 'changePassword']],
+            'force_reintake' => ['except' => ['login*', 'register', 'auth/a/*', 'changePassword', 'reintake', 'reintakeAccept', 'reintakeDeny']],
             //'csrf',
             'invalidchars',
         ],

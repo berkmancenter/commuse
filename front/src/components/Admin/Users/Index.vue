@@ -3,8 +3,9 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">Users</h3>
 
     <div class="mb-4">
-      <ActionButton class="mr-2" buttonText="Import users from CSV" @click="importUsersFromCsvModalOpen()" :icon="fileIcon"></ActionButton>
-      <ActionButton buttonText="Delete users" @click="() => deleteUsersConfirm(selectedUsers)" :icon="minusIcon"></ActionButton>
+      <ActionButton buttonText="Import users from CSV" @click="importUsersFromCsvModalOpen()" :icon="fileIcon"></ActionButton>
+      <ActionButton class="ml-2" buttonText="Delete users" @click="() => deleteUsersConfirm(selectedUsers)" :icon="minusIcon"></ActionButton>
+      <ActionButton class="ml-2" buttonText="Set ReIntake status" @click="() => setReintakeStatusModalOpen(selectedUsers)" :icon="reintakeIcon"></ActionButton>
     </div>
 
     <div class="admin-users-search mb-4">
@@ -27,6 +28,7 @@
             <th>First name</th>
             <th>Last name</th>
             <th>Email</th>
+            <th>ReIntake</th>
             <th>Invitation code</th>
             <th>Created</th>
             <th>Last login</th>
@@ -42,6 +44,7 @@
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
             <td>{{ user.email }}</td>
+            <td>{{ setReintakeStatuses[user.reintake] }}</td>
             <td>
               <VTooltip distance="10" placement="left" v-if="user.invitation_code">
                 <a class="button" @click="searchTerm = user.invitation_code">{{ user.invitation_code }}</a>
@@ -54,6 +57,7 @@
             <td>{{ user.created_at }}</td>
             <td>{{ user.last_login }}</td>
             <td class="admin-users-table-is-admin">
+              <div class="is-hidden">{{ user.groups.includes('admin') }}</div>
               <Booler :value="user.groups.includes('admin')" />
             </td>
             <td>
@@ -136,6 +140,31 @@
   >
     Are you sure you delete <span class="has-text-weight-bold">{{ deleteUserModalCurrent.map((u) => u.email).join(', ') }}</span>?
   </Modal>
+
+  <Modal
+    v-model="setReintakeStatusModalStatus"
+    title="Set Reintake status"
+    :focusOnConfirm="true"
+    class="admin-users-set-reintake-status"
+    @confirm="setReintakeStatus()"
+    @cancel="setReintakeStatusModalStatus = false"
+  >
+    Choose a status that will be set to selected users after confirmation:
+
+    <div class="field mt-2">
+      <div class="control" v-for="(option, index) in setReintakeStatuses" :key="index">
+        <label class="radio">
+          <input
+            type="radio"
+            v-model="setReintakeStatusSelected"
+            :value="index"
+            class="mb-2"
+          >
+          {{ option }}
+        </label>
+      </div>
+    </div>
+  </Modal>
 </template>
 
 <script>
@@ -149,6 +178,7 @@
   import fileIcon from '@/assets/images/file.svg'
   import editIcon from '@/assets/images/edit.svg'
   import searchIcon from '@/assets/images/search.svg'
+  import reintakeIcon from '@/assets/images/reintake.svg'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
@@ -172,6 +202,7 @@
         userIcon,
         editIcon,
         searchIcon,
+        reintakeIcon,
         users: [],
         roles: [
           'user',
@@ -185,6 +216,15 @@
         deleteUserModalStatus: false,
         deleteUserModalCurrent: [],
         searchTerm: '',
+        setReintakeStatusModalStatus: false,
+        setReintakeStatuses: {
+          not_required: 'Not required',
+          required: 'Required',
+          accepted: 'Accepted',
+          denied: 'Denied',
+        },
+        setReintakeStatusSelected: 'not_required',
+        setReintakeStatusCurrent: [],
       }
     },
     created() {
@@ -300,6 +340,34 @@
 
         this.mitt.emit('spinnerStop')
         this.$store.dispatch('app/setPeopleMarkReload', true)
+      },
+      setReintakeStatusModalOpen(users) {
+        if (users.length === 0) {
+          this.awn.warning('No users selected.')
+
+          return
+        }
+
+        this.setReintakeStatusCurrent = users
+        this.setReintakeStatusModalStatus = true
+      },
+      async setReintakeStatus() {
+        this.mitt.emit('spinnerStart')
+
+        const response = await this.$store.dispatch('app/setReintakeStatus', {
+          users: this.setReintakeStatusCurrent.map(user => user.id),
+          status: this.setReintakeStatusSelected,
+        })
+
+        if (response.ok) {
+          this.awn.success('ReIntake status has been changed for selected users.')
+          this.loadUsers()
+        } else {
+          this.awn.warning('Something went wrong, try again.')
+        }
+
+        this.setReintakeStatusModalStatus = false
+        this.mitt.emit('spinnerStop')
       },
     },
   }
