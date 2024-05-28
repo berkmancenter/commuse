@@ -2,7 +2,7 @@
   <div class="admin-profile-data-audit">
     <h3 class="is-size-3 has-text-weight-bold mb-4">Profile data audit</h3>
 
-    <admin-table :tableClasses="['admin-data-editor-table']">
+    <admin-table :tableClasses="['admin-data-audit-table']">
       <thead>
         <tr class="no-select">
           <th data-sort-method="none" class="no-sort">Changed user</th>
@@ -13,13 +13,19 @@
       </thead>
       <tbody>
         <tr v-for="auditDataItem in auditData" :key="auditData.id" class="no-break">
-          <td>{{ auditDataItem.audited_first_name }} {{ auditDataItem.audited_last_name }}</td>
-          <td>{{ auditDataItem.changed_by_first_name }} {{ auditDataItem.changed_by_last_name }}</td>
+          <td class="no-break">
+            <div>{{ auditDataItem.audited_first_name }}</div>
+            <div>{{ auditDataItem.audited_last_name }}</div>
+          </td>
+          <td class="no-break">
+            <div>{{ auditDataItem.changed_by_first_name }}</div>
+            <div>{{ auditDataItem.changed_by_last_name }}</div>
+          </td>
           <td>
             <table>
               <tr><th colspan="2">New/changed</th></tr>
               <tr v-for="(changeNew, key) in auditDataItem.changes.new">
-                <td>{{ key }}</td>
+                <td class="no-break">{{ key }}</td>
                 <td>{{ changeNew }}</td>
               </tr>
             </table>
@@ -27,12 +33,12 @@
             <table>
               <tr><th colspan="2">Old/removed</th></tr>
               <tr v-for="(changeNew, key) in auditDataItem.changes.old">
-                <td>{{ key }}</td>
+                <td class="no-break">{{ key }}</td>
                 <td>{{ changeNew }}</td>
               </tr>
             </table>
           </td>
-          <td>{{ auditDataItem.created_at }}</td>
+          <td class="no-break">{{ auditDataItem.created_at }}</td>
         </tr>
         <tr v-if="auditData.length === 0">
           <td colspan="4">No data to show.</td>

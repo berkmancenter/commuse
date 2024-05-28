@@ -33,7 +33,7 @@ class CreateAuditTable extends Migration
               'type' => 'JSONB',
               'default' => '[]',
           ],
-          'created_at timestamp default current_timestamp',
+          'created_at timestamp default DATE_TRUNC(\'second\', CURRENT_TIMESTAMP::timestamp)',
       ]);
 
       $this->forge->addPrimaryKey('id');
