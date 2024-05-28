@@ -205,6 +205,7 @@ class UserModel extends ShieldUserModel
     // Create audit record if needed
     if ($existingPerson) {
       $keysToSkip = ['updated_at', 'full_text_search'];
+      $keysToSkip = array_merge($keysToSkip, $this->getChildCustomFields());
       $newProfileData = $this->getUserProfileData($userId);
       $newValues = ArrayDiffMultidimensional::compare($newProfileData, $oldProfileData, false);
       $newValues = array_diff_key($newValues, array_flip($keysToSkip));
@@ -462,5 +463,22 @@ class UserModel extends ShieldUserModel
       log_message('error', "Couldn't fetch image {$remoteURL}.");
       return false;
     }
+  }
+
+  private function getChildCustomFields() {
+    $db = \Config\Database::connect();
+    $builder = $db->table('custom_fields cf');
+    $childFields = $builder
+      ->select('cf.machine_name')
+      ->where('model_name', 'People')
+      ->where('parent_field_id IS NOT NULL')
+      ->get()
+      ->getResultArray();
+
+    $childFields = array_map(function ($field) {
+      return $field['machine_name'];
+    }, $childFields);
+
+    return $childFields;
   }
 }
