@@ -1,5 +1,5 @@
 <template>
-  <div class="field user-profile-field" ref="fieldContainer">
+  <div class="field custom-field" ref="fieldContainer">
     <label class="label" v-if="titleVisible()">{{ label }}</label>
 
     <div class="control" v-if="type == 'short_text'">
@@ -31,7 +31,7 @@
     </div>
 
     <div v-if="type == 'tags_range'">
-      <div class="box" v-for="(item, index) in $store.state.app.userProfile[machineName]">
+      <div class="box" v-for="(item, index) in storeObject[machineName]">
         <span title="Remove item" @click="removeTagRangeItem(index)"><Icon :src="minusIcon" /></span>
 
         <div>
@@ -82,7 +82,7 @@
     </div>
 
     <div v-if="type == 'multi'">
-      <div class="box" v-for="(item, index) in $store.state.app.userProfile[machineName]">
+      <div class="box" v-for="(item, index) in storeObject[machineName]">
         <span title="Remove item" @click="removeMultiItem(index)"><Icon :src="minusIcon" /></span>
 
         <div>
@@ -119,6 +119,7 @@
       metadata: Object,
       value: null,
       fieldData: Object,
+      storeObject: Object,
     },
     data() {
       return {
@@ -187,7 +188,7 @@
           let errorMessages = []
           let valid = true
 
-          this.$store.state.app.userProfile[this.machineName]?.forEach((fieldItem) => {
+          this.storeObject[this.machineName]?.forEach((fieldItem) => {
             if (!fieldItem.to) {
               valid = false
               errorMessages.push(`<span class="has-text-weight-bold">To</span> value in the <span class="has-text-weight-bold">${this.label}</span> field must be set.`)

@@ -46,62 +46,69 @@
               </div>
             </div>
 
-            <ProfileField
+            <CustomField
               label="Prefix"
               type="short_text"
               v-bind:value="$store.state.app.userProfile.prefix"
               v-on:update:value="$store.state.app.userProfile.prefix = $event"
               :ref="el => fields['prefix'] = el"
-            ></ProfileField>
+              :storeObject="$store.state.app.userProfile"
+            ></CustomField>
 
-            <ProfileField
+            <CustomField
               label="First name"
               type="short_text"
               v-bind:value="$store.state.app.userProfile.first_name"
               v-on:update:value="$store.state.app.userProfile.first_name = $event"
               :ref="el => fields['first_name'] = el"
-            ></ProfileField>
+              :storeObject="$store.state.app.userProfile"
+            ></CustomField>
 
-            <ProfileField
+            <CustomField
               label="Middle name"
               type="short_text"
               v-bind:value="$store.state.app.userProfile.middle_name"
               v-on:update:value="$store.state.app.userProfile.middle_name = $event"
               :ref="el => fields['middle_name'] = el"
-            ></ProfileField>
+              :storeObject="$store.state.app.userProfile"
+            ></CustomField>
 
-            <ProfileField
+            <CustomField
               label="Last name"
               type="short_text"
               v-bind:value="$store.state.app.userProfile.last_name"
               v-on:update:value="$store.state.app.userProfile.last_name = $event"
               :ref="el => fields['last_name'] = el"
-            ></ProfileField>
+              :storeObject="$store.state.app.userProfile"
+            ></CustomField>
 
-            <ProfileField
+            <CustomField
               label="Preferred pronouns"
               type="short_text"
               v-bind:value="$store.state.app.userProfile.preferred_pronouns"
               v-on:update:value="$store.state.app.userProfile.preferred_pronouns = $event"
               :ref="el => fields['preferred_pronouns'] = el"
-            ></ProfileField>
+              :storeObject="$store.state.app.userProfile"
+            ></CustomField>
 
-            <ProfileField
+            <CustomField
               label="Bio"
               type="long_text"
               v-bind:value="$store.state.app.userProfile.bio"
               v-on:update:value="$store.state.app.userProfile.bio = $event"
               :ref="el => fields['bio'] = el"
-            ></ProfileField>
+              :storeObject="$store.state.app.userProfile"
+            ></CustomField>
 
-            <ProfileField
+            <CustomField
               :label="customField.title"
               :type="customField.input_type"
               v-bind:value="$store.state.app.userProfile[customField.machine_name]"
               v-on:update:value="$store.state.app.userProfile[customField.machine_name] = $event"
               :ref="el => fields[customField.machine_name] = el"
+              :storeObject="$store.state.app.userProfile"
               v-for="customField in myInformationCustomFields"
-            ></ProfileField>
+            ></CustomField>
           </div>
         </div>
 
@@ -110,21 +117,23 @@
             Contact Information
           </p>
           <div class="panel-block">
-            <ProfileField
+            <CustomField
               label="Phone"
               type="short_text"
               v-bind:value="$store.state.app.userProfile.mobile_phone_number"
               v-on:update:value="$store.state.app.userProfile.mobile_phone_number = $event"
               :ref="el => fields['mobile_phone_number'] = el"
-            ></ProfileField>
+              :storeObject="$store.state.app.userProfile"
+            ></CustomField>
 
-            <ProfileField
+            <CustomField
               label="Email"
               type="short_text"
               v-bind:value="$store.state.app.userProfile.email"
               v-on:update:value="$store.state.app.userProfile.email = $event"
               :ref="el => fields['email'] = el"
-            ></ProfileField>
+              :storeObject="$store.state.app.userProfile"
+            ></CustomField>
           </div>
         </div>
 
@@ -133,7 +142,7 @@
             {{ customGroup.title }}
           </p>
           <div class="panel-block">
-            <ProfileField
+            <CustomField
               :label="customField.title"
               :type="customField.input_type"
               :machine-name="customField.machine_name"
@@ -142,8 +151,9 @@
               :value="$store.state.app.userProfile[customField.machine_name]"
               @update:value="$store.state.app.userProfile[customField.machine_name] = $event"
               :ref="el => fields[customField.machine_name] = el"
+              :storeObject="$store.state.app.userProfile"
               v-for="customField in customGroup.custom_fields"
-            ></ProfileField>
+            ></CustomField>
           </div>
         </div>
       </div>
@@ -152,7 +162,7 @@
 </template>
 
 <script>
-  import ProfileField from './ProfileField.vue'
+  import CustomField from '@/components/CustomFields/CustomField.vue'
   import StickyElement from 'vue-sticky-element'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import saveIcon from '@/assets/images/save.svg'
@@ -168,7 +178,7 @@
       }
     },
     components: {
-      ProfileField,
+      CustomField,
       StickyElement,
       ActionButton,
     },
