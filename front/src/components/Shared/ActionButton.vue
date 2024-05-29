@@ -1,5 +1,5 @@
 <template>
-  <component :is="tagName" class="commuse-action-button button" @click="handleClick">
+  <component :is="tagName" class="commuse-action-button button" :class="{ 'commuse-action-button-active': active }" @click="handleClick">
     <Icon :src="icon" :interactive="false" />
     <div>{{ buttonText }}</div>
   </component>
@@ -18,6 +18,11 @@
       buttonText: String,
       onClick: Function,
       button: {
+        type: Boolean,
+        required: false,
+        default: false,
+      },
+      active: {
         type: Boolean,
         required: false,
         default: false,
@@ -48,6 +53,10 @@
 
     > * {
       height: 100%;
+    }
+
+    &.commuse-action-button-active {
+      background-color: var(--super-light-color);
     }
   }
 </style>

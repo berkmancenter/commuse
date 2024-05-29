@@ -1,5 +1,6 @@
 import fetchIt from '@/lib/fetch_it'
 import store2 from 'store2'
+import { objectToQueryParams } from '@/lib/url_params'
 
 const apiUrl = import.meta.env.VITE_API_URL
 
@@ -150,31 +151,31 @@ const actions = {
 
     return data
   },
-  async fetchInvitations(context, id) {
+  async fetchInvitations(context) {
     const response = await fetchIt(`${apiUrl}/api/admin/invitations`)
     const data = await response.json()
 
     return data
   },
-  async fetchUsers(context, id) {
+  async fetchUsers(context) {
     const response = await fetchIt(`${apiUrl}/api/admin/users`)
     const data = await response.json()
 
     return data
   },
-  async fetchCustomFields(context, id) {
+  async fetchCustomFields(context) {
     const response = await fetchIt(`${apiUrl}/api/admin/customFields`)
     const data = await response.json()
 
     return data
   },
-  async fetchProfileDataAuditData(context, id) {
-    const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit`)
+  async fetchProfileDataAuditData(context, params) {
+    const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit?${objectToQueryParams(params)}`)
     const data = await response.json()
 
     return data
   },
-  async fetchDataEditorData(context, id) {
+  async fetchDataEditorData(context) {
     context.state.dataEditorFetchController = new AbortController()
 
     const response = await fetchIt(`${apiUrl}/api/admin/dataEditor`, {

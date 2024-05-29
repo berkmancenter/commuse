@@ -10,10 +10,11 @@ class DataAudit extends BaseController
 
   public function profileDataAudit() {
     $this->checkAdminAccess();
+    $request = \Config\Services::request();
 
     $db = \Config\Database::connect();
     $builder = $db->table('audit au');
-    $profileAuditItems = $builder
+    $builder
       ->select('
         pa.first_name AS audited_first_name,
         pa.last_name AS audited_last_name,
@@ -24,7 +25,13 @@ class DataAudit extends BaseController
         au.created_at
       ')
       ->join('people pa', 'pa.user_id = au.audited_id', 'left')
-      ->join('people pch', 'pch.user_id = au.changed_user_id', 'left')
+      ->join('people pch', 'pch.user_id = au.changed_user_id', 'left');
+
+    if ($request->getGet('justReintake') == 'true') {
+      $builder->where('(au.changes::text) LIKE \'%reintake%\'');
+    }
+
+    $profileAuditItems = $builder
       ->orderBy('created_at', 'DESC')
       ->get()
       ->getResultArray();

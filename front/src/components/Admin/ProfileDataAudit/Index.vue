@@ -2,6 +2,10 @@
   <div class="admin-profile-data-audit">
     <h3 class="is-size-3 has-text-weight-bold mb-4">Profile data audit</h3>
 
+    <div class="mb-4">
+      <ActionButton buttonText="Just reintake changes" @click="setJustReintake()" :active="justReintake" :icon="reintakeIcon"></ActionButton>
+    </div>
+
     <admin-table :tableClasses="['admin-data-audit-table']">
       <thead>
         <tr class="no-select">
@@ -51,8 +55,10 @@
 <script>
   import Icon from '@/components/Shared/Icon.vue'
   import searchIcon from '@/assets/images/search.svg'
+  import reintakeIcon from '@/assets/images/reintake.svg'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import VueMultiselect from 'vue-multiselect'
+  import ActionButton from '@/components/Shared/ActionButton.vue'
 
   export default {
     name: 'AdminDataAudit',
@@ -60,11 +66,14 @@
       Icon,
       AdminTable,
       VueMultiselect,
+      ActionButton,
     },
     data() {
       return {
         searchIcon,
+        reintakeIcon,
         auditData: [],
+        justReintake: false,
       }
     },
     created() {
@@ -76,7 +85,9 @@
 
         let auditData = null
         try {
-          auditData = await this.$store.dispatch('app/fetchProfileDataAuditData')
+          auditData = await this.$store.dispatch('app/fetchProfileDataAuditData', {
+            justReintake: this.justReintake,
+          })
         } catch (error) {
           this.mitt.emit('spinnerStop')
           return
@@ -85,6 +96,10 @@
         this.auditData = auditData
 
         this.mitt.emit('spinnerStop')
+      },
+      setJustReintake() {
+        this.justReintake = !this.justReintake
+        this.loadData()
       },
     },
   }
