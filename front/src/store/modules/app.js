@@ -382,6 +382,34 @@ const actions = {
 
     return response
   },
+  async acceptProfileAuditRecord(context, data) {
+    const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit/accept`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: data.id,
+      }),
+    })
+
+    return response
+  },
+  async requestChangesProfileAuditRecord(context, data) {
+    const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit/requestChanges`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: data.id,
+      }),
+    })
+
+    return response
+  },
 }
 
 const getters = {}

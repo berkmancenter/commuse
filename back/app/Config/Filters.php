@@ -33,14 +33,14 @@ class Filters extends BaseConfig
      */
     public array $globals = [
         'before' => [
-            'session' => ['except' => ['login*', 'register', 'auth/a/*']],
+            'session' => ['except' => ['login*', 'register', 'auth/a/*', 'api/people/indexRemote']],
             'force_password_change' => ['except' => ['login*', 'register', 'auth/a/*', 'changePassword']],
             'force_reintake' => ['except' => ['login*', 'register', 'auth/a/*', 'changePassword', 'reintake', 'reintakeAccept', 'reintakeDeny']],
             //'csrf',
             'invalidchars',
         ],
         'after' => [
-            'toolbar',
+            //'toolbar',
             'honeypot',
             'secureheaders',
         ],

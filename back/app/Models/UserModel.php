@@ -19,6 +19,15 @@ class UserModel extends ShieldUserModel
     'prefix', 'preferred_pronouns', 'mobile_phone_number', 'reintake',
   ];
 
+  const AUDIT_SKIP_FIELDS = [
+    'updated_at', 'full_text_search',
+  ];
+
+  const REVIEW_TRIGGER_FIELDS = [
+    'bio', 'email', 'website_link', 'twitter_link', 'mastodon_link',
+    'linkedin_link', 'instagram_link', 'facebook_link', 'snapchat_link',
+  ];
+
   const REINTAKE_STATUS_NOT_REQUIRED = 'not_required';
   const REINTAKE_STATUS_REQUIRED = 'required';
   const REINTAKE_STATUS_ACCEPTED = 'accepted';
@@ -146,6 +155,8 @@ class UserModel extends ShieldUserModel
       $userId = $requestData['user_id'];
     }
 
+    $userId = intval($userId);
+
     // Clear related caches
     $cache = \Config\Services::cache();
     $cache->delete("person_{$userId}");
@@ -202,29 +213,7 @@ class UserModel extends ShieldUserModel
 
     $peopleModel->db->transComplete();
 
-    // Create audit record if needed
-    if ($existingPerson) {
-      $keysToSkip = ['updated_at', 'full_text_search'];
-      $keysToSkip = array_merge($keysToSkip, $this->getChildCustomFields());
-      $newProfileData = $this->getUserProfileData($userId);
-      $newValues = ArrayDiffMultidimensional::compare($newProfileData, $oldProfileData, false);
-      $newValues = array_diff_key($newValues, array_flip($keysToSkip));
-      $oldValues = ArrayDiffMultidimensional::compare($oldProfileData, $newProfileData, false);
-      $oldValues = array_diff_key($oldValues, array_flip($keysToSkip));
-      if (count($newValues) > 0) {
-        $db = \Config\Database::connect();
-        $builder = $db->table('audit');
-        $builder->insert([
-          'audited_id' => $userId,
-          'model_name' => 'People',
-          'changed_user_id' => auth()->id(),
-          'changes' => json_encode([
-            'new' => $newValues,
-            'old' => $oldValues,
-          ]),
-        ]);
-      }
-    }
+    $this->addAuditRecord($oldProfileData, $existingPerson, $userId);
 
     $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';
 
@@ -480,5 +469,73 @@ class UserModel extends ShieldUserModel
     }, $childFields);
 
     return $childFields;
+  }
+
+  /**
+   * Add an audit record for a user profile change.
+   *
+   * This function creates an audit record if there are changes in the profile data of an existing person.
+   * It compares the old profile data with the new data and logs the differences, excluding certain fields.
+   * If changes are found, they are recorded in the 'audit' table. Additionally, if any changes require 
+   * review (as defined by REVIEW_TRIGGER_FIELDS), an email notification is sent to the designated reviewers.
+   *
+   * @param array $oldProfileData The previous profile data before the update.
+   * @param array $existingPerson The existing person's data.
+   * @param int $userId The ID of the user whose profile is being updated.
+   */
+  private function addAuditRecord($oldProfileData, $existingPerson, $userId) {
+    // Create audit record if needed
+    if ($existingPerson) {
+      $keysToSkip = array_merge(self::AUDIT_SKIP_FIELDS, $this->getChildCustomFields());
+      $newProfileData = $this->getUserProfileData($userId);
+      $newValues = ArrayDiffMultidimensional::compare($newProfileData, $oldProfileData, false);
+      $newValues = array_diff_key($newValues, array_flip($keysToSkip));
+      $oldValues = ArrayDiffMultidimensional::compare($oldProfileData, $newProfileData, false);
+      $oldValues = array_diff_key($oldValues, array_flip($keysToSkip));
+      $review = 'not_required';
+
+      // Admin changes don't need to be reviewed
+      $reviewNeeded = array_intersect(array_keys($newValues), self::REVIEW_TRIGGER_FIELDS) && auth()->user()->id === $userId;
+
+      if ($reviewNeeded) {
+        $review = 'required';
+      }
+
+      if (count($newValues) > 0) {
+        $db = \Config\Database::connect();
+        $builder = $db->table('audit');
+        $builder->insert([
+          'audited_id' => $userId,
+          'model_name' => 'People',
+          'changed_user_id' => auth()->id(),
+          'changes' => json_encode([
+            'new' => $newValues,
+            'old' => $oldValues,
+          ]),
+          'review' => $review,
+        ]);
+
+        if ($reviewNeeded) {
+          $review = 'required';
+
+          $email = \Config\Services::email();
+          $name = $existingPerson['first_name'] . ' ' . $existingPerson['last_name'];
+          $userEmail = '';
+          if ($existingPerson['email']) {
+            $userEmail = ' ' . $existingPerson['email'];
+          }
+          $insertedId = $db->insertID();
+          $dataAuditLink = site_url("admin/profile_data_audit/{$insertedId}");
+          $email->setTo($_ENV['profileDataAudit.reviewEmails']);
+          $email->setSubject("Profile edit made by {$name}{$userEmail}");
+          $email->setMessage("
+            Action required to accept profile changes made by {$name}{$userEmail}.<br><br>" . "
+            Click to process it: <a href=\"{$dataAuditLink}\">{$dataAuditLink}</a>.
+          ");
+
+          $email->send();
+        }
+      }
+    }
   }
 }

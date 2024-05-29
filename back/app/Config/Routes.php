@@ -36,6 +36,7 @@ $routes->get('api/people/interests', 'People::interests');
 $routes->get('api/people/(:num)', 'People::person/$1');
 $routes->get('api/people/filters', 'People::filters');
 $routes->get('api/people/export', 'People::export');
+$routes->get('api/people/indexRemote', 'People::indexRemote');
 
 $routes->get('api/users/current', 'Users::current');
 $routes->get('api/users/profile/(:any)', 'Users::profile/$1');
@@ -60,6 +61,8 @@ $routes->post('api/admin/customFields/upsert', 'CustomFields::upsert');
 $routes->post('api/admin/dataEditor', 'DataEditor::index');
 $routes->post('api/admin/dataEditor/saveItem', 'DataEditor::saveItem');
 $routes->get('api/admin/profileDataAudit', 'DataAudit::profileDataAudit');
+$routes->post('api/admin/profileDataAudit/accept', 'DataAudit::auditRecordAccept');
+$routes->post('api/admin/profileDataAudit/requestChanges', 'DataAudit::auditRecordAcceptRequestChanges');
 
 $frontRoutes = [
   '/',
@@ -74,6 +77,7 @@ $frontRoutes = [
   'admin/custom_fields',
   'admin/data_editor',
   'admin/profile_data_audit',
+  'admin/profile_data_audit/(:num)',
 ];
 
 foreach ($frontRoutes as $route) {
