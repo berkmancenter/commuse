@@ -80,7 +80,13 @@ class DataAudit extends BaseController
         $usersModel = new UserModel();
         $userData = $usersModel->getUserProfileData($personId);
 
-        $client = \Config\Services::curlrequest();
+        $curlOptions = [];
+
+        if ($_ENV['CI_ENVIRONMENT'] === 'development') {
+          $curlOptions['verify'] = false;
+        }
+
+        $client = \Config\Services::curlrequest($curlOptions);
 
         $headers = [
           'Access-Token' => $remoteSyncAccessToken,
