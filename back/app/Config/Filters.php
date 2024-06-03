@@ -11,7 +11,7 @@ use CodeIgniter\Filters\SecureHeaders;
 use App\Filters\ForcePasswordChange;
 use App\Filters\ForceReintakeFilter;
 
-class Filters extends BaseConfig
+class Filters extends \CodeIgniter\Config\Filters
 {
     /**
      * Configures aliases for Filter classes to
@@ -25,6 +25,9 @@ class Filters extends BaseConfig
         'secureheaders'         => SecureHeaders::class,
         'force_password_change' => ForcePasswordChange::class,
         'force_reintake'        => ForceReintakeFilter::class,
+        'forcehttps'            => \CodeIgniter\Filters\ForceHTTPS::class,
+        'pagecache'             => \CodeIgniter\Filters\PageCache::class,
+        'performance'           => \CodeIgniter\Filters\PerformanceMetrics::class,
     ];
 
     /**
@@ -40,7 +43,6 @@ class Filters extends BaseConfig
             'invalidchars',
         ],
         'after' => [
-            //'toolbar',
             'honeypot',
             'secureheaders',
         ],
@@ -67,4 +69,29 @@ class Filters extends BaseConfig
      * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
      */
     public array $filters = [];
+
+    /**
+     * List of special required filters.
+     *
+     * The filters listed here are special. They are applied before and after
+     * other kinds of filters, and always applied even if a route does not exist.
+     *
+     * Filters set by default provide framework functionality. If removed,
+     * those functions will no longer work.
+     *
+     * @see https://codeigniter.com/user_guide/incoming/filters.html#provided-filters
+     *
+     * @var array{before: list<string>, after: list<string>}
+     */
+    public array $required = [
+      'before' => [
+          'forcehttps', // Force Global Secure Requests
+          'pagecache',  // Web Page Caching
+      ],
+      'after' => [
+          'pagecache',   // Web Page Caching
+          'performance', // Performance Metrics
+          'toolbar',     // Debug Toolbar
+      ],
+  ];
 }

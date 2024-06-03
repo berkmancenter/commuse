@@ -119,6 +119,6 @@ class People extends BaseController
     $csv->insertOne(['firstname', 'lastname', 'email']);
     $csv->insertAll($people);
 
-    return $csv;
+    return $csv->toString();
   }
 }
