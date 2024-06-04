@@ -40,7 +40,7 @@ class ChangePasswordValidationRules
   {
     return [
       'label' => 'Auth.password',
-      'rules' => ['required', Passwords::getMaxLenghtRule()],
+      'rules' => ['required', Passwords::getMaxLengthRule()],
       'errors' => [
         'max_byte' => 'Auth.errorPasswordTooLongBytes',
       ],
