@@ -151,7 +151,7 @@ class UserModel extends ShieldUserModel
     }
 
     // Edit other user profile as admin
-    if (auth()->user()->can('admin.access') === true && isset($requestData['user_id']) && $requestData['user_id']) {
+    if (auth()->user() && auth()->user()->can('admin.access') === true && isset($requestData['user_id']) && $requestData['user_id']) {
       $userId = $requestData['user_id'];
     }
 
@@ -213,7 +213,7 @@ class UserModel extends ShieldUserModel
 
     $peopleModel->db->transComplete();
 
-    if ($existingPerson) {
+    if (auth()->user() && $existingPerson) {
       $this->addAuditRecord($oldProfileData, $existingPerson, $userId);
     }
 

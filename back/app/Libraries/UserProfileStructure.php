@@ -4,20 +4,55 @@ namespace App\Libraries;
 
 use Stringy\Stringy as S;
 
-class UserProfileStructure {
+/**
+ * UserProfileStructure Library
+ *
+ * This library provides methods for retrieving and formatting user profile data.
+ */
+
+ /**
+ * UserProfileStructure Library
+ *
+ * This library provides methods for retrieving and formatting user profile data.
+ */
+class UserProfileStructure
+{
+  /**
+   * Database connection instance.
+   *
+   * @var \CodeIgniter\Database\BaseConnection
+   */
   private $db;
 
-  public function __construct() {
+  /**
+   * Constructor.
+   *
+   * Initializes the database connection.
+   */
+  public function __construct()
+  {
     $this->db = \Config\Database::connect();
   }
 
-  public function getUserProfileStructure() {
+  /**
+   * Get the user profile structure.
+   *
+   * @return array
+   */
+  public function getUserProfileStructure()
+  {
     $userProfileData = $this->getUserProfileGroupsAndFields();
 
     return $this->formatUserProfileStructure($userProfileData);
   }
 
-  public function getFiltersWithValues() {
+  /**
+   * Get filters with their corresponding values.
+   *
+   * @return array
+   */
+  public function getFiltersWithValues()
+  {
     $cache = \Config\Services::cache();
     $cachedData = $cache->get('filters_with_values');
 
@@ -33,7 +68,7 @@ class UserProfileStructure {
       $userProfileTagField['values'] = $this->getFieldUserValues($userProfileTagField['field_id'], []);
     }
 
-    usort($userProfileTagFields, function($a, $b) {
+    usort($userProfileTagFields, function ($a, $b) {
       return $a['field_title'] <=> $b['field_title'];
     });
 
@@ -42,6 +77,13 @@ class UserProfileStructure {
     return $userProfileTagFields;
   }
 
+  /**
+   * Get user profile groups and fields based on additional conditions and field types.
+   *
+   * @param array $additionalConditions
+   * @param array $fieldTypes
+   * @return array
+   */
   private function getUserProfileGroupsAndFields($additionalConditions = [], $fieldTypes = []) {
     $builder = $this->db->table('custom_field_groups');
 
@@ -73,6 +115,12 @@ class UserProfileStructure {
       ->getResultArray();
   }
 
+  /**
+   * Format the user profile structure.
+   *
+   * @param array $userProfileStructure
+   * @return array
+   */
   private function formatUserProfileStructure($userProfileStructure) {
     $customFieldGroups = [];
     foreach ($userProfileStructure as $row) {
@@ -90,6 +138,12 @@ class UserProfileStructure {
     return array_values($customFieldGroups);
   }
 
+  /**
+   * Initialize a group.
+   *
+   * @param array $row
+   * @return array
+   */
   private function initializeGroup($row) {
     return [
       'machine_name' => $row['group_machine_name'],
@@ -99,6 +153,12 @@ class UserProfileStructure {
     ];
   }
 
+  /**
+   * Process a field.
+   *
+   * @param array $row
+   * @return array
+   */
   private function processField($row) {
     $metadata = json_decode($row['field_metadata'], true);
 
@@ -151,6 +211,13 @@ class UserProfileStructure {
     ];
   }
 
+  /**
+   * Get user values for a field.
+   *
+   * @param int $fieldId
+   * @param array $existingValues
+   * @return array
+   */
   private function getFieldUserValues($fieldId, $existingValues = []) {
     $builder = $this->db->table('custom_field_data');
     $fieldUserValues = $builder

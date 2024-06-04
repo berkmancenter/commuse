@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
@@ -9,12 +8,22 @@ class DataAudit extends BaseController
 {
   use ResponseTrait;
 
-  public function profileDataAudit() {
+  /**
+   * Retrieves profile data audit records.
+   * Fetches audit records from the database with associated user information.
+   * Allows filtering based on reintake, review status, and audit ID.
+   * Returns the audit records as a JSON response.
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function profileDataAudit()
+  {
     $this->checkAdminAccess();
-    $request = \Config\Services::request();
 
+    $request = \Config\Services::request();
     $db = \Config\Database::connect();
     $builder = $db->table('audit au');
+
     $builder
       ->select('
         pa.first_name AS audited_first_name,
@@ -48,14 +57,22 @@ class DataAudit extends BaseController
 
     $profileAuditItems = array_map(function($auditItem) {
       $auditItem['changes'] = json_decode($auditItem['changes']);
-
       return $auditItem;
     }, $profileAuditItems);
 
     return $this->respond($profileAuditItems);
   }
 
-  public function auditRecordAccept() {
+  /**
+   * Accepts an audit record and updates a remote resource.
+   * Sets the review status of the audit record to 'accepted'.
+   * If remote sync URL and access token are provided, updates the remote resource.
+   * Returns a JSON response indicating the acceptance and remote update status.
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function auditRecordAccept()
+  {
     $this->checkAdminAccess();
 
     $request = \Config\Services::request();
@@ -69,6 +86,7 @@ class DataAudit extends BaseController
     if ($remoteSyncUrl && $remoteSyncAccessToken) {
       $db = \Config\Database::connect();
       $builder = $db->table('audit a');
+
       $auditItem = $builder
         ->where('a.id', $auditId)
         ->where('a.model_name', 'People')
@@ -77,11 +95,11 @@ class DataAudit extends BaseController
 
       if ($auditItem = reset($auditItem)) {
         $personId = $auditItem['audited_id'];
+
         $usersModel = new UserModel();
         $userData = $usersModel->getUserProfileData($personId);
 
         $curlOptions = [];
-
         if ($_ENV['CI_ENVIRONMENT'] === 'development') {
           $curlOptions['verify'] = false;
         }
@@ -94,7 +112,7 @@ class DataAudit extends BaseController
         ];
 
         try {
-          $response = $client->post($remoteSyncUrl, [
+          $client->post($remoteSyncUrl, [
             'headers' => $headers,
             'json' => $userData,
           ]);
@@ -111,7 +129,15 @@ class DataAudit extends BaseController
     ]);
   }
 
-  public function auditRecordAcceptRequestChanges() {
+  /**
+   * Accepts an audit record and requests changes.
+   * Sets the review status of the audit record to 'request_changes'.
+   * Returns a JSON response indicating the acceptance of the request.
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function auditRecordAcceptRequestChanges()
+  {
     $this->checkAdminAccess();
 
     $request = \Config\Services::request();
@@ -122,12 +148,23 @@ class DataAudit extends BaseController
     return $this->respond(['ok']);
   }
 
-  private function auditRecordReviewSet($id, $status) {
+  /**
+   * Sets the review status of an audit record.
+   * Updates the 'review' column of the audit record with the provided status.
+   *
+   * @param int $id The ID of the audit record.
+   * @param string $status The review status to set.
+   * @return void
+   */
+  private function auditRecordReviewSet($id, $status)
+  {
     $db = \Config\Database::connect();
     $builder = $db->table('audit a');
+
     $builder
       ->where('a.id', $id)
       ->where('a.model_name', 'People');
+
     $builder->update([
       'review' => $status,
     ]);

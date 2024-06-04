@@ -17,6 +17,12 @@ class InvitationCodeModel extends Model
   ];
   protected $beforeInsert = ['generateCode'];
 
+  /**
+   * Generates a new invitation code.
+   *
+   * @param array $data The data to insert the code to.
+   * @return array Update data array.
+   */
   protected function generateCode(array $data)
   {
     $uniqueId = uniqid();

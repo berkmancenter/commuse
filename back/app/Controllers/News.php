@@ -5,10 +5,18 @@ namespace App\Controllers;
 use CodeIgniter\API\ResponseTrait;
 use App\Libraries\Cache;
 
+/**
+ * This class is responsible for handling news-related operations.
+ */
 class News extends BaseController
 {
   use ResponseTrait;
 
+  /**
+   * Retrieves and returns the list of news items.
+   *
+   * @return \CodeIgniter\HTTP\ResponseInterface The response containing the list of news items.
+   */
   public function index()
   {
     $cache = \Config\Services::cache();

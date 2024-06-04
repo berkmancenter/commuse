@@ -11,14 +11,22 @@ use CodeIgniter\Shield\Entities\User;
 use App\Validation\ChangePasswordValidationRules;
 use \Gumlet\ImageResize;
 
+/**
+ * This class is responsible for handling user-related operations such as
+ * retrieving user data, managing profiles, and performing administrative tasks.
+ */
 class Users extends BaseController
 {
   use ResponseTrait;
 
+  /**
+   * Get the current user's information
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function current()
   {
     $user = auth()->user();
-
     $userData = [
       'id' => $user->id,
       'email' => $user->email,
@@ -28,6 +36,12 @@ class Users extends BaseController
     return $this->respond($userData);
   }
 
+  /**
+   * Get user profile data
+   *
+   * @param int|null $id User ID (optional)
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function profile($id = null)
   {
     $usersModel = new UserModel();
@@ -53,6 +67,11 @@ class Users extends BaseController
     return $this->respond($userData);
   }
 
+  /**
+   * Get user profile structure
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function profileStructure()
   {
     $usersModel = new UserModel();
@@ -61,6 +80,11 @@ class Users extends BaseController
     return $this->respond($profileStructure);
   }
 
+  /**
+   * Save user profile data
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function saveProfile()
   {
     $userModel = new UserModel();
@@ -75,12 +99,16 @@ class Users extends BaseController
     }
   }
 
+  /**
+   * Upload user profile image
+   *
+   * @param int|null $id User ID (optional)
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function uploadProfileImage($id = null)
   {
     helper('text');
-
     $peopleModel = new PeopleModel();
-
     $userId = auth()->id();
 
     if (auth()->user()->can('admin.access') === true && $id && $id !== 'current') {
@@ -92,7 +120,7 @@ class Users extends BaseController
     $file = $this->request->getFile('image');
 
     if (!$file->isValid()) {
-      return;
+      return $this->respond(['message' => 'Error saving data.'], 400);
     }
 
     $fileName = $file->getRandomName();
@@ -142,6 +170,11 @@ class Users extends BaseController
     }
   }
 
+  /**
+   * Get the list of users for the admin panel
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function adminIndex()
   {
     $this->checkAdminAccess();
@@ -178,9 +211,15 @@ class Users extends BaseController
     return $this->respond($users);
   }
 
+  /**
+   * Delete user(s)
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function delete()
   {
     $this->checkAdminAccess();
+
     $result = false;
     $usersProvider = auth()->getProvider();
     $peopleModel = model('PeopleModel');
@@ -235,6 +274,11 @@ class Users extends BaseController
     }
   }
 
+  /**
+   * Change user role
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function changeRole()
   {
     $this->checkAdminAccess();
@@ -275,6 +319,11 @@ class Users extends BaseController
     }
   }
 
+  /**
+   * Import users from CSV
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function importFromCsv()
   {
     $this->checkAdminAccess();
@@ -289,7 +338,7 @@ class Users extends BaseController
     $file = $this->request->getFile('csv');
 
     if (!$file->isValid()) {
-      return;
+      return $this->respond(['message' => 'Error saving data.'], 400);
     }
 
     $fileName = $file->getRandomName();
@@ -371,6 +420,11 @@ class Users extends BaseController
     }
   }
 
+  /**
+   * Get users CSV import template
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function getUsersCsvImportTemplate() {
     $csvImportFields = [];
     $csvImportFields = array_merge($csvImportFields, array_diff(UserModel::BASE_FIELDS, ['public_profile']));
@@ -394,6 +448,11 @@ class Users extends BaseController
     return $response->download('users_import_template.csv', $textData);
   }
 
+  /**
+   * Change user password view
+   *
+   * @return mixed
+   */
   public function changePasswordView()
   {
     if (!auth()->loggedIn()) {
@@ -403,6 +462,11 @@ class Users extends BaseController
     return view('\App\Views\Shield\change_password');
   }
 
+  /**
+   * Change user password
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function changePassword()
   {
     if (!auth()->loggedIn()) {
@@ -435,6 +499,11 @@ class Users extends BaseController
     }
   }
 
+  /**
+   * Set Reintake status
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function setReintakeStatus()
   {
     $this->checkAdminAccess();
@@ -459,27 +528,53 @@ class Users extends BaseController
     return $this->respond(['message' => 'Reintake status has been set successfully.'], 200);
   }
 
+  /**
+   * Reintake view
+   *
+   * @return string
+   */
   public function reintakeView()
   {
     return view('\App\Views\Users\reintake');
   }
 
+  /**
+   * Handle the acceptance of a reintake request.
+   *
+   * This method sets the reintake status of the user to "accepted" and redirects
+   * the user to their profile page.
+   *
+   * @return \CodeIgniter\HTTP\RedirectResponse The redirect response to the user's profile page.
+   */
   public function reintakeAccept()
   {
-    $this->reintakeSet(UserModel::REINTAKE_STATUS_ACCEPTED, 'accepted');
+    $this->reintakeSet(UserModel::REINTAKE_STATUS_ACCEPTED);
 
     return redirect()->to(site_url('profile'));
   }
 
+  /**
+   * Handle the denial of a reintake request.
+   *
+   * This method sets the reintake status of the user to "denied" and logs the user out.
+   *
+   * @return \CodeIgniter\HTTP\RedirectResponse The redirect response to the home page.
+   */
   public function reintakeDeny()
   {
-    $this->reintakeSet(UserModel::REINTAKE_STATUS_DENIED, 'denied');
+    $this->reintakeSet(UserModel::REINTAKE_STATUS_DENIED);
     auth()->logout();
 
     return redirect()->to(site_url());
   }
 
-  private function reintakeSet($value, $status) {
+  /**
+   * Set reintake status and send notification email
+   *
+   * @param string $status
+   * @return void
+   */
+  private function reintakeSet($status) {
     $userId = auth()->id();
     $usersModel = new UserModel();
 
@@ -502,6 +597,13 @@ class Users extends BaseController
     }
   }
 
+  /**
+   * Sends a notification email for the reintake status.
+   *
+   * @param string $status The reintake status.
+   * @param array $person The person's information.
+   * @return void
+   */
   private function reintakeSendNotificationEmail($status, $person) {
     $email = \Config\Services::email();
     $name = $person['first_name'] . ' ' . $person['last_name'];

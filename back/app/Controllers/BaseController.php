@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
@@ -38,24 +37,26 @@ abstract class BaseController extends Controller
   protected $helpers = [];
 
   /**
-   * Be sure to declare properties for any property fetch you initialized.
-   * The creation of dynamic property is deprecated in PHP 8.2.
-   */
-  // protected $session;
-
-  /**
    * Constructor.
+   *
+   * @param RequestInterface  $request
+   * @param ResponseInterface $response
+   * @param LoggerInterface   $logger
    */
   public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
   {
     // Do Not Edit This Line
     parent::initController($request, $response, $logger);
-
-    // Preload any models, libraries, etc, here.
-
-    // E.g.: $this->session = \Config\Services::session();
   }
 
+  /**
+   * Maps request data to the specified keys.
+   *
+   * @param array $requestData The request data.
+   * @param array $keys        The keys to map the data to.
+   *
+   * @return array The mapped data.
+   */
   protected function mapRequestData($requestData, $keys)
   {
     $mappedData = [];
@@ -67,21 +68,40 @@ abstract class BaseController extends Controller
     return $mappedData;
   }
 
-  protected function dateToMilisecondsTimestamp($dateString) {
+  /**
+   * Converts a date string to a milliseconds timestamp.
+   *
+   * @param string $dateString The date string to convert.
+   *
+   * @return int The milliseconds timestamp.
+   */
+  protected function dateToMillisecondsTimestamp($dateString)
+  {
     return strtotime($dateString) * 1000;
   }
 
+  /**
+   * Sends an authentication error response.
+   *
+   * @return void
+   */
   protected function authError()
   {
     header('HTTP/1.1 401 Unauthorized');
     echo json_encode(['message' => 'Unauthorized.']);
-    die();
+    exit();
   }
 
+  /**
+   * Checks if the user has admin access.
+   * If not, sends an authentication error response.
+   *
+   * @return void
+   */
   protected function checkAdminAccess()
   {
     if (auth()->user()->can('admin.access') === false) {
-      return $this->authError();
+      $this->authError();
     }
   }
 }

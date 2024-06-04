@@ -39,6 +39,14 @@ class PeopleModel extends Model
   protected $beforeDelete   = [];
   protected $afterDelete  = [];
 
+  /**
+   * Get people with custom fields.
+   *
+   * @param array $extraConditions
+   * @param array $likeConditions
+   * @param array $filters
+   * @return array
+   */
   public function getPeopleWithCustomFields(
     array $extraConditions = [],
     array $likeConditions = [],
@@ -50,11 +58,19 @@ class PeopleModel extends Model
     return $people;
   }
 
+  /**
+   * Get people with custom fields.
+   *
+   * @param array $extraConditions
+   * @param array $likeConditions
+   * @param array $filters
+   * @return array
+   */
   private function getPeople(
     array $extraConditions,
     array $likeConditions,
     array $filters
-  ) {
+  ): array {
     $builder = $this->db->table('people');
 
     $builder
@@ -108,6 +124,13 @@ class PeopleModel extends Model
     return $people;
   }
 
+  /**
+   * Apply filters to the query builder.
+   *
+   * @param object $builder
+   * @param array $filters
+   * @return void
+   */
   private function applyFilters($builder, array $filters) {
     if (empty($filters)) {
       return;
@@ -175,6 +198,12 @@ class PeopleModel extends Model
     }
   }
 
+  /**
+   * Process people data.
+   *
+   * @param array $people
+   * @return void
+   */
   private function processData(array &$people) {
     foreach ($people as &$personData) {
       $personData['custom_fields'] = json_decode($personData['custom_fields'], true);

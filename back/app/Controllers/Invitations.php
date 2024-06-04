@@ -19,8 +19,8 @@ class Invitations extends BaseController
       ->findAll();
 
     $invitations = array_map(function ($invitation) {
-      $invitation['expire'] = $this->dateToMilisecondsTimestamp($invitation['expire']);
-      $invitation['created_at'] = $this->dateToMilisecondsTimestamp($invitation['created_at']);
+      $invitation['expire'] = $this->dateToMillisecondsTimestamp($invitation['expire']);
+      $invitation['created_at'] = $this->dateToMillisecondsTimestamp($invitation['created_at']);
 
       return $invitation;
     }, $invitations);

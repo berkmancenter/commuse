@@ -4,19 +4,25 @@ namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
 
+/**
+ * This controller handles data editing operations.
+ */
 class DataEditor extends BaseController
 {
   use ResponseTrait;
 
-  public function index() {
+  /**
+   * Retrieves custom field data based on a search query.
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function index()
+  {
     $this->checkAdminAccess();
-
     $db = \Config\Database::connect();
     $requestData = $this->request->getJSON(true);
     $query = $db->escapeLikeString(strtolower($requestData['q']));
-
     $builder = $db->table('custom_field_data cfd');
-
     $customFieldsData = $builder
       ->select('cfd.value, cfd.value_json, cfd.id, cfd.model_id, cf.model_name, cf.title AS field_title')
       ->join('custom_fields cf', 'cf.id = cfd.custom_field_id', 'left')
@@ -24,16 +30,19 @@ class DataEditor extends BaseController
       ->orWhere("LOWER(value_json::text) ILIKE '%" . $query . "%'")
       ->get()
       ->getResultArray();
-
     return $this->respond($customFieldsData);
   }
 
-  public function saveItem() {
+  /**
+   * Saves the updated custom field data.
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function saveItem()
+  {
     $this->checkAdminAccess();
-
     $requestData = $this->request->getJSON(true);
     $db = \Config\Database::connect();
-
     $builder = $db->table('custom_field_data');
     $fieldData = $requestData;
     unset($fieldData['id']);

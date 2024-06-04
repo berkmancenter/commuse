@@ -2,10 +2,27 @@
 
 namespace App\Libraries;
 
-class Cache {
-  public static $defaultCacheExpiration = 86400*365;
+/**
+ * Cache Library
+ *
+ * This library provides methods for caching functionality.
+ */
+class Cache
+{
+  /**
+   * Default cache expiration time in seconds (365 days).
+   *
+   * @var int
+   */
+  public static $defaultCacheExpiration = 86400 * 365;
 
-  public static function isCacheEnabled() {
+  /**
+   * Checks if caching is enabled.
+   *
+   * @return bool
+   */
+  public static function isCacheEnabled()
+  {
     // Check if cache is disabled in the environment variable
     return !(isset($_ENV['cache.disabled']) && $_ENV['cache.disabled'] === 'true');
   }

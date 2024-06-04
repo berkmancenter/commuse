@@ -8,10 +8,18 @@ use App\Libraries\UserProfileStructure;
 use App\Libraries\Cache;
 use League\Csv\Writer;
 
+/**
+ * Controller for handling people-related operations.
+ */
 class People extends BaseController
 {
   use ResponseTrait;
 
+  /**
+   * Retrieves a list of people based on the provided query and filters.
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function index()
   {
     $requestData = json_decode(file_get_contents('php://input'), true);
@@ -44,6 +52,12 @@ class People extends BaseController
     return $this->respond($people);
   }
 
+  /**
+   * Retrieves a specific person by their ID.
+   *
+   * @param int $id The ID of the person to retrieve.
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function person($id)
   {
     $cache = \Config\Services::cache();
@@ -75,6 +89,11 @@ class People extends BaseController
     return $this->respond($person[0]);
   }
 
+  /**
+   * Retrieves the available filters with their values.
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function filters()
   {
     $userProfileStructure = new UserProfileStructure();
@@ -84,6 +103,11 @@ class People extends BaseController
     return $this->respond($filters);
   }
 
+  /**
+   * Exports a list of people in the specified format.
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
   public function export()
   {
     $requestedFormat = $this->request->getGet('format');
@@ -106,6 +130,12 @@ class People extends BaseController
     return $this->respond(['message' => 'Format not found.']);
   }
 
+  /**
+   * Generates an exported CSV file with a list of people for the given list of IDs.
+   *
+   * @param array $idsArray The array of IDs to export.
+   * @return string The generated CSV file as a string.
+   */
   private function getExportedCsv($idsArray = []) {
     $peopleModel = new PeopleModel();
 
