@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # Don't overwrite if .env is test configuration
-if ! grep -q "commuse_tests" .env; then
-  mv .env .env.bak 2>/dev/null
+if [ -f .env ]; then
+  if ! grep -q "commuse_tests" .env; then
+    mv .env .env.bak
+  fi
 fi
 
 cp .env.test .env
@@ -22,9 +24,13 @@ cd front && ./deploy.sh && cd ..
 # Run tests
 php vendor/bin/codecept run --steps
 
-cp .env.bak .env
+if [ -f .env.bak ]; then
+  cp .env.bak .env
+fi
 
 # Remove backup file if default .env is in place
-if grep -q "database.default.hostname" .env; then
-  rm .env.bak 2>/dev/null
+if [ -f .env.bak ]; then
+  if grep -q "database.default.hostname" .env; then
+    rm .env.bak
+  fi
 fi
