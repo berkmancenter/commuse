@@ -19,6 +19,6 @@ fi
 
 yarn install
 yarn run build --base=$BASE_PATH
-rm -rf ../back/app/Views/front_end.html ../back/public/front_assets
-mv dist/index.html ../back/app/Views/front_end.html
-cp -R dist/front_assets ../back/public
+rm -rf ../app/Views/front_end.html ../public/front_assets
+mv dist/index.html ../app/Views/front_end.html
+cp -R dist/front_assets ../public

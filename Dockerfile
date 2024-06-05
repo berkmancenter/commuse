@@ -16,13 +16,18 @@ RUN cd /etc/apache2/mods-enabled && ln -s ../mods-available/rewrite.load
 WORKDIR /root
 
 RUN apt-get update \
-    && apt-get -y install tzdata git build-essential patch sudo vim nano tmux curl wget unzip
+    && apt-get -y install tzdata git build-essential patch sudo vim nano tmux curl wget unzip default-jre gnupg
 
 RUN curl -sSLf \
         -o /usr/local/bin/install-php-extensions \
         https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions \
     && chmod +x /usr/local/bin/install-php-extensions \
     && install-php-extensions gd mysqli pdo_mysql intl zip pgsql
+
+# Set the Chrome repo.
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+RUN apt-get update && apt-get -y install google-chrome-stable
 
 RUN mkdir /usr/local/nvm
 ENV NVM_DIR /usr/local/nvm
@@ -57,6 +62,8 @@ RUN sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/hist
 
 # Code mounted as a volume
 WORKDIR /app
+
+RUN npm install --global selenium-standalone
 
 # Just to keep the containder running
 CMD apache2-foreground

@@ -15,6 +15,10 @@
         "voku/stringy": "^6.5"
     },
     "require-dev": {
+        "codeception/codeception": "^5.1",
+        "codeception/module-asserts": "*",
+        "codeception/module-phpbrowser": "*",
+        "codeception/module-webdriver": "^3.2",
         "fakerphp/faker": "^1.22",
         "mikey179/vfsstream": "^1.6",
         "phpunit/phpunit": "^9.1"
