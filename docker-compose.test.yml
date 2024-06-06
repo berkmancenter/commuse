@@ -3,6 +3,8 @@ version: '2'
 services:
   app:
     build: .
+    ports:
+      - '5176:80'
     volumes:
       - '.:/app'
     depends_on:

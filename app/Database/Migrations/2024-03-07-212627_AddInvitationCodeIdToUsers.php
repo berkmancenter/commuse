@@ -21,6 +21,6 @@ class AddInvitationCodeIdToUsers extends Migration
 
   public function down()
   {
-    $this->forge->dropColumn('users', ['used_by']);
+    $this->forge->dropColumn('users', ['invitation_code_id']);
   }
 }

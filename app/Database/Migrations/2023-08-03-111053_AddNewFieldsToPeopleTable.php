@@ -140,6 +140,6 @@ class AddNewFieldsToPeopleTable extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn('people', array_keys($this->fields));
+        $this->forge->dropColumn('people', ['prefix', 'middle_name', 'preferred_pronouns', 'email', 'mobile_phone_number']);
     }
 }

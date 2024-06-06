@@ -11,7 +11,7 @@ cp .env.test .env
 
 # Run db migrations
 composer install
-php spark migrate --all
+php spark migrate:refresh --all
 
 # Install and start selenium server
 selenium-standalone install
