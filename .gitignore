@@ -128,3 +128,6 @@ nb-configuration.xml
 # Front-end app
 /public/front_assets
 /app/Views/front_end.html
+
+# Tests stuff
+test.local.sh

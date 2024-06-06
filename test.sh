@@ -17,12 +17,16 @@ php spark migrate --all
 selenium-standalone install
 pkill -f 'selenium-standalone'
 selenium-standalone start &
+timeout 120 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:4444)" != '302' ]]; do sleep 5; done' || false
 
 # Build front-end app
 cd front && ./deploy.sh && cd ..
 
 # Run tests
 php vendor/bin/codecept run --steps
+
+# Kill selenium server
+pkill -f 'selenium-standalone'
 
 if [ -f .env.bak ]; then
   cp .env.bak .env
