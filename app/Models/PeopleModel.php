@@ -50,10 +50,11 @@ class PeopleModel extends Model
   public function getPeopleWithCustomFields(
     array $extraConditions = [],
     array $likeConditions = [],
-    array $filters = []
+    array $filters = [],
+    $simple = true
   ): array {
     $people = $this->getPeople($extraConditions, $likeConditions, $filters);
-    $this->processData($people);
+    $this->processData($people, $simple);
 
     return $people;
   }
@@ -225,6 +226,7 @@ class PeopleModel extends Model
         $personData[$customField['machine_name']] = $value;
       }
 
+      unset($personData['custom_fields']);
       $personData['image_url'] = $personData['image_url'] ? "profile_images/{$personData['image_url']}" : '';
       $personData['bio'] = nl2br($personData['bio']);
     }
