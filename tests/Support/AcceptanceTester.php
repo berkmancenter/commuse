@@ -48,4 +48,39 @@ class AcceptanceTester extends \Codeception\Actor
 
       return $userSaved;
     }
+
+    public function deleteUser($id = null) {
+      if ($id === null) {
+        return false;
+      }
+
+      $db = \Config\Database::connect();
+
+      $result = $db
+        ->table('users')
+        ->where('id', $id)
+        ->delete();
+
+      return $result;
+    }
+
+    public function loginUser(AcceptanceTester $I, string $email = 'user@example.com', string $password = '') {
+      $I->amOnPage('/login');
+      $I->fillField('email', $email);
+      $I->fillField('password', $password);
+      $I->click('Login');
+    }
+
+    public function openMenu(AcceptanceTester $I) {
+      try {
+        $I->seeElement('.switmenu-menu');
+        $isFound = true;
+      } catch (\Exception $e) {
+        $isFound = false;
+      }
+
+      if (!$isFound) {
+        $I->click('.side-menu-toggler');
+      }
+    }
 }

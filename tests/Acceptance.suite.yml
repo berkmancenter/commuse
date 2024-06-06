@@ -9,6 +9,10 @@ modules:
         - WebDriver:
             url: http://localhost
             browser: chrome
+            window_size: 1920x1080
+            wait: 10
+            debug_log_entries: 500
+            log_js_errors: true
             capabilities:
                 goog:chromeOptions:
                     args: ["--headless", "--no-sandbox", "--remote-debugging-pipe"]
