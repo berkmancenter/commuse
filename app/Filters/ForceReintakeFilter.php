@@ -35,30 +35,30 @@ class ForceReintakeFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        if (! $request instanceof IncomingRequest) {
-            return;
+      if (!$request instanceof IncomingRequest) {
+          return;
+      }
+
+      /** @var Session $authenticator */
+      $authenticator = auth('session')->getAuthenticator();
+
+      if ($authenticator->loggedIn()) {
+        $userId = $authenticator->getUser()->id;
+
+        $db = \Config\Database::connect();
+        $builder = $db->table('people p');
+        $person = $builder
+          ->select('p.reintake')
+          ->where('user_id', $userId)
+          ->get()
+          ->getResultArray();
+
+        if (count($person)) {
+          if ($person[0]['reintake'] === UserModel::REINTAKE_STATUS_REQUIRED && isset($_ENV['reintake.message'])) {
+            return redirect()->to(site_url('reintake'));
+          }
         }
-
-        /** @var Session $authenticator */
-        $authenticator = auth('session')->getAuthenticator();
-
-        if ($authenticator->loggedIn()) {
-            $userId = $authenticator->getUser()->id;
-
-            $db = \Config\Database::connect();
-            $builder = $db->table('people p');
-            $person = $builder
-              ->select('p.reintake')
-              ->where('user_id', $userId)
-              ->get()
-              ->getResultArray();
-
-            if (count($person)) {
-              if ($person[0]['reintake'] === UserModel::REINTAKE_STATUS_REQUIRED) {
-                return redirect()->to(site_url('reintake'));
-              }
-            }
-        }
+      }
     }
 
     /**

@@ -9,7 +9,7 @@
             <div class="card-body">
                 <h5 class="card-title">Welcome back</h5>
 
-                <?php echo @$_ENV['reintake.message']; ?>
+                <?php echo $_ENV['reintake.message']; ?>
 
                 <a href="<?php echo site_url('reintakeAccept') ?>" type="submit" class="btn btn-success">Accept</a>
                 <a href="<?php echo site_url('reintakeDeny') ?>" type="submit" class="btn btn-danger float-end">Deny</a>
