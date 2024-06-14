@@ -24,6 +24,7 @@ cd front && FRONT_ENVIRONMENT=test ./deploy.sh && cd ..
 
 # Run tests
 php vendor/bin/codecept run --steps "$1"
+codecept_exit_status=$?
 
 pkill -f 'selenium-standalone'
 
@@ -37,3 +38,6 @@ if [ -f .env.bak ]; then
     rm .env.bak
   fi
 fi
+
+# Exit with the status of the codecept command
+exit $codecept_exit_status
