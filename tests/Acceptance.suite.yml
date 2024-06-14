@@ -7,7 +7,7 @@ actor: AcceptanceTester
 modules:
     enabled:
         - WebDriver:
-            url: http://localhost
+            url: http://127.0.0.1
             browser: chrome
             window_size: 1920x1080
             wait: 10

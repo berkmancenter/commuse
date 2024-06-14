@@ -17,10 +17,14 @@ class RegisterController extends ShieldRegister
    */
   public function registerView()
   {
+    if (!$this->request->getGet('ic')) {
+      return redirect()->to('login')->with('errors', 'You need an invitation code to register.');
+    }
+
     $invitationCode = $this->getActiveInvitationCodeByCode($this->request->getGet('ic') ?? '');
 
     if ($invitationCode === null) {
-      return redirect()->to('login')->with('errors', 'You need an invitation code to register.');
+      return redirect()->to('login')->with('errors', 'The invitation code is not valid.');
     }
 
     $session = \Config\Services::session();
