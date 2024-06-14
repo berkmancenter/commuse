@@ -19,6 +19,7 @@ class ProfileCest
 
       $I->openMenu($I);
       $I->click('Edit profile');
+      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
       $I->click('Save');
 
       $I->seeElement('//div[contains(., "Profile has been saved.")]');
@@ -34,6 +35,7 @@ class ProfileCest
       $I->openMenu($I);
       $I->click('Edit profile');
 
+      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
       $I->checkOption('(//input[@type="checkbox"])[1]');
       $I->fillField('//label[contains(text(), "First name")]/following-sibling::div//input', 'Tommy');
       $I->fillField('//label[contains(text(), "Last name")]/following-sibling::div//input', 'Testersky');
@@ -63,6 +65,7 @@ class ProfileCest
       $I->openMenu($I);
       $I->click('Edit profile');
 
+      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
       $I->checkOption('(//input[@type="checkbox"])[1]');
       $I->fillField('//label[contains(text(), "First name")]/following-sibling::div//input', 'Tommy');
       $I->fillField('//label[contains(text(), "Last name")]/following-sibling::div//input', 'Hiddenberg');
@@ -78,9 +81,8 @@ class ProfileCest
       $I->seeElement('//div[contains(., "Found 1 user")]');
 
       $I->click('Edit profile');
-      $I->wait(1);
+      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
       $I->uncheckOption('(//input[@type="checkbox"])[1]');
-      $I->wait(1);
       $I->click('Save');
       $I->seeElement('//div[contains(., "Profile has been saved.")]');
 
@@ -106,6 +108,7 @@ class ProfileCest
       $I->openMenu($I);
       $I->click('Edit profile');
 
+      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
       $I->checkOption('(//input[@type="checkbox"])[1]');
       $I->fillField('//label[contains(text(), "First name")]/following-sibling::div//input', 'Tommy');
       $I->fillField('//label[contains(text(), "Last name")]/following-sibling::div//input', 'Hiddenberg');
@@ -124,6 +127,7 @@ class ProfileCest
       $I->openMenu($I);
       $I->click('Edit profile');
 
+      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
       $I->checkOption('(//input[@type="checkbox"])[1]');
       $I->fillField('//label[contains(text(), "First name")]/following-sibling::div//input', 'Adam');
       $I->fillField('//label[contains(text(), "Last name")]/following-sibling::div//input', 'Viselberg');

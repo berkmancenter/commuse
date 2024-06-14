@@ -1,5 +1,5 @@
 <template>
-  <div class="user-profile">
+  <div class="user-profile" v-if="profileLoaded && profileStructure">
     <form class="form-commuse-blocks" @submit.prevent="saveProfile">
       <div class="user-profile-header is-flex is-align-items-center">
         <h3 class="is-size-3 has-text-weight-bold">Edit profile</h3>
@@ -172,6 +172,7 @@
     data() {
       return {
         apiUrl: import.meta.env.VITE_API_URL,
+        profileLoaded: false,
         profileStructure: [],
         saveIcon,
         fields: {},
@@ -261,6 +262,7 @@
         }
 
         let profile = await this.$store.dispatch('app/fetchProfile', profileId)
+        this.profileLoaded = true
 
         this.mitt.emit('spinnerStop')
 
