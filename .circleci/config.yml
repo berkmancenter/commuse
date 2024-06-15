@@ -23,3 +23,10 @@ jobs:
       - run:
           name: Tests
           command: docker-compose -f docker-compose.test.yml --env-file .env.test exec app bash -c "./test.sh"
+      - run:
+          command: |
+            mkdir /tmp/artifacts
+            cp tests/_output/*.png /tmp/artifacts
+            cp tests/_output/*.html /tmp/artifacts
+      - store_artifacts:
+          path: /tmp/artifacts
