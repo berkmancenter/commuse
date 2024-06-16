@@ -173,6 +173,7 @@
       return {
         apiUrl: import.meta.env.VITE_API_URL,
         profileLoaded: false,
+        profileStructureLoaded: false,
         profileStructure: [],
         saveIcon,
         fields: {},
