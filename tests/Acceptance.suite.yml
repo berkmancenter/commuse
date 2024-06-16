@@ -15,7 +15,7 @@ modules:
             log_js_errors: true
             capabilities:
                 goog:chromeOptions:
-                    args: ["--headless", "--no-sandbox", "--remote-debugging-pipe"]
+                    args: ["--headless", "--no-sandbox", "--remote-debugging-port=9222"]
 # Add Codeception\Step\Retry trait to AcceptanceTester to enable retries
 step_decorators:
     - Codeception\Step\ConditionalAssertion
