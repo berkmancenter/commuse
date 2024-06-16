@@ -1,5 +1,5 @@
 <template>
-  <div class="user-profile" v-if="profileLoaded && profileStructure">
+  <div class="user-profile" v-if="profileLoaded && profileStructureLoaded">
     <form class="form-commuse-blocks" @submit.prevent="saveProfile">
       <div class="user-profile-header is-flex is-align-items-center">
         <h3 class="is-size-3 has-text-weight-bold">Edit profile</h3>
@@ -276,6 +276,7 @@
         let profileStructure = await this.$store.dispatch('app/fetchProfileStructure')
 
         this.profileStructure = profileStructure
+        this.profileStructureLoaded = true
 
         this.mitt.emit('spinnerStop')
       },
