@@ -25,8 +25,7 @@ jobs:
           command: docker-compose -f docker-compose.test.yml --env-file .env.test exec app bash -c "./test.sh"
       - run:
           command: |
-            mkdir /tmp/artifacts
-            cp tests/_output/*.png /tmp/artifacts
-            cp tests/_output/*.html /tmp/artifacts
+            cd tests/_output
+            find . -type f ! -name '*.png' ! -name '*.html' -delete
       - store_artifacts:
-          path: /tmp/artifacts
+          path: tests/_output
