@@ -10,7 +10,7 @@ modules:
             url: http://127.0.0.1
             browser: chrome
             window_size: 1920x1080
-            wait: 10
+            wait: 30
             debug_log_entries: 500
             log_js_errors: true
             capabilities:
