@@ -123,9 +123,27 @@ class InvitationsCest
 
     public function timeLimitedInviatationCodeAllowsRegistration(AcceptanceTester $I)
     {
+      // Multiple type
+      $this->timeLimitedInviatationCodeAllowsRegistrationTest($I, 'multiple');
+
+      // Single type
+      $this->timeLimitedInviatationCodeAllowsRegistrationTest($I, 'single');
+    }
+
+    public function expiredTimeLimitedInviatationCodeAllowsRegistration(AcceptanceTester $I)
+    {
+      // Multiple type
+      $this->expiredTimeLimitedInviatationCodeDoesntAllowRegistrationTest($I, 'multiple');
+
+      // Single type
+      $this->expiredTimeLimitedInviatationCodeDoesntAllowRegistrationTest($I, 'single');
+    }
+
+    private function timeLimitedInviatationCodeAllowsRegistrationTest(AcceptanceTester $I, $type)
+    {
       $invitationsModel = new InvitationCodeModel();
       $invitationsModel->insert([
-        'type' => 'multiple',
+        'type' => $type,
         'expire' => date('Y-m-d H:i:s', time() + 120),
       ]);
       $invitation = $invitationsModel
@@ -136,20 +154,24 @@ class InvitationsCest
       $I->amOnPage('/register?ic=' . $invitation['code']);
 
       $I->seeElement('//input[@type="email" and @name="email"]');
-      $I->fillField('email', 'timeLimitedInviatationCodeAllowsRegistration@example.com');
-      $I->fillField('username', 'timeLimitedInviatationCodeAl');
+      $I->fillField('email', 'timeLimitedInviatationCodeAllowsRegistration' . $type . '@example.com');
+      $I->fillField('username', 'timeLimitedInvCoAl' . $type);
       $I->fillField('password', 'password123');
       $I->fillField('password_confirm', 'password123');
       $I->click('Register');
 
       $I->seeElement('//h3[contains(text(), "Edit profile")]');
+
+      $I->click('.top-nav-user-menu-toggler');
+      $I->waitForElementVisible('//a[contains(text(), "Logout")]', 10);
+      $I->click('//a[contains(text(), "Logout")]');
     }
 
-    public function expiredTimeLimitedInviatationCodeAllowsRegistration(AcceptanceTester $I)
+    private function expiredTimeLimitedInviatationCodeDoesntAllowRegistrationTest(AcceptanceTester $I, $type)
     {
       $invitationsModel = new InvitationCodeModel();
       $invitationsModel->insert([
-        'type' => 'multiple',
+        'type' => $type,
         'expire' => date('Y-m-d H:i:s', time() - 120),
       ]);
       $invitation = $invitationsModel

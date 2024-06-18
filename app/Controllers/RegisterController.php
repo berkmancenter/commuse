@@ -68,15 +68,19 @@ class RegisterController extends ShieldRegister
   private function getActiveInvitationCodeByCode($code)
   {
     $invitationCodeModel = new InvitationCodeModel();
+    $currentTimestamp = date('Y-m-d H:i:s');
 
     $invitationCode = $invitationCodeModel
       ->where('code', $code)
       ->where('type', 'single')
       ->where('used', false)
+      ->groupStart()
+      ->where('expire >', $currentTimestamp)
+      ->orWhere('expire IS NULL')
+      ->groupEnd()
       ->first();
 
     if ($invitationCode === null) {
-      $currentTimestamp = date('Y-m-d H:i:s');
       $invitationCode = $invitationCodeModel
         ->where('code', $code)
         ->where('type', 'multiple')
