@@ -170,12 +170,20 @@
         return src
       },
       myInformationGroup() {
-        return this.profileStructure
-          ?.filter((group) => { return group['machine_name'] == 'my_information' })[0] ?? {}
+        let group = this.profileStructure?.filter((group) => { return group['machine_name'] == 'my_information' })[0]
+
+        if (!group) {
+          return {}
+        }
+
+        let groupCustomFields = group.custom_fields.filter(item => item.title !== 'Bio')
+        group.custom_fields = groupCustomFields
+
+        return group
       },
       customGroups() {
         return this.profileStructure
-        ?.filter((group) => { return !['my_information', 'contact_information', 'affiliation', 'location_current', 'location_information', 'multi_fields_group'].includes(group['machine_name']) })
+          ?.filter((group) => { return !['my_information', 'contact_information', 'affiliation', 'location_current', 'location_information', 'multi_fields_group'].includes(group['machine_name']) })
       },
       affiliateFieldTitle() {
         let title = ''

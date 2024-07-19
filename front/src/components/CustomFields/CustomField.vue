@@ -1,6 +1,10 @@
 <template>
   <div class="field custom-field" ref="fieldContainer">
     <label class="label" v-if="titleVisible()">{{ label }}</label>
+    <div class="user-profile-subtitle"
+         v-if="description"
+         v-html="description"
+    ></div>
 
     <div class="control" v-if="type == 'short_text'">
       <div class="control">
@@ -114,12 +118,14 @@
     name: 'ProfileField',
     props: {
       label: String,
+      description: String,
       type: String,
       machineName: String,
       metadata: Object,
       value: null,
       fieldData: Object,
       storeObject: Object,
+      groupDescription: String,
     },
     data() {
       return {

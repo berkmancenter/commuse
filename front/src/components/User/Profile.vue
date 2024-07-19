@@ -30,6 +30,11 @@
         <div class="panel">
           <p class="panel-heading">
             My Information
+            <div class="user-profile-subtitle"
+                 v-if="profileStructure?.filter((group) => { return group['machine_name'] != 'my_information' }).description"
+                 v-html="profileStructure?.filter((group) => { return group['machine_name'] != 'my_information' }).description"
+            >
+            </div>
           </p>
           <div class="panel-block">
             <div class="field user-profile-image">
@@ -92,16 +97,8 @@
             ></CustomField>
 
             <CustomField
-              label="Bio"
-              type="long_text"
-              v-bind:value="$store.state.app.userProfile.bio"
-              v-on:update:value="$store.state.app.userProfile.bio = $event"
-              :ref="el => fields['bio'] = el"
-              :storeObject="$store.state.app.userProfile"
-            ></CustomField>
-
-            <CustomField
               :label="customField.title"
+              :description="customField.description"
               :type="customField.input_type"
               v-bind:value="$store.state.app.userProfile[customField.machine_name]"
               v-on:update:value="$store.state.app.userProfile[customField.machine_name] = $event"
@@ -115,6 +112,11 @@
         <div class="panel">
           <p class="panel-heading">
             Contact Information
+            <div class="user-profile-subtitle"
+                 v-if="profileStructure?.filter((group) => { return group['machine_name'] != 'contact_information' }).description"
+                 v-html="profileStructure?.filter((group) => { return group['machine_name'] != 'contact_information' }).description"
+            >
+            </div>
           </p>
           <div class="panel-block">
             <CustomField
@@ -140,10 +142,16 @@
         <div class="panel" v-for="customGroup in customGroups">
           <p class="panel-heading">
             {{ customGroup.title }}
+            <div class="user-profile-subtitle"
+                 v-if="customGroup.description"
+                 v-html="customGroup.description"
+            >
+            </div>
           </p>
           <div class="panel-block">
             <CustomField
               :label="customField.title"
+              :description="customField.description"
               :type="customField.input_type"
               :machine-name="customField.machine_name"
               :metadata="customField.metadata"
@@ -354,6 +362,13 @@
       padding: 1rem 0;
       padding-left: 1rem;
       border-bottom: 2px solid var(--greyish-color);
+    }
+
+    .user-profile-subtitle {
+      font-size: 0.8em;
+      font-weight: normal;
+      color: #800000;
+      margin: 0.5rem 0;
     }
   }
 </style>

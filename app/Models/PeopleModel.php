@@ -83,7 +83,6 @@ class PeopleModel extends Model
         people.email,
         people.mobile_phone_number,
         people.image_url,
-        people.bio,
         people.preferred_pronouns,
         people.user_id,
         people.public_profile,
@@ -228,7 +227,6 @@ class PeopleModel extends Model
 
       unset($personData['custom_fields']);
       $personData['image_url'] = $personData['image_url'] ? "profile_images/{$personData['image_url']}" : '';
-      $personData['bio'] = nl2br($personData['bio']);
     }
   }
 }

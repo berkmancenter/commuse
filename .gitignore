@@ -131,3 +131,4 @@ nb-configuration.xml
 
 # Tests stuff
 test.local.sh
+.env.bak

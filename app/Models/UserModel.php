@@ -15,7 +15,7 @@ class UserModel extends ShieldUserModel
   use Resettable;
 
   const BASE_FIELDS = [
-    'first_name', 'middle_name', 'last_name', 'bio', 'public_profile', 'email',
+    'first_name', 'middle_name', 'last_name', 'public_profile', 'email',
     'prefix', 'preferred_pronouns', 'mobile_phone_number', 'reintake',
   ];
 
