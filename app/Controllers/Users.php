@@ -92,9 +92,6 @@ class Users extends BaseController
 
     list($result, $message) = $userModel->saveProfileData($requestData);
 
-    var_dump($result);
-    var_dump($message);
-
     if ($result) {
       return $this->respond(['message' => $message], 200);
     } else {

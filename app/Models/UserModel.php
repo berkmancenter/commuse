@@ -172,10 +172,12 @@ class UserModel extends ShieldUserModel
 
     $mappedData = [];
     foreach (UserModel::BASE_FIELDS as $key) {
-      $mappedData[$key] = $requestData[$key] ?? '';
+      if (isset($requestData[$key])) {
+        $mappedData[$key] = $requestData[$key];
 
-      if (is_string($mappedData[$key])) {
-        $mappedData[$key] = strip_tags($mappedData[$key]);
+        if (is_string($mappedData[$key])) {
+          $mappedData[$key] = strip_tags($mappedData[$key]);
+        }
       }
     }
     $data = $mappedData;
@@ -183,20 +185,22 @@ class UserModel extends ShieldUserModel
     $data['public_profile'] = $requestData['public_profile'] ?? false;
     $data['user_id'] = $userId;
 
-    $data['full_text_search'] = array_map(function ($field) {
-      if (is_array($field)) {
-        return json_encode($field);
-      }
-
-      return $field;
-    }, $requestData);
-    $data['full_text_search'] = strtolower(
-      str_replace(
-        ['"', '[', ']', '{', '}'],
-        '',
-        join(' ', $data['full_text_search']
-      )
-    ));
+    if (isset($requestData['update_search_index'])) {
+      $data['full_text_search'] = array_map(function ($field) {
+        if (is_array($field)) {
+          return json_encode($field);
+        }
+  
+        return $field;
+      }, $requestData);
+      $data['full_text_search'] = strtolower(
+        str_replace(
+          ['"', '[', ']', '{', '}'],
+          '',
+          join(' ', $data['full_text_search']
+        )
+      ));
+    }
 
     $peopleModel->db->transStart();
 

@@ -90,4 +90,20 @@ class AcceptanceTester extends \Codeception\Actor
         $I->click('.side-menu-toggler');
       }
     }
+
+    public function setProfileStatusActive($I) {
+      $I->openMenu($I);
+      $I->click('Account settings');
+      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
+      $I->checkOption('(//input[@type="checkbox"])[1]');
+      $I->seeElement('//div[contains(., "Profile status has been updated.")]');
+    }
+
+    public function setProfileStatusInactive($I) {
+      $I->openMenu($I);
+      $I->click('Account settings');
+      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
+      $I->uncheckOption('(//input[@type="checkbox"])[1]');
+      $I->seeElement('//div[contains(., "Profile status has been updated.")]');
+    }
 }

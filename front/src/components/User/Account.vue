@@ -2,6 +2,29 @@
   <div class="account-section">
     <h3 class="is-size-3 has-text-weight-bold mb-4">Account settings</h3>
 
+
+    <form class="form-commuse-blocks mb-4" @submit.prevent="changePassword">
+      <div class="panel">
+        <p class="panel-heading">
+          People Portal Profile Status
+        </p>
+        <div class="panel-block">
+          <div class="notification is-warning" v-if="!$store.state.app.userProfile.public_profile">
+            Your profile is currently set to private and will not show in the people page. To allow users of this platform to view your profile, please check the 'Make my People Portal profile visible to other users of the People Portal' checkbox.
+          </div>
+
+          <div class="field">
+            <label class="label">Make my People Portal profile visible to other users of the People Portal</label>
+            <div class="control">
+              <div class="control">
+                <input type="checkbox" v-model="$store.state.app.userProfile.public_profile">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
     <form class="form-commuse-blocks" @submit.prevent="changePassword">
       <div class="panel">
         <p class="panel-heading">
@@ -72,10 +95,38 @@
 
         this.mitt.emit('spinnerStop')
       },
+      async updateProfileStatus() {
+        this.mitt.emit('spinnerStart')
+
+        const response = await this.$store.dispatch('app/saveProfile', {
+          public_profile: this.$store.state.app.userProfile.public_profile,
+        })
+
+        this.$store.dispatch('app/setPeopleMarkReload', true)
+
+        if (response.ok) {
+          this.awn.success('Profile status has been updated.')
+        } else {
+          this.awn.warning('Something went wrong, try again.')
+        }
+
+        this.mitt.emit('spinnerStop')
+      },
+    },
+    watch: {
+      '$store.state.app.userProfile.public_profile': function() {
+        this.updateProfileStatus()
+      },
     },
   }
 </script>
 
 <style lang="scss">
-  .account-section {}
+  .account-section {
+    input[type=checkbox] {
+      transform: scale(2);
+      margin-left: 0.5rem;
+      cursor: pointer;
+    }
+  }
 </style>

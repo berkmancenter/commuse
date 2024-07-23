@@ -19,7 +19,7 @@ class ProfileCest
 
       $I->openMenu($I);
       $I->click('Edit profile');
-      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
+      $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
       $I->click('Save');
 
       $I->seeElement('//div[contains(., "Profile has been saved.")]');
@@ -32,11 +32,11 @@ class ProfileCest
       $user = $I->createUser('saveProfileWithDataAndSeeProfile@example.com', 'password123');
       $I->loginUser($I, 'saveProfileWithDataAndSeeProfile@example.com', 'password123');
 
+      $I->setProfileStatusActive($I);
+
       $I->openMenu($I);
       $I->click('Edit profile');
-
-      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
-      $I->checkOption('(//input[@type="checkbox"])[1]');
+      $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
       $I->fillField('//label[contains(text(), "First name")]/following-sibling::div//input', 'Tommy');
       $I->fillField('//label[contains(text(), "Last name")]/following-sibling::div//input', 'Testersky');
       $I->fillField('//label[contains(text(), "Bio")]/following-sibling::div//textarea', 'You can call me Tommy, I am a tester.');
@@ -62,11 +62,11 @@ class ProfileCest
       $user = $I->createUser('saveProfileWithDataAndHideProfile@example.com', 'password123');
       $I->loginUser($I, 'saveProfileWithDataAndHideProfile@example.com', 'password123');
 
+      $I->setProfileStatusActive($I);
+
       $I->openMenu($I);
       $I->click('Edit profile');
-
-      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
-      $I->checkOption('(//input[@type="checkbox"])[1]');
+      $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
       $I->fillField('//label[contains(text(), "First name")]/following-sibling::div//input', 'Tommy');
       $I->fillField('//label[contains(text(), "Last name")]/following-sibling::div//input', 'Hiddenberg');
       $I->fillField('//label[contains(text(), "Bio")]/following-sibling::div//textarea', 'You can call me Tommy, I am a tester.');
@@ -80,9 +80,10 @@ class ProfileCest
       $I->seeElement('//div[contains(., "Hiddenberg")]');
       $I->seeElement('//div[contains(., "Found 1 user")]');
 
+      $I->setProfileStatusInactive($I);
+
       $I->click('Edit profile');
-      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
-      $I->uncheckOption('(//input[@type="checkbox"])[1]');
+      $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
       $I->click('Save');
       $I->seeElement('//div[contains(., "Profile has been saved.")]');
 
@@ -105,11 +106,11 @@ class ProfileCest
       $I->createUser('profileRedirectsOnClickableValues@example.com', 'password123');
       $I->loginUser($I, 'profileRedirectsOnClickableValues@example.com', 'password123');
 
+      $I->setProfileStatusActive($I);
+
       $I->openMenu($I);
       $I->click('Edit profile');
-
-      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
-      $I->checkOption('(//input[@type="checkbox"])[1]');
+      $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
       $I->fillField('//label[contains(text(), "First name")]/following-sibling::div//input', 'Tommy');
       $I->fillField('//label[contains(text(), "Last name")]/following-sibling::div//input', 'Hiddenberg');
       $I->fillField('//label[contains(text(), "Current country")]/following-sibling::div//input', 'Spain');
@@ -124,11 +125,11 @@ class ProfileCest
       $I->createUser('profileRedirectsOnClickableValues2@example.com', 'password123');
       $I->loginUser($I, 'profileRedirectsOnClickableValues2@example.com', 'password123');
 
+      $I->setProfileStatusActive($I);
+
       $I->openMenu($I);
       $I->click('Edit profile');
-
-      $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
-      $I->checkOption('(//input[@type="checkbox"])[1]');
+      $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
       $I->fillField('//label[contains(text(), "First name")]/following-sibling::div//input', 'Adam');
       $I->fillField('//label[contains(text(), "Last name")]/following-sibling::div//input', 'Viselberg');
       $I->fillField('//label[contains(text(), "Current country")]/following-sibling::div//input', 'Norway');

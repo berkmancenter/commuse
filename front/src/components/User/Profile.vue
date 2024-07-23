@@ -9,26 +9,6 @@
       <div class="user-profile-form-fields">
         <div class="panel">
           <p class="panel-heading">
-            Profile Status
-          </p>
-          <div class="panel-block">
-            <div class="notification is-warning" v-if="!$store.state.app.userProfile.public_profile">
-              Your profile is currently set to private and will not show in the people page. To allow users of this platform to view your profile, please check the 'Make my People Portal profile visible to other users of the People Portal' checkbox.
-            </div>
-
-            <div class="field">
-              <label class="label">Make my People Portal profile visible to other users of the People Portal</label>
-              <div class="control">
-                <div class="control">
-                  <input type="checkbox" v-model="$store.state.app.userProfile.public_profile">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <p class="panel-heading">
             My Information
             <div class="user-profile-subtitle"
                  v-if="profileStructure?.filter((group) => { return group['machine_name'] != 'my_information' }).description"
@@ -215,6 +195,7 @@
 
         this.mitt.emit('spinnerStart')
 
+        this.$store.state.app.userProfile['update_search_index'] = true
         const response = await this.$store.dispatch('app/saveProfile', this.$store.state.app.userProfile)
 
         this.mitt.emit('spinnerStop')
@@ -345,12 +326,6 @@
       input {
         display: none;
       }
-    }
-
-    input[type=checkbox] {
-      transform: scale(2);
-      margin-left: 0.5rem;
-      cursor: pointer;
     }
 
     .user-profile-header {
