@@ -13,11 +13,11 @@
           </p>
           <div class="panel-block">
             <div class="notification is-warning" v-if="!$store.state.app.userProfile.public_profile">
-              Your profile is currently set to private and will not show in the people page. To allow users of this platform to view your profile, please check the 'List my information in the people page' checkbox.
+              Your profile is currently set to private and will not show in the people page. To allow users of this platform to view your profile, please check the 'Make my People Portal profile visible to other users of the People Portal' checkbox.
             </div>
 
             <div class="field">
-              <label class="label">List my information in the people page</label>
+              <label class="label">Make my People Portal profile visible to other users of the People Portal</label>
               <div class="control">
                 <div class="control">
                   <input type="checkbox" v-model="$store.state.app.userProfile.public_profile">
