@@ -11,8 +11,8 @@
 
                 <?php echo $_ENV['reintake.message']; ?>
 
-                <a href="<?php echo site_url('reintakeAccept') ?>" type="submit" class="btn btn-success">Accept</a>
-                <a href="<?php echo site_url('reintakeDeny') ?>" type="submit" class="btn btn-danger float-end">Deny</a>
+                <a href="<?php echo site_url('reintakeDeny') ?>" type="submit" class="btn btn-danger">Decline</a>
+                <a href="<?php echo site_url('reintakeAccept') ?>" type="submit" class="btn btn-success float-end">Accept</a>
             </div>
         </div>
     </div>

@@ -85,8 +85,8 @@ class ReintakeCest
 
       $I->seeElement('//p[contains(text(), "Reintake message test")]');
       $I->dontSeeElement('//h3[contains(text(), "News & events")]');
-      $I->seeElement('//a[contains(text(), "Deny")]');
-      $I->click('Deny');
+      $I->seeElement('//a[contains(text(), "Decline")]');
+      $I->click('Decline');
 
       $I->seeElement('//input[@type="email" and @name="email"]');
 
