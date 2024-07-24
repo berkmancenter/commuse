@@ -39,11 +39,11 @@ $routes->get('api/people/export', 'People::export');
 $routes->get('api/people/indexRemote', 'People::indexRemote');
 
 $routes->get('api/users/current', 'Users::current');
+$routes->get('api/users/profileStatus', 'Users::profileStatus');
 $routes->get('api/users/profile/(:any)', 'Users::profile/$1');
 $routes->get('api/users/profileStructure', 'Users::profileStructure');
 $routes->post('api/users/saveProfile', 'Users::saveProfile');
 $routes->post('api/users/uploadProfileImage/(:any)', 'Users::uploadProfileImage/$1');
-
 
 $routes->get('api/files/get/(.+)', 'Files::get/$1');
 

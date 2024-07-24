@@ -67,6 +67,37 @@ class Users extends BaseController
     return $this->respond($userData);
   }
 
+    /**
+   * Get user profile status
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function profileStatus()
+  {
+    $usersModel = new UserModel();
+
+    $userId = auth()->id();
+
+    $db = \Config\Database::connect();
+    $builder = $db->table('people');
+
+    $userData = $builder
+    ->select('people.public_profile')
+    ->where('people.user_id', $userId)
+    ->get()
+    ->getRowArray();
+
+    if (!$userData) {
+      return $this->respond([
+        'public_profile' => false,
+      ]);
+    }
+
+    $userData['public_profile'] = $userData['public_profile'] == 't';
+
+    return $this->respond($userData);
+  }
+
   /**
    * Get user profile structure
    *

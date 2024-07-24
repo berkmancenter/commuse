@@ -45,6 +45,9 @@ const mutations = {
   setUserProfile(state, profile) {
     state.userProfile = profile
   },
+  setUserProfileStatus(state, profileStatus) {
+    state.userProfile.public_profile = profileStatus.public_profile
+  },
   setCurrentUser(state, currentUser) {
     state.currentUser = currentUser
   },
@@ -123,6 +126,12 @@ const actions = {
   },
   async fetchProfile(context, id) {
     const response = await fetchIt(`${apiUrl}/api/users/profile/${id}`)
+    const data = await response.json()
+
+    return data
+  },
+  async fetchProfileStatus(context) {
+    const response = await fetchIt(`${apiUrl}/api/users/profileStatus`)
     const data = await response.json()
 
     return data
@@ -209,6 +218,9 @@ const actions = {
   },
   setUserProfile(context, profile) {
     context.commit('setUserProfile', profile)
+  },
+  setUserProfileStatus(context, profileStatus) {
+    context.commit('setUserProfileStatus', profileStatus)
   },
   setCurrentUser(context, currentUser) {
     context.commit('setCurrentUser', currentUser)

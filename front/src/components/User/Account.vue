@@ -17,7 +17,7 @@
             <label class="label">Make my People Portal profile visible to other users of the People Portal</label>
             <div class="control">
               <div class="control">
-                <input type="checkbox" v-model="$store.state.app.userProfile.public_profile">
+                <input type="checkbox" v-model="$store.state.app.userProfile.public_profile" @change="updateProfileStatus()">
               </div>
             </div>
           </div>
@@ -71,6 +71,9 @@
         }
       }
     },
+    created() {
+      this.loadProfileStatus()
+    },
     methods: {
       async changePassword() {
         if (this.passwordData.password != this.passwordData.password_confirm) {
@@ -112,10 +115,14 @@
 
         this.mitt.emit('spinnerStop')
       },
-    },
-    watch: {
-      '$store.state.app.userProfile.public_profile': function() {
-        this.updateProfileStatus()
+      async loadProfileStatus() {
+        this.mitt.emit('spinnerStart')
+
+        let profileStatus = await this.$store.dispatch('app/fetchProfileStatus')
+
+        this.mitt.emit('spinnerStop')
+
+        this.$store.dispatch('app/setUserProfileStatus', profileStatus)
       },
     },
   }
