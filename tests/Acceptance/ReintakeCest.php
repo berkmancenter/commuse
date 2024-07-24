@@ -5,11 +5,15 @@ namespace Tests\Acceptance;
 
 use App\Models\UserModel;
 use Tests\Support\AcceptanceTester;
+use \App\Libraries\SystemSettingsWrapper;
 
 class ReintakeCest
 {
     public function _before(AcceptanceTester $I)
     {
+      $settings = SystemSettingsWrapper::getInstance()->getSettings();
+      $settings['ReintakeMessage'] = ['value' => '<p>Reintake message</p>'];
+      SystemSettingsWrapper::getInstance()->saveSettings($settings);
     }
 
     // tests
@@ -42,7 +46,7 @@ class ReintakeCest
       $I->fillField('password', 'password123');
       $I->click('Login');
 
-      $I->seeElement('//p[contains(text(), "Reintake message test")]');
+      $I->seeElement('//p[contains(text(), "Reintake message")]');
       $I->dontSeeElement('//h3[contains(text(), "News & events")]');
     }
 
@@ -60,13 +64,15 @@ class ReintakeCest
       $I->fillField('password', 'password123');
       $I->click('Login');
 
-      $I->seeElement('//p[contains(text(), "Reintake message test")]');
+      var_dump(\App\Libraries\SystemSettingsWrapper::getInstance()->getSettingByKey('ReintakeMessage')['value']);
+
+      $I->seeElement('//p[contains(text(), "Reintake message")]');
       $I->dontSeeElement('//h3[contains(text(), "News & events")]');
       $I->seeElement('//a[contains(text(), "Accept")]');
       $I->click('Accept');
 
       $I->seeElement('//h3[contains(text(), "Edit profile")]');
-      $I->dontSeeElement('//p[contains(text(), "Reintake message test")]');
+      $I->dontSeeElement('//p[contains(text(), "Reintake message")]');
     }
 
     public function reintakeDenyingWorks(AcceptanceTester $I)
@@ -83,7 +89,7 @@ class ReintakeCest
       $I->fillField('password', 'password123');
       $I->click('Login');
 
-      $I->seeElement('//p[contains(text(), "Reintake message test")]');
+      $I->seeElement('//p[contains(text(), "Reintake message")]');
       $I->dontSeeElement('//h3[contains(text(), "News & events")]');
       $I->seeElement('//a[contains(text(), "Decline")]');
       $I->click('Decline');
@@ -95,6 +101,6 @@ class ReintakeCest
       $I->click('Login');
 
       $I->seeElement('//h3[contains(text(), "News & events")]');
-      $I->dontSeeElement('//p[contains(text(), "Reintake message test")]');
+      $I->dontSeeElement('//p[contains(text(), "Reintake message")]');
     }
 }

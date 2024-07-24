@@ -97,6 +97,7 @@
   import worldMenuIcon from '@/assets/images/world.svg'
   import dataMenuIcon from '@/assets/images/data.svg'
   import magnifierMenuIcon from '@/assets/images/magnifier_menu.svg'
+  import settingsMenuIcon from '@/assets/images/settings_menu.svg'
   import { isMobile } from '@/lib/mobile_utils.js'
   import Spinner from '@/components/Shared/Spinner.vue'
 
@@ -143,6 +144,11 @@
           },
         ],
         adminMenu: [
+          {
+            href: '/admin/settings',
+            title: 'Settings',
+            icon: settingsMenuIcon,
+          },
           {
             href: '/admin/invitations',
             title: 'Invitations',

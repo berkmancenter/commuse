@@ -63,6 +63,8 @@ $routes->post('api/admin/dataEditor/saveItem', 'DataEditor::saveItem');
 $routes->get('api/admin/profileDataAudit', 'DataAudit::profileDataAudit');
 $routes->post('api/admin/profileDataAudit/accept', 'DataAudit::auditRecordAccept');
 $routes->post('api/admin/profileDataAudit/requestChanges', 'DataAudit::auditRecordAcceptRequestChanges');
+$routes->get('api/admin/systemSettings', 'SystemSettings::index');
+$routes->post('api/admin/systemSettings', 'SystemSettings::saveSettings');
 
 $frontRoutes = [
   '/',
@@ -78,6 +80,7 @@ $frontRoutes = [
   'admin/data_editor',
   'admin/profile_data_audit',
   'admin/profile_data_audit/(:num)',
+  'admin/settings',
 ];
 
 foreach ($frontRoutes as $route) {

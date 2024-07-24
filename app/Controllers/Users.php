@@ -10,6 +10,7 @@ use League\Csv\Statement;
 use CodeIgniter\Shield\Entities\User;
 use App\Validation\ChangePasswordValidationRules;
 use \Gumlet\ImageResize;
+use App\Libraries\SystemSettingsWrapper;
 
 /**
  * This class is responsible for handling user-related operations such as
@@ -236,7 +237,7 @@ class Users extends BaseController
     $users = $query->getResultArray();
 
     foreach ($users as &$user) {
-      $user['groups'] = array_map('trim', array_filter(explode(',', $user['groups'])));
+      $user['groups'] = array_map('trim', array_filter(explode(',', $user['groups'] ?? '')));
     }
 
     return $this->respond($users);
@@ -623,27 +624,63 @@ class Users extends BaseController
         $userData['reintake'] = $status;
         $usersModel->saveProfileData($userData, $userId);
 
-        $this->reintakeSendNotificationEmail($status, $person[0]);
+        $this->reintakeSendNotificationEmailToAdmins($status, $person[0]);
+        $this->reintakeSendNotificationEmailToUser($status, $person[0]);
       }
     }
   }
 
   /**
-   * Sends a notification email for the reintake status.
+   * Sends a notification email for the reintake status to community admins.
    *
    * @param string $status The reintake status.
    * @param array $person The person's information.
    * @return void
    */
-  private function reintakeSendNotificationEmail($status, $person) {
+  private function reintakeSendNotificationEmailToAdmins($status, $person) {
     $email = \Config\Services::email();
     $name = $person['first_name'] . ' ' . $person['last_name'];
     $userEmail = $person['email'];
 
-    $email->setTo($_ENV['reintake.notificationEmails']);
+    $email->setTo(SystemSettingsWrapper::getInstance()->getSettingByKey('ReintakeAdminEmails')['value']);
     $email->setSubject("Reintake {$status} by {$name} {$userEmail}");
     $email->setMessage("Reintake has been {$status} by {$name} {$userEmail}.");
 
+    $email->send();
+  }
+
+  /**
+   * Sends a notification email for the reintake status to a processed user.
+   *
+   * @param string $status The reintake status.
+   * @param array $person The person's information.
+   * @return void
+   */
+  private function reintakeSendNotificationEmailToUser($status, $person) {
+    $email = \Config\Services::email();
+
+
+    if (UserModel::REINTAKE_STATUS_ACCEPTED === $status) {
+      $subject = str_replace(
+        ['###ACCEPTED_BY_FIRST_NAME###', '###ACCEPTED_BY_LAST_NAME###', '###ACCEPTED_BY_EMAIL###'],
+        [$person['first_name'], $person['last_name'], $person['email']],
+        SystemSettingsWrapper::getInstance()->getSettingByKey('ReintakeAcceptedToUserSubject')['value'],
+      );
+
+      $email->setSubject($subject);
+      $email->setMessage(SystemSettingsWrapper::getInstance()->getSettingByKey('ReintakeAcceptedToUserBody')['value']);
+    } else {
+      $subject = str_replace(
+        ['###REJECTED_BY_FIRST_NAME###', '###REJECTED_BY_LAST_NAME###', '###REJECTED_BY_EMAIL###'],
+        [$person['first_name'], $person['last_name'], $person['email']],
+        SystemSettingsWrapper::getInstance()->getSettingByKey('ReintakeRejectedToUserSubject')['value'],
+      );
+
+      $email->setSubject($subject);
+      $email->setMessage(SystemSettingsWrapper::getInstance()->getSettingByKey('ReintakeRejectedToUserBody')['value']);
+    }
+
+    $email->setTo($person['email']);
     $email->send();
   }
 }

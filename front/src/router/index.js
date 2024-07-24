@@ -104,6 +104,14 @@ const router = createRouter({
         title: 'Profile data audit',
       },
     },
+    {
+      path: '/admin/settings',
+      component: () => import('@/components/Admin/Settings/Index.vue'),
+      name: 'admin-settings.index',
+      meta: {
+        title: 'Settings',
+      },
+    },
   ]
 })
 

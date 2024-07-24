@@ -151,7 +151,6 @@
 
 <script>
   import CustomField from '@/components/CustomFields/CustomField.vue'
-  import StickyElement from 'vue-sticky-element'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import saveIcon from '@/assets/images/save.svg'
 
@@ -169,7 +168,6 @@
     },
     components: {
       CustomField,
-      StickyElement,
       ActionButton,
     },
     created() {

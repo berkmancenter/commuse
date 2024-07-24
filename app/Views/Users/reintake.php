@@ -9,7 +9,9 @@
             <div class="card-body">
                 <h5 class="card-title">Welcome back</h5>
 
-                <?php echo $_ENV['reintake.message']; ?>
+                <div class="mb-4">
+                  <?php echo \App\Libraries\SystemSettingsWrapper::getInstance()->getSettingByKey('ReintakeMessage')['value']; ?>
+                </div>
 
                 <a href="<?php echo site_url('reintakeDeny') ?>" type="submit" class="btn btn-danger">Decline</a>
                 <a href="<?php echo site_url('reintakeAccept') ?>" type="submit" class="btn btn-success float-end">Accept</a>
@@ -17,4 +19,9 @@
         </div>
     </div>
 
+    <style>
+      p {
+        margin-bottom: 0;
+      }
+    </style>
 <?= $this->endSection() ?>

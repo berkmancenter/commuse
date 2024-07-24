@@ -27,6 +27,8 @@ const state = {
   peopleFetchController: null,
   dataEditorFetchController: null,
   dataEditorSearchQuery: '',
+  systemSettings: [],
+  systemSettingsValues: [],
 }
 
 const mutations = {
@@ -88,6 +90,9 @@ const mutations = {
   },
   removeMultiItem(state, data) {
     state.userProfile[data.machineName].splice(data.index, 1);
+  },
+  setSystemSettings(state, settings) {
+    state.systemSettings = settings;
   },
 }
 
@@ -203,6 +208,12 @@ const actions = {
 
     return data
   },
+  async fetchSystemSettings(context) {
+    const response = await fetchIt(`${apiUrl}/api/admin/systemSettings`)
+    const data = await response.json()
+
+    return data
+  },
   setNews(context, news) {
     context.commit('setNews', news)
   },
@@ -233,6 +244,18 @@ const actions = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(profileData),
+    })
+
+    return response
+  },
+  async saveSystemSettings(context, settings) {
+    const response = await fetchIt(`${apiUrl}/api/admin/systemSettings`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(settings),
     })
 
     return response
@@ -421,6 +444,9 @@ const actions = {
     })
 
     return response
+  },
+  setSystemSettings(context, value) {
+    context.commit('setSystemSettings', value)
   },
 }
 

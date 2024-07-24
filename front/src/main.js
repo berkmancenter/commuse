@@ -9,6 +9,7 @@ import './plugins/loading_css'
 import './plugins/datepicker'
 import floating from './plugins/floating_vue'
 import vfm from './plugins/vfm'
+import CKEditor from './plugins/ckeditor'
 
 import { createApp } from 'vue'
 import router from './router/index'
@@ -29,6 +30,7 @@ app.use(router)
 app.use(store)
 app.use(floating)
 app.use(vfm)
+app.use(CKEditor)
 app.mount('#app')
 
 const globals = app.config.globalProperties
