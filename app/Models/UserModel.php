@@ -9,6 +9,7 @@ use CodeIgniter\Shield\Traits\Resettable as Resettable;
 use App\Libraries\UserProfileStructure;
 use \Gumlet\ImageResize;
 use Rogervila\ArrayDiffMultidimensional;
+use App\Libraries\SystemSettingsWrapper;
 
 class UserModel extends ShieldUserModel
 {
@@ -532,7 +533,7 @@ class UserModel extends ShieldUserModel
           }
           $insertedId = $db->insertID();
           $dataAuditLink = site_url("admin/profile_data_audit/{$insertedId}");
-          $email->setTo($_ENV['profileDataAudit.reviewEmails']);
+          $email->setTo(SystemSettingsWrapper::getInstance()->getSettingByKey('DataAuditReviewAdminEmails')['value']);
           $email->setSubject("Profile edit made by {$name}{$userEmail}");
           $email->setMessage("
             Action required to accept profile changes made by {$name}{$userEmail}.<br><br>" . "

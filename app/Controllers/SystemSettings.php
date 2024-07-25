@@ -33,6 +33,8 @@ class SystemSettings extends BaseController
    */
   public function saveSettings()
   {
+    $this->checkAdminAccess();
+
     $requestData = $this->request->getJSON(true);
 
     SystemSettingsWrapper::getInstance()->saveSettings($requestData);
