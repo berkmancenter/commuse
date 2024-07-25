@@ -73,7 +73,7 @@
               <VueMultiselect
                 v-model="item.to"
                 :multiple="false"
-                :options="rangeYearsOptionsTo()"
+                :options="rangeYearsOptionsTo(item)"
                 placeholder="Select"
               >
               </VueMultiselect>
@@ -186,8 +186,20 @@
       rangeYearsOptionsFrom() {
         return Array.from(Array(new Date().getFullYear() - 1995 + 1), (_, index) => new Date().getFullYear() - index)
       },
-      rangeYearsOptionsTo() {
-        return ['Now', (new Date().getFullYear() + 1)].concat(this.rangeYearsOptionsFrom())
+      rangeYearsOptionsTo(item) {
+        let toOptions = [];
+
+        if (this.metadata.disableRangeToNowValues && item.tags.some(item => this.metadata.disableRangeToNowValues.includes(item))) {
+          if (item.to === 'Now') {
+            item.to = null
+          }
+
+          toOptions = [(new Date().getFullYear() + 1)].concat(this.rangeYearsOptionsFrom())
+        } else {
+          toOptions = ['Now', (new Date().getFullYear() + 1)].concat(this.rangeYearsOptionsFrom())
+        }
+
+        return toOptions
       },
       validate() {
         if (this.type === 'tags_range') {

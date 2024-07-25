@@ -109,6 +109,7 @@
     border-radius: 0.5rem;
     width: 32em;
     max-width: 100%;
+    max-height: 80vh;
     overflow-y: auto;
     margin: 1rem 0;
   }

@@ -28,6 +28,10 @@ class CustomFields extends BaseController
         $customField['metadata']->possibleValues = join("\n", $customField['metadata']->possibleValues);
       }
 
+      if (isset($customField['metadata']->disableRangeToNowValues)) {
+        $customField['metadata']->disableRangeToNowValues = join("\n", $customField['metadata']->disableRangeToNowValues);
+      }
+
       return $customField;
     }, $customFields);
 
@@ -104,6 +108,7 @@ class CustomFields extends BaseController
         'possibleValues' => preg_split('/\R/u', $customFieldData['metadata']['possibleValues'] ?? ''),
         'tagName' => $customFieldData['metadata']['tagName'] ?? '',
         'childFields' => $customFieldData['metadata']['childFields'] ?? [],
+        'disableRangeToNowValues' => preg_split('/\R/u', $customFieldData['metadata']['disableRangeToNowValues'] ?? ''),
       ]),
     ];
   }

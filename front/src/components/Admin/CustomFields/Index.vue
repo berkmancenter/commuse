@@ -109,6 +109,16 @@
             <input class="input" type="text" v-model="fieldModalCurrent.metadata.tagName">
           </div>
         </div>
+
+        <hr>
+
+        <div class="field">
+          <label class="label">Disabled "Now" values</label>
+          <p class="is-size-6">List of values that, when selected, disallow to select the "Now" value in the "To" field. One value per line.</p>
+          <div class="control">
+            <textarea class="textarea" v-model="fieldModalCurrent.metadata.disableRangeToNowValues"></textarea>
+          </div>
+        </div>
       </div>
 
       <div v-if="['short_text'].includes(fieldModalCurrent.input_type)">
