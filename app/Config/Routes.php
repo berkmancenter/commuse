@@ -65,6 +65,7 @@ $routes->post('api/admin/profileDataAudit/accept', 'DataAudit::auditRecordAccept
 $routes->post('api/admin/profileDataAudit/requestChanges', 'DataAudit::auditRecordAcceptRequestChanges');
 $routes->get('api/admin/systemSettings', 'SystemSettings::index');
 $routes->post('api/admin/systemSettings', 'SystemSettings::saveSettings');
+$routes->post('api/admin/users/setActiveAffiliation', 'Users::setActiveAffiliation');
 
 $frontRoutes = [
   '/',

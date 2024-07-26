@@ -71,7 +71,7 @@
       <div class="field">
         <label class="label" for="expire">Expire</label>
         <div class="control">
-          <input class="input" type="text" ref="createInvitationCurrentExpire">
+          <date-picker v-model:value="createInvitationCurrentExpire" format="MMMM D, Y" type="date" value-type="format" input-class="input" :clearable="false"></date-picker>
         </div>
       </div>
     </form>
@@ -85,12 +85,9 @@
   import clipboardIcon from '@/assets/images/clipboard.svg'
   import addIcon from '@/assets/images/add.svg'
   import AdminTable from '@/components/Admin/AdminTable.vue'
-  import AirDatepicker from 'air-datepicker'
-  import localeEn from 'air-datepicker/locale/en'
   import { formattedTimestamp } from '@/lib/time_stuff'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
-  import { waitUntil } from '@/lib/wait_until'
 
   export default {
     name: 'AdminInvitations',
@@ -117,6 +114,7 @@
           type: 'single',
           expire: '',
         },
+        createInvitationCurrentExpire: '',
       }
     },
     created() {
@@ -137,25 +135,13 @@
       },
       async createInvitationModalOpen() {
         this.createInvitationModalStatus = true
-
-        await waitUntil(() => {
-          return this.$refs.createInvitationCurrentExpire
-        })
-
-        new AirDatepicker(this.$refs.createInvitationCurrentExpire, {
-          locale: localeEn,
-          timepicker: true,
-          minutesStep: 5,
-        })
       },
       async createInvitation() {
         this.mitt.emit('spinnerStart')
 
-        // FIXME: Vue doesn't seem to see value changes made by AirDatepicker
-        // therefore we can't use v-model on the expire input 😔
         const response = await this.$store.dispatch('app/saveInvitation', {
           type: this.createInvitationCurrent.type,
-          expire: this.$refs.createInvitationCurrentExpire.value,
+          expire: this.createInvitationCurrentExpire,
         })
 
         if (response.ok) {

@@ -119,6 +119,15 @@
             <textarea class="textarea" v-model="fieldModalCurrent.metadata.disableRangeToNowValues"></textarea>
           </div>
         </div>
+
+        <hr>
+
+        <div class="field">
+          <label class="label">Allow to create multiple items</label>
+          <div class="control">
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.multipleItems">
+          </div>
+        </div>
       </div>
 
       <div v-if="['short_text'].includes(fieldModalCurrent.input_type)">
@@ -175,6 +184,15 @@
         <label class="label">Is people filter</label>
         <div class="control">
           <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.isPeopleFilter">
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="field">
+        <label class="label">Editable only by admins</label>
+        <div class="control">
+          <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.editableOnlyByAdmins">
         </div>
       </div>
     </form>

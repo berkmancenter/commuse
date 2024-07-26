@@ -29,9 +29,15 @@
       this.mitt.on('spinnerStop', () => {
         that.stopsToStop = that.stopsToStop - 1
 
+
         if (that.stopsToStop === 0) {
           that.stop()
         }
+      })
+
+      this.mitt.on('spinnerStopForce', () => {
+        that.stopsToStop = 0
+        that.stop()
       })
     },
     methods: {

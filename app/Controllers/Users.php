@@ -409,6 +409,14 @@ class Users extends BaseController
             $userSaved = $usersProvider->findById($userId);
             $userSaved->forcePasswordReset();
 
+            if ($record['active_affiliation_roles'] && $record['active_affiliation_from'] && $record['active_affiliation_to']) {
+              $record['activeAffiliation'] = [[
+                'tags' => explode(',', $record['active_affiliation_roles']),
+                'from' => strtotime($record['active_affiliation_from']),
+                'to' => strtotime($record['active_affiliation_to']),
+              ]];
+            }
+
             $customFieldsModel = model('CustomFieldModel');
             $customFields = $customFieldsModel
               ->select('machine_name')
@@ -471,6 +479,8 @@ class Users extends BaseController
       return $customField['machine_name'];
     }, $customFields);
     $csvImportFields = array_merge($csvImportFields, $customFieldsMachineNames);
+
+    $csvImportFields = array_merge($csvImportFields, ['active_affiliation_roles', 'active_affiliation_from', 'active_affiliation_to']);
 
     $textData = join(',', $csvImportFields);
 
@@ -545,7 +555,7 @@ class Users extends BaseController
       $userIds = $requestData['users'] ?? [];
       $status = $requestData['status'] ?? 'not_required';
       $usersModel = new UserModel();
-  
+
       if (!empty($userIds)) {
         foreach ($userIds as $userId) {
           $userData = $usersModel->getUserProfileData($userId);
@@ -682,5 +692,39 @@ class Users extends BaseController
 
     $email->setTo($person['email']);
     $email->send();
+  }
+
+  /**
+   * Set users active affiliation
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function setActiveAffiliation()
+  {
+    $this->checkAdminAccess();
+
+   try {
+     $requestData = $this->request->getJSON(true);
+     $userIds = $requestData['users'] ?? [];
+     $affiliation = $requestData['affiliation'] ?? [];
+     $usersModel = new UserModel();
+  
+     if (!empty($userIds)) {
+       foreach ($userIds as $userId) {
+         $userData = $usersModel->getUserProfileData($userId);
+         if ($affiliation === 'unset') {
+           $userData['activeAffiliation'] = [];
+         } else {
+           $userData['activeAffiliation'] = $affiliation;
+         }
+
+         $usersModel->saveProfileData($userData, $userId);
+       }
+     }
+    } catch (\Throwable $th) {
+      return $this->respond(['message' => 'Error changing active affiliation.'], 500);
+    }
+
+    return $this->respond(['message' => 'Active affiliation has been set successfully.'], 200);
   }
 }

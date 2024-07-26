@@ -8,13 +8,13 @@
 
     <div class="control" v-if="type == 'short_text'">
       <div class="control">
-        <input type="text" class="input" :value="value" @input="updateSimpleValue">
+        <input type="text" class="input" :value="value" @input="updateSimpleValue" :disabled="disabled()">
       </div>
     </div>
 
     <div class="control" v-if="type == 'long_text'">
       <div class="control">
-        <textarea class="textarea" :value="value" @input="updateSimpleValue"></textarea>
+        <textarea class="textarea" :value="value" @input="updateSimpleValue" :disabled="disabled()"></textarea>
       </div>
     </div>
 
@@ -29,14 +29,15 @@
           tag-placeholder="Add"
           :placeholder="metadata.allowNewValues ? 'Search or add new' : 'Search'"
           @tag="addTag"
+          :disabled="disabled()"
         >
         </VueMultiselect>
       </div>
     </div>
 
     <div v-if="type == 'tags_range'">
-      <div class="box" v-for="(item, index) in storeObject[machineName]">
-        <span title="Remove item" @click="removeTagRangeItem(index)"><Icon :src="minusIcon" /></span>
+      <div class="box" v-for="(item, index) in formatTagsRangeValue(storeObject[machineName])">
+        <span title="Remove item" @click="removeTagRangeItem(index)" v-if="!disabled() && !forceOneItem"><Icon :src="minusIcon" /></span>
 
         <div>
           <label class="label">{{ metadata.tagName ?? 'Item name' }}</label>
@@ -49,6 +50,7 @@
                 :options="metadata.possibleValues ?? []"
                 @tag="addTagRange"
                 :placeholder="metadata.allowNewValues ? 'Select or add new' : 'Select'"
+                :disabled="disabled()"
               >
               </VueMultiselect>
             </div>
@@ -57,37 +59,46 @@
           <label class="label">From</label>
           <div class="control">
             <div class="control">
-              <VueMultiselect
-                v-model="item.from"
-                :multiple="false"
-                :options="rangeYearsOptionsFrom()"
-                placeholder="Select"
-              >
-              </VueMultiselect>
+              <date-picker
+                v-model:value="item.from"
+                format="MMMM D, Y"
+                type="date"
+                value-type="format"
+                input-class="input"
+                :clearable="false"
+                :disabled="disabled()"
+              ></date-picker>
             </div>
           </div>
 
           <label class="label">To</label>
           <div class="control">
             <div class="control">
-              <VueMultiselect
-                v-model="item.to"
-                :multiple="false"
-                :options="rangeYearsOptionsTo(item)"
-                placeholder="Select"
-              >
-              </VueMultiselect>
+              <date-picker
+                v-model:value="item.to"
+                format="MMMM D, Y"
+                type="date"
+                value-type="format"
+                input-class="input"
+                :clearable="false"
+                :disabled="disabled()"
+              ></date-picker>
             </div>
           </div>
         </div>
       </div>
 
-      <span title="Add more" @click="addEmptyTagRangeItem"><Icon :src="addIcon" /></span>
+      <span 
+        title="Add more"
+        @click="addEmptyTagRangeItem"
+        v-if="!disabled() && ((!storeObject[machineName]) || (storeObject[machineName].length === 0) || (storeObject[machineName].length > 0 && metadata.multipleItems))">
+        <Icon :src="addIcon" />
+      </span>
     </div>
 
     <div v-if="type == 'multi'">
       <div class="box" v-for="(item, index) in storeObject[machineName]">
-        <span title="Remove item" @click="removeMultiItem(index)"><Icon :src="minusIcon" /></span>
+        <span title="Remove item" @click="removeMultiItem(index)" v-if="!disabled() && !forceOneItem"><Icon :src="minusIcon" /></span>
 
         <div>
           <ProfileField
@@ -103,7 +114,7 @@
         </div>
       </div>
 
-      <span title="Add more" @click="addEmptyMultiItem"><Icon :src="addIcon" /></span>
+      <span title="Add more" @click="addEmptyMultiItem" v-if="!disabled()"><Icon :src="addIcon" /></span>
     </div>
   </div>
 </template>
@@ -113,6 +124,7 @@
   import Icon from '@/components/Shared/Icon.vue'
   import addIcon from '@/assets/images/add.svg'
   import minusIcon from '@/assets/images/minus_light.svg'
+  import { calendarDateFormat } from '@/lib/time_stuff.js'
 
   export default {
     name: 'ProfileField',
@@ -126,6 +138,9 @@
       fieldData: Object,
       storeObject: Object,
       groupDescription: String,
+      hideTitle: Boolean,
+      autoPopulateFirstItem: Boolean,
+      forceOneItem: Boolean,
     },
     data() {
       return {
@@ -137,6 +152,9 @@
     components: {
       VueMultiselect,
       Icon,
+    },
+    mounted() {
+      this.checkIfAutoPopulateFirstItem()
     },
     methods: {
       updateSimpleValue(ev) {
@@ -150,10 +168,16 @@
         this.$emit('update:value', currentValue.filter(item => item !== option))
       },
       addEmptyTagRangeItem() {
-        this.$store.dispatch('app/addEmptyTagRangeItem', this.machineName)
+        this.$store.dispatch('app/addEmptyTagRangeItem', {
+          store: this.storeObject,
+          key: this.machineName,
+        })
       },
       addEmptyMultiItem() {
-        this.$store.dispatch('app/addEmptyMultiItem', this.machineName)
+        this.$store.dispatch('app/addEmptyMultiItem', {
+          store: this.storeObject,
+          key: this.machineName,
+        })
       },
       removeTagRangeItem(index) {
         this.$store.dispatch('app/removeTagRangeItem', {
@@ -182,24 +206,6 @@
           key: this.machineName,
           newOption: newOption,
         })
-      },
-      rangeYearsOptionsFrom() {
-        return Array.from(Array(new Date().getFullYear() - 1995 + 1), (_, index) => new Date().getFullYear() - index)
-      },
-      rangeYearsOptionsTo(item) {
-        let toOptions = [];
-
-        if (this.metadata.disableRangeToNowValues && item.tags.some(item => this.metadata.disableRangeToNowValues.includes(item))) {
-          if (item.to === 'Now') {
-            item.to = null
-          }
-
-          toOptions = [(new Date().getFullYear() + 1)].concat(this.rangeYearsOptionsFrom())
-        } else {
-          toOptions = ['Now', (new Date().getFullYear() + 1)].concat(this.rangeYearsOptionsFrom())
-        }
-
-        return toOptions
       },
       validate() {
         if (this.type === 'tags_range') {
@@ -243,11 +249,44 @@
         return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
       },
       titleVisible() {
-        if (this?.metadata && this.metadata.hideTitle) {
+        if ((this?.metadata && this.metadata.hideTitle) || this.hideTitle) {
           return false
         }
 
         return true
+      },
+      disabled() {
+        return this?.metadata && this?.metadata.editableOnlyByAdmins && !this.$store.state.app.currentUser.admin
+      },
+      checkIfAutoPopulateFirstItem() {
+        if (this.autoPopulateFirstItem) {
+          if (!this.storeObject[this.machineName]) {
+            this.storeObject[this.machineName] = []
+          }
+
+          if (this.type == 'tags_range') {
+            this.addEmptyTagRangeItem()
+          } else if (this.type == 'multi') {
+            this.addEmptyMultiItem()
+          }
+        }
+      },
+      formatTagsRangeValue(value) {
+        if (!value) {
+          return []
+        }
+
+        return value.map((item) => {
+          if (item.to) {
+            item.to = calendarDateFormat(item.to)
+          }
+
+          if (item.from) {
+            item.from = calendarDateFormat(item.from)
+          }
+
+          return item
+        })
       },
     },
   }

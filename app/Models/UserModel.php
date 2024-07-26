@@ -122,6 +122,13 @@ class UserModel extends ShieldUserModel
       $userData = array_merge($userData, $userCustomFields);
     }
 
+    // Filter out future active affiliation for non-admin users
+    if (php_sapi_name() !== 'cli' && auth()->user()->can('admin.access') === false && isset($userData['activeAffiliation']) && count($userData['activeAffiliation']) > 0) {
+      $userData['activeAffiliation'] = array_filter($userData['activeAffiliation'], function ($affiliation) {
+        return $affiliation['from'] < time();
+      });
+    }
+
     return $userData;
   }
 
@@ -295,6 +302,14 @@ class UserModel extends ShieldUserModel
               $value = array_map(function ($v) {
                 if (isset($v['tags']) && is_array($v['tags']) === false) {
                   $v['tags'] = [$v['tags']];
+                }
+
+                if (isset($v['from']) && is_string($v['from'])) {
+                  $v['from'] = strtotime($v['from']);
+                }
+
+                if (isset($v['to']) && is_string($v['to'])) {
+                  $v['to'] = strtotime($v['to']);
                 }
 
                 return $v;

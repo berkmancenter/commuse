@@ -1,6 +1,7 @@
 import fetchIt from '@/lib/fetch_it'
 import store2 from 'store2'
 import { objectToQueryParams } from '@/lib/url_params'
+import { ref } from 'vue'
 
 const apiUrl = import.meta.env.VITE_API_URL
 
@@ -29,6 +30,7 @@ const state = {
   dataEditorSearchQuery: '',
   systemSettings: [],
   systemSettingsValues: [],
+  setActiveAffiliationModalValue: {},
 }
 
 const mutations = {
@@ -71,19 +73,19 @@ const mutations = {
 
     state.userProfile[data.key]['tags'](data.newOption)
   },
-  addEmptyTagRangeItem(state, machineName) {
-    if (!state.userProfile[machineName]) {
-      state.userProfile[machineName] = []
+  addEmptyTagRangeItem(state, destination) {
+    if (!destination['store'][destination['key']]) {
+      destination['store'][destination['key']] = []
     }
 
-    state.userProfile[machineName].push(JSON.parse(JSON.stringify(defaultTagRange)))
+    destination['store'][destination['key']].push(JSON.parse(JSON.stringify(defaultTagRange)))
   },
-  addEmptyMultiItem(state, machineName) {
-    if (!state.userProfile[machineName]) {
-      state.userProfile[machineName] = []
+  addEmptyMultiItem(state, destination) {
+    if (!destination['store'][destination['key']]) {
+      destination['store'][destination['key']] = []
     }
 
-    state.userProfile[machineName].push({})
+    destination['store'][destination['key']].push({})
   },
   removeTagRangeItem(state, data) {
     state.userProfile[data.machineName].splice(data.index, 1);
@@ -93,6 +95,9 @@ const mutations = {
   },
   setSystemSettings(state, settings) {
     state.systemSettings = settings;
+  },
+  setActiveAffiliationModalValue(state, value) {
+    state.setActiveAffiliationModalValue = value;
   },
 }
 
@@ -236,6 +241,9 @@ const actions = {
   setCurrentUser(context, currentUser) {
     context.commit('setCurrentUser', currentUser)
   },
+  setActiveAffiliationModalValue(context, value) {
+    context.commit('setActiveAffiliationModalValue', value)
+  },
   async saveProfile(context, profileData) {
     const response = await fetchIt(`${apiUrl}/api/users/saveProfile`, {
       method: 'POST',
@@ -334,11 +342,23 @@ const actions = {
 
     return response
   },
-  addEmptyTagRangeItem(context, machineName) {
-    context.commit('addEmptyTagRangeItem', machineName)
+  async setActiveAffiliation(context, data) {
+    const response = await fetchIt(`${apiUrl}/api/admin/users/setActiveAffiliation`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+
+    return response
   },
-  addEmptyMultiItem(context, machineName) {
-    context.commit('addEmptyMultiItem', machineName)
+  addEmptyTagRangeItem(context, destination) {
+    context.commit('addEmptyTagRangeItem', destination)
+  },
+  addEmptyMultiItem(context, destination) {
+    context.commit('addEmptyMultiItem', destination)
   },
   removeTagRangeItem(context, data) {
     context.commit('removeTagRangeItem', data)

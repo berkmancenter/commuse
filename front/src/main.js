@@ -6,7 +6,7 @@ import store2 from 'store2'
 import mitt from './plugins/mitt'
 import './plugins/multiselect'
 import './plugins/loading_css'
-import './plugins/datepicker'
+import datepicker from './plugins/datepicker'
 import floating from './plugins/floating_vue'
 import vfm from './plugins/vfm'
 import CKEditor from './plugins/ckeditor'
@@ -31,7 +31,8 @@ app.use(store)
 app.use(floating)
 app.use(vfm)
 app.use(CKEditor)
+app.use(datepicker)
 app.mount('#app')
 
 const globals = app.config.globalProperties
-export { globals }
+export { globals, app }

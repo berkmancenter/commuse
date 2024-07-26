@@ -109,6 +109,8 @@ class CustomFields extends BaseController
         'tagName' => $customFieldData['metadata']['tagName'] ?? '',
         'childFields' => $customFieldData['metadata']['childFields'] ?? [],
         'disableRangeToNowValues' => preg_split('/\R/u', $customFieldData['metadata']['disableRangeToNowValues'] ?? ''),
+        'editableOnlyByAdmins' => $customFieldData['metadata']['editableOnlyByAdmins'] ?? false,
+        'multipleItems' => $customFieldData['metadata']['multipleItems'] ?? false,
       ]),
     ];
   }

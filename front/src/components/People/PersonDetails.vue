@@ -57,13 +57,30 @@
                   <img class="people-section-details-icon" :src="affiliateIcon">
                 </div>
                 <div>
-                  {{ affiliationItem.tags.join(', ') }}, {{ affiliationItem.from }}-{{ affiliationItem.to }}
+                  {{ affiliationItem.tags.join(', ') }}, {{ calendarDateFormat(affiliationItem.from) }}-{{ calendarDateFormat(affiliationItem.to) }}
                 </div>
               </div>
             </div>
 
             <template #popper>
-              {{ affiliateFieldTitle }}(s)
+              {{ affiliateFieldTitle('affiliation') }}(s)
+            </template>
+          </VTooltip>
+
+          <VTooltip distance="10" placement="left" v-if="person?.activeAffiliation?.length > 0">
+            <div class="people-section-details-side-affiliation">
+              <div class="people-section-details-side-affiliation-item" v-for="activeAffiliationItem in person.activeAffiliation">
+                <div class="people-section-details-side-affiliation-item-icon">
+                  <img class="people-section-details-icon" :src="affiliateIcon">
+                </div>
+                <div>
+                  {{ activeAffiliationItem.tags.join(', ') }}, {{ calendarDateFormat(activeAffiliationItem.from) }}-{{ calendarDateFormat(activeAffiliationItem.to) }}
+                </div>
+              </div>
+            </div>
+
+            <template #popper>
+              {{ affiliateFieldTitle('activeAffiliation') }}
             </template>
           </VTooltip>
 
@@ -130,6 +147,7 @@
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import { compact, flatten } from 'lodash'
   import { getMultiFieldValue } from '@/lib/fields/multi.js'
+  import { calendarDateFormat } from '@/lib/time_stuff.js'
 
   export default {
     name: 'PersonDetails',
@@ -146,6 +164,7 @@
         currentAddressIcon,
         profileStructure: [],
         getMultiFieldValue,
+        calendarDateFormat,
       }
     },
     components: {
@@ -185,23 +204,6 @@
         return this.profileStructure
           ?.filter((group) => { return !['my_information', 'contact_information', 'affiliation', 'location_current', 'location_information', 'multi_fields_group'].includes(group['machine_name']) })
       },
-      affiliateFieldTitle() {
-        let title = ''
-
-        this.profileStructure.some((group) => {
-          return group.custom_fields.some((custom_field) => {
-            if (custom_field.machine_name === 'affiliation') {
-              title = custom_field.title
-
-              return true
-            }
-
-            return false
-          });
-        });
-
-        return title
-      }
     },
     created() {
       this.mitt.emit('spinnerStart', 2)
@@ -251,6 +253,23 @@
           top: y,
           behavior: 'instant'
         })
+      },
+      affiliateFieldTitle(fieldMachineName) {
+        let title = ''
+
+        this.profileStructure.some((group) => {
+          return group.custom_fields.some((custom_field) => {
+            if (custom_field.machine_name === fieldMachineName) {
+              title = custom_field.title
+
+              return true
+            }
+
+            return false
+          });
+        });
+
+        return title
       },
     },
   }

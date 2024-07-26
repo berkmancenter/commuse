@@ -16,6 +16,7 @@ use CodeIgniter\Shield\Authentication\Passwords\NothingPersonalValidator;
 use CodeIgniter\Shield\Authentication\Passwords\PwnedValidator;
 use CodeIgniter\Shield\Authentication\Passwords\ValidatorInterface;
 use CodeIgniter\Shield\Models\UserModel;
+use \App\Models\UserModel as AppUserModel;
 
 class Auth extends ShieldAuth
 {
@@ -434,6 +435,13 @@ class Auth extends ShieldAuth
             ->where('id', auth()->id())
             ->update();
         }
+
+        // Create a people record for the user.
+        // Setting the public_profile here just to force the model to create a record.
+        $usersModel = new AppUserModel();
+        $usersModel->saveProfileData([
+          'public_profile' => false,
+        ], auth()->id());
 
         $url = base_url('profile');
 

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { app } from '../main'
 
 const basePath = import.meta.env.VITE_BASE_URL
 const appTitle = import.meta.env.VITE_APP_TITLE
@@ -120,6 +121,8 @@ router.afterEach(route => {
 })
 
 router.beforeEach((to, from, next) => {
+  app.config.globalProperties.mitt.emit('spinnerStopForce')
+
   if (to.meta.title) {
     document.title = `${to.meta.title} | ${appTitle}`
   }

@@ -3,9 +3,10 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">Users</h3>
 
     <div class="mb-4">
-      <ActionButton buttonText="Import users from CSV" @click="importUsersFromCsvModalOpen()" :icon="fileIcon"></ActionButton>
-      <ActionButton class="ml-2" buttonText="Delete users" @click="() => deleteUsersConfirm(selectedUsers)" :icon="minusIcon"></ActionButton>
-      <ActionButton class="ml-2" buttonText="Set ReIntake status" @click="() => setReintakeStatusModalOpen(selectedUsers)" :icon="reintakeIcon"></ActionButton>
+      <ActionButton class="mr-2 mb-2" buttonText="Import users from CSV" @click="importUsersFromCsvModalOpen()" :icon="fileIcon"></ActionButton>
+      <ActionButton class="mr-2 mb-2" buttonText="Delete users" @click="() => deleteUsersConfirm(selectedUsers)" :icon="minusIcon"></ActionButton>
+      <ActionButton class="mr-2 mb-2" buttonText="Set ReIntake status" @click="() => setReintakeStatusModalOpen(selectedUsers)" :icon="reintakeIcon"></ActionButton>
+      <ActionButton class="mr-2 mb-2" buttonText="Set active affiliation" @click="() => setActiveAffiliationModalOpen(selectedUsers)" :icon="affiliationIcon"></ActionButton>
     </div>
 
     <div class="admin-users-search mb-4">
@@ -165,6 +166,50 @@
       </div>
     </div>
   </Modal>
+
+  <Modal
+    v-model="setActiveAffiliationModalStatus"
+    title="Set active affiliation"
+    :focusOnConfirm="true"
+    class="admin-users-set-active-affiliation"
+    @confirm="setActiveAffiliation()"
+    @cancel="setActiveAffiliationModalStatus = false"
+  >
+    Choose an affiliation that will be set to selected users as their active affilication.
+    <br>
+    Select unset to remove the active affiliation for selected users.
+
+    <div class="field mt-2">
+      <div class="control" v-for="(option, index) in setActiveAffiliationModalOptions" :key="index">
+        <label class="radio">
+          <input
+            type="radio"
+            v-model="setActiveAffiliationModalOptionsSelected"
+            :value="index"
+            class="mb-2"
+          >
+          {{ option }}
+        </label>
+      </div>
+    </div>
+
+    <div class="field mt-2" v-show="setActiveAffiliationModalOptionsSelected === 'new_affiliation'">
+      <CustomField
+        :label="activeAffiliateField.title"
+        :hide-title="true"
+        :description="activeAffiliateField.description"
+        :type="activeAffiliateField.input_type"
+        :machine-name="activeAffiliateField.machine_name"
+        :metadata="activeAffiliateField.metadata"
+        :field-data="activeAffiliateField"
+        :value="$store.state.app.setActiveAffiliationModalValue[activeAffiliateField.machine_name]"
+        :storeObject="$store.state.app.setActiveAffiliationModalValue"
+        :auto-populate-first-item="true"
+        :force-one-item="true"
+        ref="activeAffiliateFieldRef"
+      ></CustomField>
+    </div>
+  </Modal>
 </template>
 
 <script>
@@ -179,9 +224,11 @@
   import editIcon from '@/assets/images/edit.svg'
   import searchIcon from '@/assets/images/search.svg'
   import reintakeIcon from '@/assets/images/reintake.svg'
+  import affiliationIcon from '@/assets/images/affiliation.svg'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
+  import CustomField from '@/components/CustomFields/CustomField.vue'
 
   export default {
     name: 'AdminUsers',
@@ -191,6 +238,7 @@
       Booler,
       ActionButton,
       Modal,
+      CustomField,
     },
     data() {
       return {
@@ -203,6 +251,7 @@
         editIcon,
         searchIcon,
         reintakeIcon,
+        affiliationIcon,
         users: [],
         roles: [
           'user',
@@ -225,6 +274,14 @@
         },
         setReintakeStatusSelected: 'not_required',
         setReintakeStatusCurrent: [],
+        setActiveAffiliationModalStatus: false,
+        setActiveAffiliationCurrent: [],
+        profileStructure: [],
+        setActiveAffiliationModalOptions: {
+          'new_affiliation': 'New affiliation',
+          'unset': 'Unset',
+        },
+        setActiveAffiliationModalOptionsSelected: 'new_affiliation',
       }
     },
     created() {
@@ -244,10 +301,16 @@
           return searchText.includes(searchTerm)
         })
       },
+      activeAffiliateField() {
+        let group = this.profileStructure.find(field => field.machine_name === 'affiliation')
+
+        return group.custom_fields.find(field => field.machine_name === 'activeAffiliation')
+      },
     },
     methods: {
       initialDataLoad() {
         this.loadUsers()
+        this.loadProfileStructure()
       },
       async loadUsers() {
         this.mitt.emit('spinnerStart')
@@ -255,6 +318,15 @@
         const users = await this.$store.dispatch('app/fetchUsers')
 
         this.users = users
+
+        this.mitt.emit('spinnerStop')
+      },
+      async loadProfileStructure() {
+        this.mitt.emit('spinnerStart')
+
+        let profileStructure = await this.$store.dispatch('app/fetchProfileStructure')
+
+        this.profileStructure = profileStructure
 
         this.mitt.emit('spinnerStop')
       },
@@ -336,6 +408,8 @@
           }
 
           this.importUsersCsvModalStatus = false
+        } else {
+          this.awn.warning('No file selected.')
         }
 
         this.mitt.emit('spinnerStop')
@@ -367,6 +441,52 @@
         }
 
         this.setReintakeStatusModalStatus = false
+        this.mitt.emit('spinnerStop')
+      },
+      setActiveAffiliationModalOpen(users) {
+        if (users.length === 0) {
+          this.awn.warning('No users selected.')
+
+          return
+        }
+
+        this.$store.dispatch('app/setActiveAffiliationModalValue', {})
+        this.setActiveAffiliationCurrent = users
+        this.setActiveAffiliationModalStatus = true
+        this.setActiveAffiliationModalOptionsSelected = 'new_affiliation'
+      },
+      async setActiveAffiliation() {
+        let affiliation
+
+        if (this.setActiveAffiliationModalOptionsSelected === 'new_affiliation') {
+          const validation = this.$refs.activeAffiliateFieldRef.validate()
+
+          if (validation.status === false) {
+            this.awn.warning(validation.message)
+
+            return
+          }
+
+          affiliation = this.$store.state.app.setActiveAffiliationModalValue[this.activeAffiliateField.machine_name]
+        } else {
+          affiliation = 'unset'
+        }
+
+        this.mitt.emit('spinnerStart')
+
+        const response = await this.$store.dispatch('app/setActiveAffiliation', {
+          users: this.setActiveAffiliationCurrent.map(user => user.id),
+          affiliation: affiliation,
+        })
+
+        if (response.ok) {
+          this.awn.success('Active affiliation has been updated.')
+          this.loadUsers()
+        } else {
+          this.awn.warning('Something went wrong, try again.')
+        }
+
+        this.setActiveAffiliationModalStatus = false
         this.mitt.emit('spinnerStop')
       },
     },

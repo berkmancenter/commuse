@@ -8,4 +8,16 @@ function formattedTimestamp(timestamp) {
   return moment(timestamp).format('yyyy-MM-DD hh:mm:ss')
 }
 
-export { formattedTimestamp }
+function calendarDateFormat(timestamp) {
+  if (!timestamp) {
+    return '';
+  }
+
+  if (timestamp.toString().length === 10) {
+    timestamp = timestamp * 1000
+  }
+
+  return moment(new Date(timestamp)).format('MMMM D, YYYY')
+}
+
+export { formattedTimestamp, calendarDateFormat }
