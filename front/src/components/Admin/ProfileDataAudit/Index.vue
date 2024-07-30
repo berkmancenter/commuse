@@ -33,31 +33,14 @@
             <div>{{ auditDataItem.changed_by_last_name }}</div>
           </td>
           <td width="70%">
-            <table>
-              <tr><th colspan="2">New/changed</th></tr>
-              <tr v-for="(changeNew, key) in auditDataItem.changes.new">
-                <td class="no-break">{{ key }}</td>
-                <td>{{ changeNew }}</td>
-              </tr>
-            </table>
-
-            <table>
-              <tr><th colspan="2">Old/removed</th></tr>
-              <tr v-for="(changeNew, key) in auditDataItem.changes.old">
-                <td class="no-break">{{ key }}</td>
-                <td>{{ changeNew }}</td>
-              </tr>
-            </table>
+            <changes-list :auditDataItem="auditDataItem"></changes-list>
           </td>
           <td class="no-break">{{ auditDataItem.review }}</td>
           <td class="no-break">{{ auditDataItem.created_at }}</td>
           <td>
             <div class="admin-table-actions" v-if="auditDataItem.review === 'required'">
-              <a title="Accept changes" @click.prevent="acceptAuditRecord(auditDataItem)">
-                <Icon :src="acceptIcon" />
-              </a>
-              <a title="Request further details" @click.prevent="requestChangesAuditRecord(auditDataItem)">
-                <Icon :src="denyIcon" />
+              <a title="Process changes" @click.prevent="processAuditRecordModalOpen(auditDataItem)">
+                <Icon :src="processIcon" />
               </a>
             </div>
           </td>
@@ -68,6 +51,68 @@
       </tbody>
     </admin-table>
   </div>
+
+  <Modal
+    v-model="processAuditRecordModalStatus"
+    title="Process user data changes"
+    :focusOnConfirm="false"
+    :showConfirmButton="false"
+    class="admin-users-process-audit-record-modal"
+    @cancel="processAuditRecordModalStatus = false"
+  >
+    <div>
+      You are reviewing changes of
+      <span class="has-text-weight-bold" v-if="processAuditRecordModalCurrent.audited_first_name">{{ processAuditRecordModalCurrent.audited_first_name }}</span>
+      <span class="has-text-weight-bold" v-if="processAuditRecordModalCurrent.last_name">{{ processAuditRecordModalCurrent.last_name }}</span>.
+
+      <changes-list :auditDataItem="processAuditRecordModalCurrent"></changes-list>
+    </div>
+
+    <hr>
+
+    <div class="mb-2 has-text-weight-bold">1. Select how to process the changes:</div>
+
+    <div class="field">
+      <div class="control">
+        <div class="select">
+          <select v-model="processAuditRecordModalSelect" @change="setProcessAuditRecordModalEmailTemplates()">
+            <option value="accept">Accept</option>
+            <option value="deny">Deny</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="mb-2 has-text-weight-bold">2. Customize user confirmation email and subject (if needed).</div>
+
+    <div class="field">
+      <div class="mb-2">Email subject</div>
+
+      <div class="control">
+        <input type="text" class="input" v-model="processAuditRecordModalEmailValues.subject" />
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="mb-2">Email body</div>
+
+      <div class="control">
+        <ckeditor :editor="editor" v-model="processAuditRecordModalEmailValues.body" :config="editorConfig"></ckeditor>
+      </div>
+    </div>
+
+    <div class="mb-2 has-text-weight-bold">3. Select an action.</div>
+
+    <button class="button is-success" @click="processAuditRecord('process_send_email')">
+      Accept/deny & send email
+    </button>
+
+    <button class="button ml-2 is-success" @click="processAuditRecord('process_quietly')">
+      Accept/deny quietly
+    </button>
+  </Modal>
 </template>
 
 <script>
@@ -75,11 +120,13 @@
   import searchIcon from '@/assets/images/search.svg'
   import reintakeIcon from '@/assets/images/reintake.svg'
   import reviewIcon from '@/assets/images/review.svg'
-  import acceptIcon from '@/assets/images/accept.svg'
-  import denyIcon from '@/assets/images/deny.svg'
+  import processIcon from '@/assets/images/process.svg'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import VueMultiselect from 'vue-multiselect'
   import ActionButton from '@/components/Shared/ActionButton.vue'
+  import Modal from '@/components/Shared/Modal.vue'
+  import ChangesList from './ChangesList.vue'
+  import { ClassicEditor, Bold, Essentials, Italic, Paragraph, Undo, Link } from 'ckeditor5'
 
   export default {
     name: 'AdminDataAudit',
@@ -88,17 +135,30 @@
       AdminTable,
       VueMultiselect,
       ActionButton,
+      Modal,
+      ChangesList,
     },
     data() {
       return {
         searchIcon,
         reintakeIcon,
         reviewIcon,
-        acceptIcon,
-        denyIcon,
+        processIcon,
         auditData: [],
         justReintake: false,
         justReview: false,
+        editor: ClassicEditor,
+        editorConfig: {
+          plugins: [ Bold, Essentials, Italic, Paragraph, Undo, Link ],
+          toolbar: [ 'undo', 'redo', '|', 'bold', 'italic', '|', 'link' ],
+        },
+        processAuditRecordModalStatus: false,
+        processAuditRecordModalCurrent: null,
+        processAuditRecordModalSelect: 'accept',
+        processAuditRecordModalEmailSubject: '',
+        processAuditRecordModalEmailBody: '',
+        processAuditRecordModalEmailTemplates: {},
+        processAuditRecordModalEmailValues: {},
       }
     },
     created() {
@@ -108,19 +168,33 @@
       async loadData() {
         this.mitt.emit('spinnerStart')
 
+        let processAuditRecordModalEmailTemplates = null
+        try {
+          processAuditRecordModalEmailTemplates = await this.$store.dispatch('app/fetchDataAuditEmailTemplates')
+        } catch (error) {
+          this.mitt.emit('spinnerStop')
+          return
+        }
+        this.processAuditRecordModalEmailTemplates = processAuditRecordModalEmailTemplates
+
         let auditData = null
         try {
           auditData = await this.$store.dispatch('app/fetchProfileDataAuditData', {
             justReintake: this.justReintake,
             justReview: this.justReview,
-            auditId: this.$route.params.id ?? false
           })
         } catch (error) {
           this.mitt.emit('spinnerStop')
           return
         }
-
         this.auditData = auditData
+
+        if (this.$route.params.id) {
+          let item = this.auditData.filter(auditDataItem => auditDataItem.id === this.$route.params.id)[0]
+          if (item.review === 'required') {
+            this.processAuditRecordModalOpen(item)
+          }
+        }
 
         this.mitt.emit('spinnerStop')
       },
@@ -132,13 +206,34 @@
         this.justReview = !this.justReview
         this.loadData()
       },
-      async acceptAuditRecord(auditRecord) {
+      async processAuditRecordModalOpen(auditRecord) {
+        this.processAuditRecordModalCurrent = auditRecord
+        this.processAuditRecordModalStatus = true
+        this.setProcessAuditRecordModalEmailTemplates()
+      },
+      setProcessAuditRecordModalEmailTemplates() {
+        if (this.processAuditRecordModalSelect === 'accept') {
+          this.processAuditRecordModalEmailValues = {
+            subject: this.processAuditRecordModalEmailTemplates['DataAuditUserEmailAcceptedSubject'].value,
+            body: this.processAuditRecordModalEmailTemplates['DataAuditUserEmailAcceptedBody'].value,
+          }
+        } else {
+          this.processAuditRecordModalEmailValues = {
+            subject: this.processAuditRecordModalEmailTemplates['DataAuditUserEmailDeclinedSubject'].value,
+            body: this.processAuditRecordModalEmailTemplates['DataAuditUserEmailDeclinedBody'].value,
+          }
+        }
+      },
+      async processAuditRecord(action) {
         this.mitt.emit('spinnerStart')
 
         let response = ''
         try {
-          response = await this.$store.dispatch('app/acceptProfileAuditRecord', {
-            id: auditRecord.id,
+          response = await this.$store.dispatch('app/processProfileAuditRecord', {
+            id: this.processAuditRecordModalCurrent.id,
+            emailTemplate: this.processAuditRecordModalEmailValues,
+            decision: this.processAuditRecordModalSelect,
+            action,
           })
           response = await response.json()
         } catch (error) {
@@ -151,24 +246,8 @@
         this.awn.success(response.message)
 
         this.loadData()
-      },
-      async requestChangesAuditRecord(auditRecord) {
-        this.mitt.emit('spinnerStart')
 
-        try {
-          await this.$store.dispatch('app/requestChangesProfileAuditRecord', {
-            id: auditRecord.id,
-          })
-        } catch (error) {
-          this.mitt.emit('spinnerStop')
-          return
-        }
-
-        this.mitt.emit('spinnerStop')
-
-        this.awn.success('Audit record changes have been requested.')
-
-        this.loadData()
+        this.processAuditRecordModalStatus = false
       },
     },
     watch: {
@@ -183,6 +262,10 @@
   .admin-profile-data-audit {
     tr {
       white-space: unset;
+
+      th:hover {
+        background-color: #fff;
+      }
     }
   }
 </style>

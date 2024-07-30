@@ -88,16 +88,16 @@ const mutations = {
     destination['store'][destination['key']].push({})
   },
   removeTagRangeItem(state, data) {
-    state.userProfile[data.machineName].splice(data.index, 1);
+    state.userProfile[data.machineName].splice(data.index, 1)
   },
   removeMultiItem(state, data) {
-    state.userProfile[data.machineName].splice(data.index, 1);
+    state.userProfile[data.machineName].splice(data.index, 1)
   },
   setSystemSettings(state, settings) {
-    state.systemSettings = settings;
+    state.systemSettings = settings
   },
   setActiveAffiliationModalValue(state, value) {
-    state.setActiveAffiliationModalValue = value;
+    state.setActiveAffiliationModalValue = value
   },
 }
 
@@ -215,6 +215,12 @@ const actions = {
   },
   async fetchSystemSettings(context) {
     const response = await fetchIt(`${apiUrl}/api/admin/systemSettings`)
+    const data = await response.json()
+
+    return data
+  },
+  async fetchDataAuditEmailTemplates(context) {
+    const response = await fetchIt(`${apiUrl}/api/admin/dataAuditEmailTemplates`)
     const data = await response.json()
 
     return data
@@ -437,30 +443,14 @@ const actions = {
 
     return response
   },
-  async acceptProfileAuditRecord(context, data) {
-    const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit/accept`, {
+  async processProfileAuditRecord(context, data) {
+    const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit/process`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        id: data.id,
-      }),
-    })
-
-    return response
-  },
-  async requestChangesProfileAuditRecord(context, data) {
-    const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit/requestChanges`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: data.id,
-      }),
+      body: JSON.stringify(data),
     })
 
     return response

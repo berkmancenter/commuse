@@ -46,10 +46,6 @@ class DataAudit extends BaseController
       $builder->where('au.review', 'required');
     }
 
-    if ($request->getGet('auditId') != 'false') {
-      $builder->where('au.id', $request->getGet('auditId'));
-    }
-
     $profileAuditItems = $builder
       ->orderBy('created_at', 'DESC')
       ->get()
@@ -64,14 +60,41 @@ class DataAudit extends BaseController
   }
 
   /**
+   * Processes an audit record based on the provided request data.
+   * Determines the action to be taken (accept or deny) and whether a user email should be sent.
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function auditRecordProcess() {
+    $requestData = $this->request->getJSON(true);
+    $userEmail = false;
+
+    if ($requestData['action'] === 'process_send_email') {
+      $userEmail = true;
+    }
+
+    $decision = $requestData['decision'];
+
+    if ($decision === 'accept') {
+      $result = $this->auditRecordAccept($userEmail, $requestData['emailTemplate']);
+    } else if ($decision === 'deny') {
+      $result = $this->auditRecordAcceptRequestChanges($userEmail, $requestData['emailTemplate']);
+    }
+
+    return $this->respond([
+      'message' => $result,
+    ]);
+  }
+
+  /**
    * Accepts an audit record and updates a remote resource.
    * Sets the review status of the audit record to 'accepted'.
    * If remote sync URL and access token are provided, updates the remote resource.
    * Returns a JSON response indicating the acceptance and remote update status.
    *
-   * @return \CodeIgniter\HTTP\Response
+   * @return string
    */
-  public function auditRecordAccept()
+  private function auditRecordAccept($userEmail = false, $emailTemplate = null)
   {
     $this->checkAdminAccess();
 
@@ -117,16 +140,16 @@ class DataAudit extends BaseController
             'json' => $userData,
           ]);
         } catch (\Exception $e) {
-          return $this->respond([
-            'message' => 'Audit record has been accepted, but a remote resource couldn\'t be found.'
-          ]);
+          return 'Audit record has been accepted, but a remote resource couldn\'t be found.';
         }
       }
     }
 
-    return $this->respond([
-      'message' => 'Audit record has been accepted and a remote resource has been updated.'
-    ]);
+    if ($userEmail) {
+      $this->sendUserEmail($auditId, $emailTemplate);
+    }
+
+    return 'Audit record has been accepted and a remote resource has been updated.';
   }
 
   /**
@@ -134,9 +157,9 @@ class DataAudit extends BaseController
    * Sets the review status of the audit record to 'request_changes'.
    * Returns a JSON response indicating the acceptance of the request.
    *
-   * @return \CodeIgniter\HTTP\Response
+   * @return string
    */
-  public function auditRecordAcceptRequestChanges()
+  private function auditRecordAcceptRequestChanges($userEmail = false, $emailTemplate = null)
   {
     $this->checkAdminAccess();
 
@@ -145,7 +168,41 @@ class DataAudit extends BaseController
 
     $this->auditRecordReviewSet($auditId, 'request_changes');
 
-    return $this->respond(['ok']);
+    if ($userEmail) {
+      $this->sendUserEmail($auditId, $emailTemplate);
+    }
+
+    return 'Audit record has been updated with a changes request.';
+  }
+
+  private function sendUserEmail($auditId, $emailTemplate)
+  {
+    $db = \Config\Database::connect();
+    $builder = $db->table('audit a');
+
+    $auditItem = $builder
+      ->where('a.id', $auditId)
+      ->where('a.model_name', 'People')
+      ->get()
+      ->getResultArray();
+
+    if ($auditItem = reset($auditItem)) {
+      $personId = $auditItem['audited_id'];
+
+      $usersModel = new UserModel();
+      $userData = $usersModel->getUserProfileData($personId);
+
+      if (!$userData['email']) {
+        return;
+      }
+
+      $email = \Config\Services::email();
+      $email->setTo($userData['email']);
+      $email->setSubject($emailTemplate['subject']);
+      $email->setMessage($emailTemplate['body']);
+
+      $email->send();
+    }
   }
 
   /**

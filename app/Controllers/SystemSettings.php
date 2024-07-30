@@ -41,4 +41,21 @@ class SystemSettings extends BaseController
 
     return $this->respond(['message' => 'System settings have been saved.'], 200);
   }
+
+    /**
+   * Get data audit email templates.
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function getDataAuditEmailTemplates()
+  {
+    $this->checkAdminAccess();
+
+    $settings = SystemSettingsWrapper::getInstance()->getSettings();
+    $settings = array_filter($settings, function ($key) {
+      return strpos($key, 'DataAuditUserEmail') !== false;
+    }, ARRAY_FILTER_USE_KEY);
+
+    return $this->respond($settings, 200);
+  }
 }
