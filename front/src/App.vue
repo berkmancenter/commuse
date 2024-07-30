@@ -43,7 +43,9 @@
         </a>
 
         <router-link :to="'/'" class="top-nav-name-link">
-          <img class="top-nav-name-link-logo" :src="logo">
+          <div class="top-nav-name-link-logo">
+            <img :src="logo">
+          </div>
           <h3 class="is-size-4">{{ appTitle }}</h3>
         </router-link>
       </div>
