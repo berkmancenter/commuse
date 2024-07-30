@@ -43,6 +43,7 @@
         </a>
 
         <router-link :to="'/'" class="top-nav-name-link">
+          <img class="top-nav-name-link-logo" :src="logo">
           <h3 class="is-size-4">{{ appTitle }}</h3>
         </router-link>
       </div>
@@ -98,6 +99,7 @@
   import dataMenuIcon from '@/assets/images/data.svg'
   import magnifierMenuIcon from '@/assets/images/magnifier_menu.svg'
   import settingsMenuIcon from '@/assets/images/settings_menu.svg'
+  import logo from '@/assets/images/logo.png'
   import { isMobile } from '@/lib/mobile_utils.js'
   import Spinner from '@/components/Shared/Spinner.vue'
 
@@ -175,6 +177,7 @@
             icon: magnifierMenuIcon,
           },
         ],
+        logo,
       }
     },
     methods: {

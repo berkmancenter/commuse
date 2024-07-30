@@ -16,9 +16,8 @@
     flex-grow: 1;
 
     .top-nav-name-link {
-      background-color: var(--main-color);
-      color: #ffffff;
-      padding: 0.5rem 1rem;
+      display: flex;
+      color: var(--main-color);
       margin: 0 auto;
 
       > h3 {
