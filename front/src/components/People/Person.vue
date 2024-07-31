@@ -103,6 +103,16 @@
 <style lang="scss">
   .people-section-person {
     overflow: hidden;
+    background-color:   #FAFAFA;
+    border: 1px solid var(--greyish-color);
+    padding: 1rem;
+    border-radius: 5%;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      transform: translateY(-10px);
+    }
 
     .person-section-social {
       img {
@@ -113,6 +123,8 @@
     }
 
     .people-section-person-full-name {
+      min-height: 90px;
+
       > div {
         word-wrap: break-word;
       }
