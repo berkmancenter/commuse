@@ -64,7 +64,7 @@ $routes->get('api/admin/profileDataAudit', 'DataAudit::profileDataAudit');
 $routes->post('api/admin/profileDataAudit/process', 'DataAudit::auditRecordProcess');
 $routes->get('api/admin/systemSettings', 'SystemSettings::index');
 $routes->post('api/admin/systemSettings', 'SystemSettings::saveSettings');
-$routes->get('api/admin/dataAuditEmailTemplates', 'SystemSettings::getDataAuditEmailTemplates');
+$routes->get('api/admin/publicSystemSettings', 'SystemSettings::getPublicSettings');
 $routes->post('api/admin/users/setActiveAffiliation', 'Users::setActiveAffiliation');
 
 $frontRoutes = [

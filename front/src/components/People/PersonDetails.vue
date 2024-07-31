@@ -109,7 +109,7 @@
 
     <div class="box people-section-details-content">
       <div class="notification is-warning" v-if="person.public_profile === 'f'">
-        Your profile is not public, currently it's visible only to you. To make it public, please check the "Make profile visible to other users" checkbox on the "Account settings" page.
+        {{ $store.state.app.publicSystemSettings.PublicProfileWarningShowProfile.value }}
       </div>
 
       <div class="people-section-details-content-other">

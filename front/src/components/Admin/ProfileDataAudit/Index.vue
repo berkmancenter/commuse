@@ -156,7 +156,6 @@
         processAuditRecordModalSelect: 'accept',
         processAuditRecordModalEmailSubject: '',
         processAuditRecordModalEmailBody: '',
-        processAuditRecordModalEmailTemplates: {},
         processAuditRecordModalEmailValues: {},
       }
     },
@@ -181,15 +180,6 @@
     methods: {
       async loadData() {
         this.mitt.emit('spinnerStart')
-
-        let processAuditRecordModalEmailTemplates = null
-        try {
-          processAuditRecordModalEmailTemplates = await this.$store.dispatch('app/fetchDataAuditEmailTemplates')
-        } catch (error) {
-          this.mitt.emit('spinnerStop')
-          return
-        }
-        this.processAuditRecordModalEmailTemplates = processAuditRecordModalEmailTemplates
 
         let auditData = null
         try {
@@ -228,13 +218,13 @@
       setProcessAuditRecordModalEmailTemplates() {
         if (this.processAuditRecordModalSelect === 'accept') {
           this.processAuditRecordModalEmailValues = {
-            subject: this.processAuditRecordModalEmailTemplates['DataAuditUserEmailAcceptedSubject'].value,
-            body: this.processAuditRecordModalEmailTemplates['DataAuditUserEmailAcceptedBody'].value,
+            subject: this.$store.state.app.publicSystemSettings['DataAuditUserEmailAcceptedSubject'].value,
+            body: this.$store.state.app.publicSystemSettings['DataAuditUserEmailAcceptedBody'].value,
           }
         } else {
           this.processAuditRecordModalEmailValues = {
-            subject: this.processAuditRecordModalEmailTemplates['DataAuditUserEmailDeclinedSubject'].value,
-            body: this.processAuditRecordModalEmailTemplates['DataAuditUserEmailDeclinedBody'].value,
+            subject: this.$store.state.app.publicSystemSettings['DataAuditUserEmailDeclinedSubject'].value,
+            body: this.$store.state.app.publicSystemSettings['DataAuditUserEmailDeclinedBody'].value,
           }
         }
       },

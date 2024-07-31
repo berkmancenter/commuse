@@ -13,6 +13,16 @@ class SystemSettingsWrapper
   protected $cacheKey = 'system_settings';
   protected $cacheExpiration;
 
+  public static $publicSettings = [
+    'PublicProfileWarningInAccountSettings',
+    'PublicProfileWarningShowProfile',
+    'PublicProfileCheckboxLabel',
+    'DataAuditUserEmailAcceptedSubject',
+    'DataAuditUserEmailAcceptedBody',
+    'DataAuditUserEmailDeclinedSubject',
+    'DataAuditUserEmailDeclinedBody',
+  ];
+
   private function __construct(CacheInterface $cache, $settingsService)
   {
     $this->cache = $cache;

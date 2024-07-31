@@ -115,6 +115,7 @@
     },
     created() {
       this.loadCurrentUser()
+      this.loadSystemSettings()
     },
     data() {
       return {
@@ -191,6 +192,10 @@
       async loadCurrentUser() {
         const currentUser = await this.$store.dispatch('app/fetchCurrentUser')
         this.$store.dispatch('app/setCurrentUser', currentUser)
+      },
+      async loadSystemSettings() {
+        const systemSettings = await this.$store.dispatch('app/fetchPublicSystemSettings')
+        this.$store.dispatch('app/setPublicSystemSettings', systemSettings)
       },
       logout() {
         window.location.href = `${this.apiUrl}/logout`

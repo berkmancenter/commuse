@@ -10,11 +10,11 @@
         </p>
         <div class="panel-block">
           <div class="notification is-warning" v-if="!$store.state.app.userProfile.public_profile">
-            Your profile is currently set to private and will not show in the people page. To allow users of this platform to view your profile, please check the 'Make my People Portal profile visible to other users of the People Portal' checkbox.
+            {{ $store.state.app.publicSystemSettings.PublicProfileWarningInAccountSettings.value }}
           </div>
 
           <div class="field">
-            <label class="label">Make my People Portal profile visible to other users of the People Portal</label>
+            <label class="label">{{ $store.state.app.publicSystemSettings.PublicProfileCheckboxLabel.value }}</label>
             <div class="control">
               <div class="control">
                 <input type="checkbox" v-model="$store.state.app.userProfile.public_profile" @change="updateProfileStatus()">

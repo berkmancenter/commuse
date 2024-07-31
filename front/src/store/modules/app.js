@@ -31,6 +31,7 @@ const state = {
   systemSettings: [],
   systemSettingsValues: [],
   setActiveAffiliationModalValue: {},
+  publicSystemSettings: [],
 }
 
 const mutations = {
@@ -98,6 +99,9 @@ const mutations = {
   },
   setActiveAffiliationModalValue(state, value) {
     state.setActiveAffiliationModalValue = value
+  },
+  setPublicSystemSettings(state, settings) {
+    state.publicSystemSettings = settings
   },
 }
 
@@ -218,8 +222,8 @@ const actions = {
 
     return data
   },
-  async fetchDataAuditEmailTemplates(context) {
-    const response = await fetchIt(`${apiUrl}/api/admin/dataAuditEmailTemplates`)
+  async fetchPublicSystemSettings(context) {
+    const response = await fetchIt(`${apiUrl}/api/admin/publicSystemSettings`)
     const data = await response.json()
 
     return data
@@ -456,6 +460,9 @@ const actions = {
   },
   setSystemSettings(context, value) {
     context.commit('setSystemSettings', value)
+  },
+  setPublicSystemSettings(context, value) {
+    context.commit('setPublicSystemSettings', value)
   },
 }
 
