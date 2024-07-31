@@ -4,6 +4,9 @@
       <div class="user-profile-header is-flex is-align-items-center">
         <h3 class="is-size-3 has-text-weight-bold">Edit profile</h3>
         <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true"></ActionButton>
+        <router-link :to="{ name: 'people.details', params: { id: $store.state.app.userProfile.id } }">
+          <ActionButton class="ml-2" buttonText="Show profile" :icon="userIcon" :button="true"></ActionButton>
+        </router-link>
       </div>
 
       <div class="user-profile-form-fields">
@@ -153,6 +156,7 @@
   import CustomField from '@/components/CustomFields/CustomField.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import saveIcon from '@/assets/images/save.svg'
+  import userIcon from '@/assets/images/user.svg'
 
   export default {
     name: 'UserProfile',
@@ -163,6 +167,7 @@
         profileStructureLoaded: false,
         profileStructure: [],
         saveIcon,
+        userIcon,
         fields: {},
       }
     },

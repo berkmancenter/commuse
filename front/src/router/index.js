@@ -113,6 +113,18 @@ const router = createRouter({
         title: 'Settings',
       },
     },
+    {
+      path: '/404',
+      name: 'pagenotfound.index',
+      meta: {
+        title: 'Page not found',
+      },
+      component: () => import('@/components/PageNotFound/Index.vue')
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '404',
+    },
   ]
 })
 
