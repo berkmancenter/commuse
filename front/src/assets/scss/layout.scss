@@ -98,6 +98,8 @@
       color: #FFFFFF;
       border-bottom: 1px solid #F5F5F6;
       align-items: center;
+      border-radius: 1rem;
+      margin: 0.5rem;
 
       &:focus,
       &:active {
@@ -119,7 +121,7 @@
 }
 
 .switmenu-menu {
-  width: 210px;
+  width: 250px;
 
   @media all and (max-width: 700px) {
     width: 100%;
@@ -128,7 +130,7 @@
 
 .switmenu-body-open {
   .switmenu-content {
-    margin-left: 210px;
+    margin-left: 250px;
 
     @media all and (max-width: 700px) {
       margin-left: 100%;

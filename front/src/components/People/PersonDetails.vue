@@ -108,6 +108,10 @@
     </div>
 
     <div class="box people-section-details-content">
+      <div class="notification is-warning" v-if="person.public_profile === 'f'">
+        Your profile is not public, currently it's visible only to you. To make it public, please check the "Make profile visible to other users" checkbox on the "Account settings" page.
+      </div>
+
       <div class="people-section-details-content-other">
         <div v-if="person.bio" ref="group_bio">
           <div class="panel">
@@ -215,9 +219,15 @@
         this.loadProfileStructure()
       },
       async loadPerson() {
-        const person = await this.$store.dispatch('app/fetchPerson', this.$route.params.id)
+        const response = await this.$store.dispatch('app/fetchPerson', this.$route.params.id)
 
-        this.person = person
+        if (response.status === 404) {
+          this.$router.push({ name: 'pagenotfound.index' })
+
+          return
+        }
+
+        this.person = await response.json()
         this.mitt.emit('spinnerStop')
       },
       async loadProfileStructure() {

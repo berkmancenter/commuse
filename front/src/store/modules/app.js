@@ -166,9 +166,8 @@ const actions = {
   },
   async fetchPerson(context, id) {
     const response = await fetchIt(`${apiUrl}/api/people/${id}`)
-    const data = await response.json()
 
-    return data
+    return response
   },
   async fetchInvitations(context) {
     const response = await fetchIt(`${apiUrl}/api/admin/invitations`)
