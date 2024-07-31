@@ -252,7 +252,33 @@
           return []
         }
 
-        return orderBy(this.$store.state.app.people, [person => person[sortingField].toLowerCase()], [this.sortingActive.direction])
+        return orderBy(this.$store.state.app.people, [person => {
+          if (person[sortingField]) {
+            return person[sortingField].toLowerCase()
+          } else {
+            if (sortingField === 'first_name') {
+              if (person.middle_name) {
+                return person.middle_name.toLowerCase()
+              }
+
+              if (person.last_name) {
+                return person.last_name.toLowerCase()
+              }
+            }
+
+            if (sortingField === 'last_name') {
+              if (person.first_name) {
+                return person.first_name.toLowerCase()
+              }
+
+              if (person.middle_name) {
+                return person.middle_name.toLowerCase()
+              }
+            }
+          }
+
+          return ''
+        }], [this.sortingActive.direction])
       },
     },
     methods: {
