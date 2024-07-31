@@ -62,8 +62,7 @@
   >
     <div>
       You are reviewing changes of
-      <span class="has-text-weight-bold" v-if="processAuditRecordModalCurrent.audited_first_name">{{ processAuditRecordModalCurrent.audited_first_name }}</span>
-      <span class="has-text-weight-bold" v-if="processAuditRecordModalCurrent.last_name">{{ processAuditRecordModalCurrent.last_name }}</span>.
+      <span class="has-text-weight-bold">{{ processedPersonName }}</span>.
 
       <changes-list :auditDataItem="processAuditRecordModalCurrent"></changes-list>
     </div>
@@ -163,6 +162,21 @@
     },
     created() {
       this.loadData()
+    },
+    computed: {
+      processedPersonName() {
+        let name = []
+
+        if (this.processAuditRecordModalCurrent.audited_first_name) {
+          name.push(this.processAuditRecordModalCurrent.audited_first_name)
+        }
+
+        if (this.processAuditRecordModalCurrent.audited_last_name) {
+          name.push(this.processAuditRecordModalCurrent.audited_last_name)
+        }
+
+        return name.join(' ')
+      },
     },
     methods: {
       async loadData() {
