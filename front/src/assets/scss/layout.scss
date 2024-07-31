@@ -118,6 +118,24 @@
   }
 }
 
+.switmenu-menu {
+  width: 210px;
+
+  @media all and (max-width: 700px) {
+    width: 100%;
+  }
+}
+
+.switmenu-body-open {
+  .switmenu-content {
+    margin-left: 210px;
+
+    @media all and (max-width: 700px) {
+      margin-left: 100%;
+    }
+  }
+}
+
 .container.is-fluid {
   padding: 0 1rem;
 }
