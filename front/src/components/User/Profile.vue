@@ -311,6 +311,10 @@
       position: relative;
       padding-top: 5rem;
       z-index: 1;
+
+      @media all and (max-width: 700px) {
+        padding-top: 7rem;
+      }
     }
 
     .user-profile-image {
@@ -340,6 +344,14 @@
       padding: 1rem 0;
       padding-left: 1rem;
       border-bottom: 2px solid var(--greyish-color);
+
+      @media all and (max-width: 700px) {
+        display: block !important;
+
+        > button {
+          margin-left: 0 !important;
+        }
+      }
     }
 
     .user-profile-subtitle {

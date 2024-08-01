@@ -380,6 +380,12 @@
         gap: 1rem;
         flex-direction: column;
       }
+
+      @media screen and (max-width: 1199px) {
+        .panel {
+          margin-bottom: 1rem;
+        }
+      }
     }
 
     table {
