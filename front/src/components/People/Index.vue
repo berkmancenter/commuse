@@ -219,11 +219,8 @@
     created() {
       if (this.$store.state.app.people.length === 0 || this.$store.state.app.peopleMarkReload) {
         this.loadPeople()
-        this.$store.dispatch('app/setPeopleMarkReload', false)
-      }
-
-      if (this.$store.state.app.peopleFilters.length === 0) {
         this.loadFilters()
+        this.$store.dispatch('app/setPeopleMarkReload', false)
       }
 
       this.initImgLazyLoad()
