@@ -294,6 +294,10 @@ class UserModel extends ShieldUserModel
         'model_id' => $userId,
       ];
 
+      if (isset($fieldMetadata['editableOnlyByAdmins']) && $fieldMetadata['editableOnlyByAdmins'] === true && auth()->user()->can('admin.access') === false) {
+        continue;
+      }
+
       switch ($customFieldToProcess['input_type']) {
         case 'tags':
         case 'tags_range':
