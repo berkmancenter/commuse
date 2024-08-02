@@ -63,6 +63,7 @@ const router = createRouter({
       name: 'admin-users.index',
       meta: {
         title: 'Users admin',
+        admin: true,
       },
     },
     {
@@ -71,6 +72,7 @@ const router = createRouter({
       name: 'admin-invitations.index',
       meta: {
         title: 'Invitations admin',
+        admin: true,
       },
     },
     {
@@ -79,6 +81,7 @@ const router = createRouter({
       name: 'admin-custom-fields.index',
       meta: {
         title: 'Custom fields admin',
+        admin: true,
       },
     },
     {
@@ -87,6 +90,7 @@ const router = createRouter({
       name: 'admin-data-editor.index',
       meta: {
         title: 'Data editor',
+        admin: true,
       },
     },
     {
@@ -95,6 +99,7 @@ const router = createRouter({
       name: 'admin-profile-data-audit.index',
       meta: {
         title: 'Profile data audit',
+        admin: true,
       },
     },
     {
@@ -103,6 +108,7 @@ const router = createRouter({
       name: 'admin-profile-data-audit-single.index',
       meta: {
         title: 'Profile data audit',
+        admin: true,
       },
     },
     {
@@ -111,6 +117,7 @@ const router = createRouter({
       name: 'admin-settings.index',
       meta: {
         title: 'Settings',
+        admin: true,
       },
     },
     {
@@ -138,6 +145,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = `${to.meta.title} | ${appTitle}`
   }
+
   next()
 })
 

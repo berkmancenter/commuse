@@ -192,6 +192,11 @@
       async loadCurrentUser() {
         const currentUser = await this.$store.dispatch('app/fetchCurrentUser')
         this.$store.dispatch('app/setCurrentUser', currentUser)
+
+        // Redirect to the 404 page if the currentuser is not admin and tries to access an admin page
+        if (this.$router.currentRoute._value.meta.admin && this.$store.state.app.currentUser.admin === false) {
+          this.$router.push({ name: 'pagenotfound.index' })
+        }
       },
       async loadSystemSettings() {
         const systemSettings = await this.$store.dispatch('app/fetchPublicSystemSettings')

@@ -22,9 +22,10 @@ app.config.globalProperties = {
   colors: {
     main: '#890309',
   },
-  awn: awn,
-  store2: store2,
-  mitt: mitt,
+  awn,
+  store2,
+  mitt,
+  store,
 }
 app.use(router)
 app.use(store)
