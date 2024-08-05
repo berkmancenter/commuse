@@ -2,7 +2,7 @@
   <div class="news-section">
     <h3 class="is-size-3 has-text-weight-bold mb-4">News & events</h3>
 
-    <div class="card" v-for="(news) in $store.state.app.news">
+    <div class="card" v-for="news in newsItems" :key="news.id">
       <div class="card-content">
         <div class="media">
           <div class="media-left">
@@ -20,12 +20,16 @@
             <p>{{ news.short_description }}</p>
           </div>
         </div>
-
-        <div class="content">
-
-        </div>
       </div>
     </div>
+
+    <vue-awesome-paginate
+      :total-items="paginateTotalItems"
+      :items-per-page="20"
+      :max-pages-shown="5"
+      v-model="page"
+      @click="paginateChangePage"
+    />
   </div>
 </template>
 
@@ -37,22 +41,39 @@
     data() {
       return {
         lazyLoadInstance: null,
+        paginateTotalItems: 0,
+        newsItems: [],
       }
     },
-    computed: {},
+    computed: {
+      page: {
+        get () {
+          return parseInt(this.$route.query.page) || 1
+        },
+        set () {}
+      },
+    },
     created() {
-      this.mitt.emit('spinnerStart')
-      this.initialDataLoad()
+      this.loadNews()
       this.initLazyLoad()
     },
-    mounted() {},
     methods: {
-      async initialDataLoad() {
-        const news = await this.$store.dispatch('app/fetchNews')
-        this.$store.dispatch('app/setNews', news)
+      async loadNews() {
+        this.mitt.emit('spinnerStart')
+
+        const response = await this.$store.dispatch('app/fetchNews', {
+          paginateCurrentPage: this.page,
+        })
+
+        this.newsItems = response.items
+        this.paginateTotalItems = response.metadata.total
+
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
         })
+
+        window.scrollTo({ top: 0 })
+
         this.mitt.emit('spinnerStop')
       },
       initLazyLoad() {
@@ -64,6 +85,15 @@
           unobserve_completed: true,
         })
         this.lazyLoadInstance.update()
+      },
+      paginateChangePage(page) {
+        this.$router.push({ name: 'home.index', query: { ...this.$route.query, page: page }})
+        this.loadNews()
+      },
+    },
+    watch: {
+      page () {
+        this.loadNews()
       },
     },
   }

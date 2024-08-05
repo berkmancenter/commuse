@@ -20,15 +20,22 @@ class News extends BaseController
   public function index()
   {
     $cache = \Config\Services::cache();
-    $cachedData = $cache->get('news');
+    $paramsMd5 = md5(json_encode($this->request->getGet()));
+    $cacheKey = "news_{$paramsMd5}";
+    $cachedData = $cache->get($cacheKey);
 
     if ($cachedData && Cache::isCacheEnabled()) {
       return $this->respond($cachedData);
     }
 
     $newsModel = model('NewsModel');
+    $paginateCurrentPage = intval($this->request->getGet('paginateCurrentPage') ?? 1);
+    $limitStart = ($paginateCurrentPage - 1) * 20;
 
+    $newsCount = $newsModel
+      ->countAll();
     $news = $newsModel
+      ->limit(20, $limitStart)
       ->orderBy('remote_id', 'desc')
       ->findAll();
 
@@ -37,8 +44,15 @@ class News extends BaseController
       $newsItem['short_description'] = html_entity_decode($newsItem['short_description']);
     }
 
-    $cache->save('news', $news, Cache::$defaultCacheExpiration);
+    $response = [
+      'items' => $news,
+      'metadata' => [
+        'total' => $newsCount,
+      ],
+    ];
 
-    return $this->respond($news);
+    $cache->save($cacheKey, $response, Cache::$defaultCacheExpiration);
+
+    return $this->respond($response);
   }
 }

@@ -12,7 +12,6 @@ const defaultTagRange = {
 }
 
 const state = {
-  news: [],
   people: [],
   peopleMarkReload: false,
   sideMenuStatus: false,
@@ -35,9 +34,6 @@ const state = {
 }
 
 const mutations = {
-  setNews(state, news) {
-    state.news = news
-  },
   setPeople(state, people) {
     state.people = people
   },
@@ -106,8 +102,8 @@ const mutations = {
 }
 
 const actions = {
-  async fetchNews(context) {
-    const response = await fetchIt(`${apiUrl}/api/news`)
+  async fetchNews(context, params) {
+    const response = await fetchIt(`${apiUrl}/api/news?${objectToQueryParams(params)}`)
     const data = await response.json()
 
     return data
@@ -227,9 +223,6 @@ const actions = {
     const data = await response.json()
 
     return data
-  },
-  setNews(context, news) {
-    context.commit('setNews', news)
   },
   setPeople(context, people) {
     context.commit('setPeople', people)

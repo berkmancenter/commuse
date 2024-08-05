@@ -10,6 +10,7 @@ import datepicker from './plugins/datepicker'
 import floating from './plugins/floating_vue'
 import vfm from './plugins/vfm'
 import CKEditor from './plugins/ckeditor'
+import paginate from './plugins/paginate'
 
 import { createApp } from 'vue'
 import router from './router/index'
@@ -33,6 +34,7 @@ app.use(floating)
 app.use(vfm)
 app.use(CKEditor)
 app.use(datepicker)
+app.use(paginate)
 app.mount('#app')
 
 const globals = app.config.globalProperties

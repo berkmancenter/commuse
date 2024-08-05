@@ -29,6 +29,7 @@
     "tinymce": "^7.2.1",
     "vanilla-lazyload": "^17.8.3",
     "vue": "^3.2.45",
+    "vue-awesome-paginate": "^1.2.0",
     "vue-datepicker-next": "^1.0.3",
     "vue-final-modal": "^4.5.4",
     "vue-multiselect": "^3.0.0-beta.2",
