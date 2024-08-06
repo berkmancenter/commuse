@@ -27,6 +27,7 @@
       :total-items="paginateTotalItems"
       :items-per-page="20"
       :max-pages-shown="5"
+      :hidePrevNextWhenEnds="true"
       v-model="page"
       @click="paginateChangePage"
     />
@@ -88,7 +89,6 @@
       },
       paginateChangePage(page) {
         this.$router.push({ name: 'home.index', query: { ...this.$route.query, page: page }})
-        this.loadNews()
       },
     },
     watch: {
