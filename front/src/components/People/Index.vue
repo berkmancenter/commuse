@@ -91,15 +91,11 @@
       ></Person>
     </div>
 
-    <div v-if="loading">
-      <div class="ssc">
-        <div class="w-100">
-          <div class="ssc-wrapper mb-4" v-for="n in 10" :key="n">
-            <div class="ssc-head-line"></div>
-            <br>
-            <div class="ssc-square"></div>
-          </div>
-        </div>
+    <div class="content people-section-content ssc" v-if="loading">
+      <div class="ssc-wrapper mb-4 is-flex is-flex-direction-column is-align-items-center" v-for="n in 30" :key="n">
+        <div class="ssc-head-line w-80 mb-4"></div>
+        <div class="ssc-head-line w-80 mb-4"></div>
+        <div class="ssc-square"></div>
       </div>
     </div>
   </div>
@@ -226,13 +222,16 @@
         exportModalStatus: false,
         exportPlainModalStatus: false,
         exportPlainList: '',
+        loading: false,
       }
     },
-    created() {
+    async created() {
       if (this.$store.state.app.people.length === 0 || this.$store.state.app.peopleMarkReload) {
-        this.loadPeople()
-        this.loadFilters()
+        this.loading = true
+        await this.loadPeople()
+        await this.loadFilters()
         this.$store.dispatch('app/setPeopleMarkReload', false)
+        this.loading = false
       }
 
       this.initImgLazyLoad()
@@ -309,11 +308,6 @@
         }
 
         this.$store.dispatch('app/setPeople', people)
-        this.$nextTick(() => {
-          if (this.lazyLoadInstance) {
-            this.lazyLoadInstance.update()
-          }
-        })
 
         this.mitt.emit('spinnerStop')
       },
@@ -331,8 +325,16 @@
           }
         })
       },
-      reloadView() {
-        this.loadPeople()
+      async reloadView() {
+        this.loading = true
+        await this.loadPeople()
+        this.loading = false
+
+        this.$nextTick(() => {
+          if (this.lazyLoadInstance) {
+            this.lazyLoadInstance.update()
+          }
+        })
       },
       openFiltersModal() {
         this.filtersModalStatus = true
