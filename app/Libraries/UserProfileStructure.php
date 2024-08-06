@@ -64,8 +64,12 @@ class UserProfileStructure
       "custom_fields.metadata->>'isPeopleFilter' = 'true'"
     ], ['tags', 'tags_range', 'short_text']);
 
-    foreach ($userProfileTagFields as &$userProfileTagField) {
+    foreach ($userProfileTagFields as $key => &$userProfileTagField) {
       $userProfileTagField['values'] = $this->getFieldUserValues($userProfileTagField['field_id'], []);
+
+      if (empty($userProfileTagField['values'])) {
+        unset($userProfileTagFields[$key]);
+      }
     }
 
     usort($userProfileTagFields, function ($a, $b) {
