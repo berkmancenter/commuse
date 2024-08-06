@@ -82,13 +82,25 @@
 
     <div class="is-clearfix"></div>
 
-    <div class="content people-section-content">
+    <div class="content people-section-content" v-if="!loading">
       <Person
         v-for="(person, index) in sortedPeople"
         :key="person.id"
         :person="person"
         :ref="'personRef_' + index"
       ></Person>
+    </div>
+
+    <div v-if="loading">
+      <div class="ssc">
+        <div class="w-100">
+          <div class="ssc-wrapper mb-4" v-for="n in 10" :key="n">
+            <div class="ssc-head-line"></div>
+            <br>
+            <div class="ssc-square"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -408,7 +420,7 @@
       }
 
       @media screen and (min-width: 600px) {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
       }
 
       @media screen and (min-width: 960px) {

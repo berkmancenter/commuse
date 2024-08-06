@@ -2,11 +2,10 @@
   <div class="people-section-person">
     <router-link :to="'/people/' + person.id">
       <div class="is-size-5 mb-2 people-section-person-full-name">
-        <div>
-          <div>{{ person.prefix }}</div>
-          <div><span>{{ person.first_name }}</span> <span v-if="person.middle_name">{{ person.middle_name }}</span></div>
-          <div>{{ person.last_name }}</div>
-        </div>
+        <div>{{ person.prefix }}</div>
+        <div v-if="person.first_name">{{ person.first_name }}</div>
+        <div v-if="person.middle_name">{{ person.middle_name }}</div>
+        <div>{{ person.last_name }}</div>
         <div class="is-size-6" v-if="person.preferred_pronouns">({{ person.preferred_pronouns }})</div>
       </div>
 
@@ -17,7 +16,7 @@
     </router-link>
 
     <VTooltip distance="10" placement="left" class="people-section-person-location">
-      <div>
+      <div class="mt-2">
         <div class="is-size-6" v-if="personAddress.city">
           {{ personAddress.city }}
         </div>
@@ -123,10 +122,17 @@
     }
 
     .people-section-person-full-name {
-      min-height: 90px;
+      min-height: 115px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
 
       > div {
-        word-wrap: break-word;
+        text-align: center;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 100%;
       }
     }
 
