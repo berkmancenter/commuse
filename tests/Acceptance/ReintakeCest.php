@@ -64,8 +64,6 @@ class ReintakeCest
       $I->fillField('password', 'password123');
       $I->click('Login');
 
-      var_dump(\App\Libraries\SystemSettingsWrapper::getInstance()->getSettingByKey('ReintakeMessage')['value']);
-
       $I->seeElement('//p[contains(text(), "Reintake message")]');
       $I->dontSeeElement('//h3[contains(text(), "News & events")]');
       $I->seeElement('//a[contains(text(), "Accept")]');
