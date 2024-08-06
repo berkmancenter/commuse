@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="admin-profile-data-audit-changes-list">
     <table class="table">
       <tr><th colspan="2">New/changed</th></tr>
       <tr v-for="(changeNew, key) in auditDataItem.changes.new" :key="key">
@@ -30,4 +30,10 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+  .admin-profile-data-audit-changes-list {
+    td {
+      word-break: normal !important;
+    }
+  }
+</style>
