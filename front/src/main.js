@@ -11,6 +11,7 @@ import floating from './plugins/floating_vue'
 import vfm from './plugins/vfm'
 import CKEditor from './plugins/ckeditor'
 import paginate from './plugins/paginate'
+import './plugins/skeleton_screen'
 
 import { createApp } from 'vue'
 import router from './router/index'
