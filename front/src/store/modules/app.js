@@ -99,6 +99,12 @@ const mutations = {
   setPublicSystemSettings(state, settings) {
     state.publicSystemSettings = settings
   },
+  setPeopleActiveFilters(state, filters) {
+    state.peopleActiveFilters = filters
+  },
+  setPeopleSearchTerm(state, term) {
+    state.peopleSearchTerm = term
+  },
 }
 
 const actions = {
@@ -456,6 +462,12 @@ const actions = {
   },
   setPublicSystemSettings(context, value) {
     context.commit('setPublicSystemSettings', value)
+  },
+  setPeopleActiveFilters(context, filters) {
+    context.commit('setPeopleActiveFilters', filters)
+  },
+  setPeopleSearchTerm(context, term) {
+    context.commit('setPeopleSearchTerm', term)
   },
 }
 
