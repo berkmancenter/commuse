@@ -324,7 +324,7 @@
       async loadProfileStructure() {
         this.mitt.emit('spinnerStart')
 
-        let profileStructure = await this.$store.dispatch('app/fetchProfileStructure')
+        let profileStructure = await this.$store.dispatch('user/fetchProfileStructure')
 
         this.profileStructure = profileStructure
 

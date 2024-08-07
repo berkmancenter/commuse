@@ -9,7 +9,7 @@
           People Portal Profile Status
         </p>
         <div class="panel-block">
-          <div class="notification is-warning" v-if="!$store.state.app.userProfile.public_profile">
+          <div class="notification is-warning" v-if="!$store.state.user.userProfile.public_profile">
             {{ $store.state.app.publicSystemSettings.PublicProfileWarningInAccountSettings.value }}
           </div>
 
@@ -17,7 +17,7 @@
             <label class="label">{{ $store.state.app.publicSystemSettings.PublicProfileCheckboxLabel.value }}</label>
             <div class="control">
               <div class="control">
-                <input type="checkbox" v-model="$store.state.app.userProfile.public_profile" @change="updateProfileStatus()">
+                <input type="checkbox" v-model="$store.state.user.userProfile.public_profile" @change="updateProfileStatus()">
               </div>
             </div>
           </div>
@@ -83,7 +83,7 @@
 
         this.mitt.emit('spinnerStart')
 
-        const response = await this.$store.dispatch('app/changePassword', this.passwordData)
+        const response = await this.$store.dispatch('user/changePassword', this.passwordData)
         const data = await response.json()
 
         if (response.ok) {
@@ -101,8 +101,8 @@
       async updateProfileStatus() {
         this.mitt.emit('spinnerStart')
 
-        const response = await this.$store.dispatch('app/saveProfile', {
-          public_profile: this.$store.state.app.userProfile.public_profile,
+        const response = await this.$store.dispatch('user/saveProfile', {
+          public_profile: this.$store.state.user.userProfile.public_profile,
         })
 
         this.$store.dispatch('app/setPeopleMarkReload', true)
@@ -118,11 +118,11 @@
       async loadProfileStatus() {
         this.mitt.emit('spinnerStart')
 
-        let profileStatus = await this.$store.dispatch('app/fetchProfileStatus')
+        let profileStatus = await this.$store.dispatch('user/fetchProfileStatus')
 
         this.mitt.emit('spinnerStop')
 
-        this.$store.dispatch('app/setUserProfileStatus', profileStatus)
+        this.$store.dispatch('user/setUserProfileStatus', profileStatus)
       },
     },
   }

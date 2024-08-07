@@ -18,7 +18,7 @@
         </li>
       </ul>
 
-      <div class="side-menu-admin" v-if="$store.state.app.currentUser.admin">
+      <div class="side-menu-admin" v-if="$store.state.user.currentUser.admin">
         <div class="is-size-5 px-2 py-1">Admin</div>
 
         <ul>
@@ -60,7 +60,7 @@
             <template #popper>
               <div class="dropdown-item">
                 You are logged in as
-                <div>{{ $store.state.app.currentUser.email }}</div>
+                <div>{{ $store.state.user.currentUser.email }}</div>
               </div>
               <hr class="dropdown-divider">
               <router-link class="dropdown-item" :to="'/profile'" v-close-popper>
@@ -190,11 +190,11 @@
         }
       },
       async loadCurrentUser() {
-        const currentUser = await this.$store.dispatch('app/fetchCurrentUser')
-        this.$store.dispatch('app/setCurrentUser', currentUser)
+        const currentUser = await this.$store.dispatch('user/fetchCurrentUser')
+        this.$store.dispatch('user/setCurrentUser', currentUser)
 
         // Redirect to the 404 page if the currentuser is not admin and tries to access an admin page
-        if (this.$router.currentRoute._value.meta.admin && this.$store.state.app.currentUser.admin === false) {
+        if (this.$router.currentRoute._value.meta.admin && this.$store.state.user.currentUser.admin === false) {
           this.$router.push({ name: 'pagenotfound.index' })
         }
       },

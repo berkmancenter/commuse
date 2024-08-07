@@ -96,7 +96,7 @@
 
           <div class="mt-2 people-section-details-last-updated">Last updated: {{ person.updated_at }} UTC</div>
 
-          <div class="people-section-details-admin-actions" v-if="$store.state.app.currentUser.admin">
+          <div class="people-section-details-admin-actions" v-if="$store.state.user.currentUser.admin">
             <hr>
 
             <h4 class="is-size-5 mt-2">Admin</h4>
@@ -231,7 +231,7 @@
         this.mitt.emit('spinnerStop')
       },
       async loadProfileStructure() {
-        let profileStructure = await this.$store.dispatch('app/fetchProfileStructure')
+        let profileStructure = await this.$store.dispatch('user/fetchProfileStructure')
 
         this.profileStructure = profileStructure
         this.mitt.emit('spinnerStop')

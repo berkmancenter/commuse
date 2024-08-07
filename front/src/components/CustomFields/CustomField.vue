@@ -256,7 +256,7 @@
         return true
       },
       disabled() {
-        return this?.metadata && this?.metadata.editableOnlyByAdmins && !this.$store.state.app.currentUser.admin
+        return this?.metadata && this?.metadata.editableOnlyByAdmins && !this.$store.state.user.currentUser.admin
       },
       checkIfAutoPopulateFirstItem() {
         if (this.autoPopulateFirstItem) {

@@ -386,8 +386,8 @@
         this.exportModalStatus = true
       },
       clearAllFilters() {
-        this.$store.state.app.peopleSearchTerm = ''
-        this.$store.state.app.peopleActiveFilters = {}
+        this.$store.dispatch('app/setPeopleActiveFilters', {})
+        this.$store.dispatch('app/setPeopleSearchTerm', '')
       },
     },
     watch: {
