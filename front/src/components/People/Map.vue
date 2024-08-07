@@ -22,18 +22,18 @@
     },
     methods: {
       async initMap() {
-        if (this.$store.state.app.people.length === 0) {
+        if (this.$store.state.people.people.length === 0) {
           this.mitt.emit('spinnerStart')
 
           let people = null
           try {
-            people = await this.$store.dispatch('app/fetchPeople')
+            people = await this.$store.dispatch('people/fetchPeople')
           } catch (error) {
             this.mitt.emit('spinnerStop')
             return
           }
 
-          this.$store.dispatch('app/setPeople', people)
+          this.$store.dispatch('people/setPeople', people)
 
           this.mitt.emit('spinnerStop')
         }
@@ -49,7 +49,7 @@
         }).addTo(map)
 
         const clusters = {}
-        this.$store.state.app.people.forEach(person => {
+        this.$store.state.people.people.forEach(person => {
           if (person['current_location_lat']) {
             const clusterKey = person['current_location_lat'].replace(/\D/g,'') + '_' + person['current_location_lon'].replace(/\D/g,'')
 

@@ -202,8 +202,8 @@
         :machine-name="activeAffiliateField.machine_name"
         :metadata="activeAffiliateField.metadata"
         :field-data="activeAffiliateField"
-        :value="$store.state.app.setActiveAffiliationModalValue[activeAffiliateField.machine_name]"
-        :storeObject="$store.state.app.setActiveAffiliationModalValue"
+        :value="$store.state.admin.activeAffiliationModalValue[activeAffiliateField.machine_name]"
+        :storeObject="$store.state.admin.activeAffiliationModalValue"
         :auto-populate-first-item="true"
         :force-one-item="true"
         ref="activeAffiliateFieldRef"
@@ -315,7 +315,7 @@
       async loadUsers() {
         this.mitt.emit('spinnerStart')
 
-        const users = await this.$store.dispatch('app/fetchUsers')
+        const users = await this.$store.dispatch('admin/fetchUsers')
 
         this.users = users
 
@@ -349,7 +349,7 @@
         this.mitt.emit('spinnerStart')
 
         const usersIds = this.deleteUserModalCurrent.map(user => user.id)
-        const response = await this.$store.dispatch('app/deleteUsers', usersIds)
+        const response = await this.$store.dispatch('admin/deleteUsers', usersIds)
         const data = await response.json()
 
         if (response.ok) {
@@ -364,7 +364,7 @@
 
         this.deleteUserModalStatus = false
         this.mitt.emit('spinnerStop')
-        this.$store.dispatch('app/setPeopleMarkReload', true)
+        this.$store.dispatch('people/setPeopleMarkReload', true)
       },
       setUserRoleModalOpen(user) {
         this.setUserRoleModalStatus = true
@@ -373,7 +373,7 @@
       async setUserRole() {
         this.mitt.emit('spinnerStart')
 
-        const response = await this.$store.dispatch('app/changeUserRole', {
+        const response = await this.$store.dispatch('admin/changeUserRole', {
           users: [this.setUserRoleModalCurrent.id],
           role: this.setUserRoleCurrentRole,
         })
@@ -397,7 +397,7 @@
         const file = this.$refs.importUsersCsvModalFileInput.files[0]
 
         if (file) {
-          const response = await this.$store.dispatch('app/importUsersFromCsv', file)
+          const response = await this.$store.dispatch('admin/importUsersFromCsv', file)
 
           if (response.ok) {
             this.loadUsers()
@@ -413,7 +413,7 @@
         }
 
         this.mitt.emit('spinnerStop')
-        this.$store.dispatch('app/setPeopleMarkReload', true)
+        this.$store.dispatch('people/setPeopleMarkReload', true)
       },
       setReintakeStatusModalOpen(users) {
         if (users.length === 0) {
@@ -428,7 +428,7 @@
       async setReintakeStatus() {
         this.mitt.emit('spinnerStart')
 
-        const response = await this.$store.dispatch('app/setReintakeStatus', {
+        const response = await this.$store.dispatch('admin/setReintakeStatus', {
           users: this.setReintakeStatusCurrent.map(user => user.id),
           status: this.setReintakeStatusSelected,
         })
@@ -450,7 +450,7 @@
           return
         }
 
-        this.$store.dispatch('app/setActiveAffiliationModalValue', {})
+        this.$store.dispatch('admin/setActiveAffiliationModalValue', {})
         this.setActiveAffiliationCurrent = users
         this.setActiveAffiliationModalStatus = true
         this.setActiveAffiliationModalOptionsSelected = 'new_affiliation'
@@ -467,14 +467,14 @@
             return
           }
 
-          affiliation = this.$store.state.app.setActiveAffiliationModalValue[this.activeAffiliateField.machine_name]
+          affiliation = this.$store.state.admin.activeAffiliationModalValue[this.activeAffiliateField.machine_name]
         } else {
           affiliation = 'unset'
         }
 
         this.mitt.emit('spinnerStart')
 
-        const response = await this.$store.dispatch('app/setActiveAffiliation', {
+        const response = await this.$store.dispatch('admin/setActiveAffiliation', {
           users: this.setActiveAffiliationCurrent.map(user => user.id),
           affiliation: affiliation,
         })

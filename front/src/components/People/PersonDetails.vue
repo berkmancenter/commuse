@@ -109,7 +109,7 @@
 
     <div class="box people-section-details-content">
       <div class="notification is-warning" v-if="person.public_profile === 'f'">
-        {{ $store.state.app.publicSystemSettings.PublicProfileWarningShowProfile.value }}
+        {{ $store.state.systemSettings.publicSystemSettings.PublicProfileWarningShowProfile.value }}
       </div>
 
       <div class="people-section-details-content-other">
@@ -219,7 +219,7 @@
         this.loadProfileStructure()
       },
       async loadPerson() {
-        const response = await this.$store.dispatch('app/fetchPerson', this.$route.params.id)
+        const response = await this.$store.dispatch('people/fetchPerson', this.$route.params.id)
 
         if (response.status === 404) {
           this.$router.push({ name: 'pagenotfound.index' })

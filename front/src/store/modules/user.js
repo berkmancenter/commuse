@@ -2,6 +2,12 @@ import fetchIt from '@/lib/fetch_it'
 
 const apiUrl = import.meta.env.VITE_API_URL
 
+const defaultTagRange = {
+  from: '',
+  to: '',
+  tags: '',
+}
+
 const state = {
   userProfile: {},
   currentUser: {
@@ -20,6 +26,44 @@ const mutations = {
   },
   setCurrentUser(state, currentUser) {
     state.currentUser = currentUser
+  },
+  addTag(state, data) {
+    if (!state.userProfile[data.key]) {
+      state.userProfile[data.key] = []
+    }
+
+    state.userProfile[data.key].push(data.newOption)
+  },
+  addTagRange(state, data) {
+    if (!state.userProfile[data.key]) {
+      state.userProfile[data.key] = {}
+    }
+
+    if (!state.userProfile[data.key]['tags']) {
+      state.userProfile[data.key]['tags'] = []
+    }
+
+    state.userProfile[data.key]['tags'](data.newOption)
+  },
+  addEmptyTagRangeItem(state, destination) {
+    if (!destination['store'][destination['key']]) {
+      destination['store'][destination['key']] = []
+    }
+
+    destination['store'][destination['key']].push(JSON.parse(JSON.stringify(defaultTagRange)))
+  },
+  addEmptyMultiItem(state, destination) {
+    if (!destination['store'][destination['key']]) {
+      destination['store'][destination['key']] = []
+    }
+
+    destination['store'][destination['key']].push({})
+  },
+  removeTagRangeItem(state, data) {
+    state.userProfile[data.machineName].splice(data.index, 1)
+  },
+  removeMultiItem(state, data) {
+    state.userProfile[data.machineName].splice(data.index, 1)
   },
 }
 
@@ -47,15 +91,6 @@ const actions = {
     const data = await response.json()
 
     return data
-  },
-  setUserProfile(context, profile) {
-    context.commit('setUserProfile', profile)
-  },
-  setUserProfileStatus(context, profileStatus) {
-    context.commit('setUserProfileStatus', profileStatus)
-  },
-  setCurrentUser(context, currentUser) {
-    context.commit('setCurrentUser', currentUser)
   },
   async saveProfile(context, profileData) {
     const response = await fetchIt(`${apiUrl}/api/users/saveProfile`, {
@@ -98,6 +133,30 @@ const actions = {
     })
 
     return response
+  },
+  setUserProfile(context, profile) {
+    context.commit('setUserProfile', profile)
+  },
+  setUserProfileStatus(context, profileStatus) {
+    context.commit('setUserProfileStatus', profileStatus)
+  },
+  setCurrentUser(context, currentUser) {
+    context.commit('setCurrentUser', currentUser)
+  },
+  addTag(context, data) {
+    context.commit('addTag', data)
+  },
+  addEmptyTagRangeItem(context, destination) {
+    context.commit('addEmptyTagRangeItem', destination)
+  },
+  addEmptyMultiItem(context, destination) {
+    context.commit('addEmptyMultiItem', destination)
+  },
+  removeTagRangeItem(context, data) {
+    context.commit('removeTagRangeItem', data)
+  },
+  removeMultiItem(context, data) {
+    context.commit('removeMultiItem', data)
   },
 }
 

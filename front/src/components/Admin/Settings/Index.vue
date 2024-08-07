@@ -6,7 +6,7 @@
 
   <div class="system-settings-section">
     <form class="form-commuse-blocks mb-4" @submit.prevent="changePassword">
-      <div class="panel mb-4" v-for="(systemField, key) in $store.state.app.systemSettings">
+      <div class="panel mb-4" v-for="(systemField, key) in $store.state.systemSettings.systemSettings">
         <p class="panel-heading">
           {{ camelCaseToTitleCase(key) }}
         </p>
@@ -59,11 +59,11 @@
       async loadSettings() {
         this.mitt.emit('spinnerStart')
 
-        let settings = await this.$store.dispatch('app/fetchSystemSettings')
+        let settings = await this.$store.dispatch('systemSettings/fetchSystemSettings')
 
         this.mitt.emit('spinnerStop')
 
-        this.$store.dispatch('app/setSystemSettings', settings)
+        this.$store.dispatch('systemSettings/setSystemSettings', settings)
       },
       camelCaseToTitleCase(str) {
         let result = str.replace(/([A-Z])/g, ' $1').trim()
@@ -73,7 +73,7 @@
       async saveSettings() {
         this.mitt.emit('spinnerStart')
 
-        const response = await this.$store.dispatch('app/saveSystemSettings', this.$store.state.app.systemSettings)
+        const response = await this.$store.dispatch('systemSettings/saveSystemSettings', this.$store.state.systemSettings.systemSettings)
 
         this.mitt.emit('spinnerStop')
 

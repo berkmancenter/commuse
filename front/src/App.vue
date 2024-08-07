@@ -199,8 +199,8 @@
         }
       },
       async loadSystemSettings() {
-        const systemSettings = await this.$store.dispatch('app/fetchPublicSystemSettings')
-        this.$store.dispatch('app/setPublicSystemSettings', systemSettings)
+        const systemSettings = await this.$store.dispatch('systemSettings/fetchPublicSystemSettings')
+        this.$store.dispatch('systemSettings/setPublicSystemSettings', systemSettings)
       },
       logout() {
         window.location.href = `${this.apiUrl}/logout`

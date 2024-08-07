@@ -127,7 +127,7 @@
       async loadInvitations() {
         this.mitt.emit('spinnerStart')
 
-        const invitations = await this.$store.dispatch('app/fetchInvitations')
+        const invitations = await this.$store.dispatch('admin/fetchInvitations')
 
         this.invitations = invitations
 
@@ -139,7 +139,7 @@
       async createInvitation() {
         this.mitt.emit('spinnerStart')
 
-        const response = await this.$store.dispatch('app/saveInvitation', {
+        const response = await this.$store.dispatch('admin/saveInvitation', {
           type: this.createInvitationCurrent.type,
           expire: this.createInvitationCurrentExpire,
         })
@@ -175,7 +175,7 @@
       async deleteInvitation() {
         this.mitt.emit('spinnerStart')
 
-        const response = await this.$store.dispatch('app/deleteInvitations', [this.deleteInvitationCurrent.id])
+        const response = await this.$store.dispatch('admin/deleteInvitations', [this.deleteInvitationCurrent.id])
         const data = await response.json()
 
         if (response.ok) {

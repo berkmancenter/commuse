@@ -168,25 +168,25 @@
         this.$emit('update:value', currentValue.filter(item => item !== option))
       },
       addEmptyTagRangeItem() {
-        this.$store.dispatch('app/addEmptyTagRangeItem', {
+        this.$store.dispatch('user/addEmptyTagRangeItem', {
           store: this.storeObject,
           key: this.machineName,
         })
       },
       addEmptyMultiItem() {
-        this.$store.dispatch('app/addEmptyMultiItem', {
+        this.$store.dispatch('user/addEmptyMultiItem', {
           store: this.storeObject,
           key: this.machineName,
         })
       },
       removeTagRangeItem(index) {
-        this.$store.dispatch('app/removeTagRangeItem', {
+        this.$store.dispatch('user/removeTagRangeItem', {
           index: index,
           machineName: this.machineName,
         })
       },
       removeMultiItem(index) {
-        this.$store.dispatch('app/removeMultiItem', {
+        this.$store.dispatch('user/removeMultiItem', {
           index: index,
           machineName: this.machineName,
         })
@@ -194,7 +194,7 @@
       addTag (newOption) {
         this.metadata.possibleValues.push(newOption)
 
-        this.$store.dispatch('app/addTag', {
+        this.$store.dispatch('user/addTag', {
           key: this.machineName,
           newOption: newOption,
         })
@@ -202,7 +202,7 @@
       addTagRange (newOption) {
         this.metadata.possibleValues.push(newOption)
 
-        this.$store.dispatch('app/addTagRange', {
+        this.$store.dispatch('user/addTagRange', {
           key: this.machineName,
           newOption: newOption,
         })

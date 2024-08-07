@@ -242,7 +242,7 @@
       async loadCustomFields() {
         this.mitt.emit('spinnerStart')
 
-        const customFields = await this.$store.dispatch('app/fetchCustomFields')
+        const customFields = await this.$store.dispatch('admin/fetchCustomFields')
 
         this.customFields = customFields
 
@@ -265,7 +265,7 @@
       async submitEditFieldForm() {
         this.mitt.emit('spinnerStart')
 
-        const response = await this.$store.dispatch('app/saveCustomField', this.fieldModalCurrent)
+        const response = await this.$store.dispatch('admin/saveCustomField', this.fieldModalCurrent)
 
         if (response.ok) {
           this.awn.success('Custom field has been updated.')

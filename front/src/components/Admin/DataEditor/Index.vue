@@ -5,7 +5,7 @@
     <div class="admin-data-editor-search mb-4">
       <input
         type="text"
-        v-model="$store.state.app.dataEditorSearchQuery"
+        v-model="$store.state.dataEditor.dataEditorSearchQuery"
         placeholder="Search data to edit"
         class="input"
         @keyup="reloadView()"
@@ -103,17 +103,17 @@
     methods: {
       async loadData() {
         this.mitt.emit('spinnerStart')
-        const searchTermEntering = this.$store.state.app.dataEditorSearchQuery
+        const searchTermEntering = this.$store.state.dataEditor.dataEditorSearchQuery
 
         let fieldsData = null
         try {
-          fieldsData = await this.$store.dispatch('app/fetchDataEditorData')
+          fieldsData = await this.$store.dispatch('dataEditor/fetchDataEditorData')
         } catch (error) {
           this.mitt.emit('spinnerStop')
           return
         }
 
-        if (this.$store.state.app.dataEditorSearchQuery !== searchTermEntering) {
+        if (this.$store.state.dataEditor.dataEditorSearchQuery !== searchTermEntering) {
           this.mitt.emit('spinnerStop')
           return
         }
@@ -123,15 +123,15 @@
         this.mitt.emit('spinnerStop')
       },
       reloadView() {
-        if (this.$store.state.app.dataEditorSearchQuery.length > 1) {
+        if (this.$store.state.dataEditor.dataEditorSearchQuery.length > 1) {
           this.loadData()
         } else {
           this.fieldsData = []
         }
       },
       abortFetchDataEditorRequest() {
-        if (this.$store.state.app.dataEditorFetchController) {
-          this.$store.state.app.dataEditorFetchController.abort()
+        if (this.$store.state.dataEditor.dataEditorFetchController) {
+          this.$store.state.dataEditor.dataEditorFetchController.abort()
         }
       },
       openEditModal(dataItem) {
@@ -141,7 +141,7 @@
       async submitEditDataForm() {
         this.mitt.emit('spinnerStart')
 
-        const response = await this.$store.dispatch('app/saveDataEditorItem', this.fieldDataFormModalCurrent)
+        const response = await this.$store.dispatch('dataEditor/saveDataEditorItem', this.fieldDataFormModalCurrent)
 
         this.mitt.emit('spinnerStop')
 
@@ -158,7 +158,7 @@
       },
     },
     watch: {
-      '$store.state.app.dataEditorSearchQuery': function() {
+      '$store.state.dataEditor.dataEditorSearchQuery': function() {
         this.abortFetchDataEditorRequest()
       },
     },

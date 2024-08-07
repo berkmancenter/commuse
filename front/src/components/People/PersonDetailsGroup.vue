@@ -65,17 +65,17 @@
     },
     methods: {
       activatePeopleFilter(fieldMachineName, value) {
-        const hasValue = some(this.$store.state.app.peopleActiveFilters[fieldMachineName], filterValue => filterValue === value)
+        const hasValue = some(this.$store.state.people.peopleActiveFilters[fieldMachineName], filterValue => filterValue === value)
 
         if (hasValue === false) {
-          if (!this.$store.state.app.peopleActiveFilters[fieldMachineName]) {
-            this.$store.state.app.peopleActiveFilters[fieldMachineName] = []
+          if (!this.$store.state.people.peopleActiveFilters[fieldMachineName]) {
+            this.$store.state.people.peopleActiveFilters[fieldMachineName] = []
           }
 
-          this.$store.state.app.peopleActiveFilters[fieldMachineName].push(value)
+          this.$store.state.people.peopleActiveFilters[fieldMachineName].push(value)
         }
 
-        this.$store.dispatch('app/setPeopleMarkReload', true)
+        this.$store.dispatch('people/setPeopleMarkReload', true)
         this.$router.push({
           name: 'people.index',
         })

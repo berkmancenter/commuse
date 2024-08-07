@@ -183,7 +183,7 @@
 
         let auditData = null
         try {
-          auditData = await this.$store.dispatch('app/fetchProfileDataAuditData', {
+          auditData = await this.$store.dispatch('admin/fetchProfileDataAuditData', {
             justReintake: this.justReintake,
             justReview: this.justReview,
           })
@@ -218,13 +218,13 @@
       setProcessAuditRecordModalEmailTemplates() {
         if (this.processAuditRecordModalSelect === 'accept') {
           this.processAuditRecordModalEmailValues = {
-            subject: this.$store.state.app.publicSystemSettings['DataAuditUserEmailAcceptedSubject'].value,
-            body: this.$store.state.app.publicSystemSettings['DataAuditUserEmailAcceptedBody'].value,
+            subject: this.$store.state.systemSettings.publicSystemSettings['DataAuditUserEmailAcceptedSubject'].value,
+            body: this.$store.state.systemSettings.publicSystemSettings['DataAuditUserEmailAcceptedBody'].value,
           }
         } else {
           this.processAuditRecordModalEmailValues = {
-            subject: this.$store.state.app.publicSystemSettings['DataAuditUserEmailDeclinedSubject'].value,
-            body: this.$store.state.app.publicSystemSettings['DataAuditUserEmailDeclinedBody'].value,
+            subject: this.$store.state.systemSettings.publicSystemSettings['DataAuditUserEmailDeclinedSubject'].value,
+            body: this.$store.state.systemSettings.publicSystemSettings['DataAuditUserEmailDeclinedBody'].value,
           }
         }
       },
@@ -233,7 +233,7 @@
 
         let response = ''
         try {
-          response = await this.$store.dispatch('app/processProfileAuditRecord', {
+          response = await this.$store.dispatch('admin/processProfileAuditRecord', {
             id: this.processAuditRecordModalCurrent.id,
             emailTemplate: this.processAuditRecordModalEmailValues,
             decision: this.processAuditRecordModalSelect,

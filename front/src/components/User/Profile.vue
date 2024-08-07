@@ -203,7 +203,7 @@
 
         this.mitt.emit('spinnerStop')
 
-        this.$store.dispatch('app/setPeopleMarkReload', true)
+        this.$store.dispatch('people/setPeopleMarkReload', true)
 
         if (response.ok) {
           this.awn.success('Profile has been saved.')
@@ -240,7 +240,7 @@
             const data = await response.json()
             profile.image_url = data.image
             this.$store.dispatch('user/setUserProfile', profile)
-            this.$store.dispatch('app/setPeopleMarkReload', true)
+            this.$store.dispatch('people/setPeopleMarkReload', true)
             this.awn.success('Profile image has been saved.')
           } else {
             this.awn.warning('Something went wrong, try again.')

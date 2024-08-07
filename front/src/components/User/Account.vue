@@ -10,11 +10,11 @@
         </p>
         <div class="panel-block">
           <div class="notification is-warning" v-if="!$store.state.user.userProfile.public_profile">
-            {{ $store.state.app.publicSystemSettings.PublicProfileWarningInAccountSettings.value }}
+            {{ $store.state.systemSettings.publicSystemSettings.PublicProfileWarningInAccountSettings.value }}
           </div>
 
           <div class="field">
-            <label class="label">{{ $store.state.app.publicSystemSettings.PublicProfileCheckboxLabel.value }}</label>
+            <label class="label">{{ $store.state.systemSettings.publicSystemSettings.PublicProfileCheckboxLabel.value }}</label>
             <div class="control">
               <div class="control">
                 <input type="checkbox" v-model="$store.state.user.userProfile.public_profile" @change="updateProfileStatus()">
@@ -105,7 +105,7 @@
           public_profile: this.$store.state.user.userProfile.public_profile,
         })
 
-        this.$store.dispatch('app/setPeopleMarkReload', true)
+        this.$store.dispatch('people/setPeopleMarkReload', true)
 
         if (response.ok) {
           this.awn.success('Profile status has been updated.')

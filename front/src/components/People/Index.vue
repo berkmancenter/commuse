@@ -6,7 +6,7 @@
       <div class="people-section-filters-search">
         <input
           type="text"
-          v-model="$store.state.app.peopleSearchTerm"
+          v-model="$store.state.people.peopleSearchTerm"
           placeholder="Search"
           class="input"
           @keyup="reloadView()"
@@ -23,7 +23,7 @@
         <div class="people-section-active-filters-header">Active filters</div>
 
         <div class="people-section-active-filters mt-2 ml-4">
-          <template v-for="(activeFilterValues, fieldMachineName) in $store.state.app.peopleActiveFilters">
+          <template v-for="(activeFilterValues, fieldMachineName) in $store.state.people.peopleActiveFilters">
             <div class="people-section-active-filter" v-if="activeFilterValues.length > 0">
               <div class="people-section-active-filter-title mt-1">
                 <span>></span>
@@ -109,12 +109,12 @@
     cancelButtonTitle="Close"
     @cancel="filtersModalStatus = false"
   >
-    <template v-for="filter in $store.state.app.peopleFilters">
+    <template v-for="filter in $store.state.people.peopleFilters">
       <div class="mb-2">{{ filter.field_title }}</div>
 
       <VueMultiselect
         class="mb-2"
-        v-model="$store.state.app.peopleActiveFilters[filter.field_machine_name]"
+        v-model="$store.state.people.peopleActiveFilters[filter.field_machine_name]"
         :multiple="true"
         :options="filter.values"
       >
@@ -226,11 +226,11 @@
       }
     },
     async created() {
-      if (this.$store.state.app.people.length === 0 || this.$store.state.app.peopleMarkReload) {
+      if (this.$store.state.people.people.length === 0 || this.$store.state.people.peopleMarkReload) {
         this.loading = true
         await this.loadPeople()
         await this.loadFilters()
-        this.$store.dispatch('app/setPeopleMarkReload', false)
+        this.$store.dispatch('people/setPeopleMarkReload', false)
         this.loading = false
       }
 
@@ -242,7 +242,7 @@
     },
     computed: {
       countedUsers() {
-        const count = this.$store.state.app.people.length
+        const count = this.$store.state.people.people.length
 
         if (count === 1) {
           return `Found 1 user`
@@ -251,7 +251,7 @@
         }
       },
       anyActiveFilters() {
-        return some(this.$store.state.app.peopleActiveFilters, filter => filter.length > 0)
+        return some(this.$store.state.people.peopleActiveFilters, filter => filter.length > 0)
       },
       sortedPeople() {
         const sortingField = this.sortingActive.field
@@ -260,7 +260,7 @@
           return []
         }
 
-        return orderBy(this.$store.state.app.people, [person => {
+        return orderBy(this.$store.state.people.people, [person => {
           if (person[sortingField]) {
             return person[sortingField].toLowerCase()
           } else {
@@ -292,22 +292,22 @@
     methods: {
       async loadPeople() {
         this.mitt.emit('spinnerStart')
-        const searchTermEntering = this.$store.state.app.peopleSearchTerm
+        const searchTermEntering = this.$store.state.people.peopleSearchTerm
 
         let people = null
         try {
-          people = await this.$store.dispatch('app/fetchPeople')
+          people = await this.$store.dispatch('people/fetchPeople')
         } catch (error) {
           this.mitt.emit('spinnerStop')
           return
         }
 
-        if (this.$store.state.app.peopleSearchTerm !== searchTermEntering) {
+        if (this.$store.state.people.peopleSearchTerm !== searchTermEntering) {
           this.mitt.emit('spinnerStop')
           return
         }
 
-        this.$store.dispatch('app/setPeople', people)
+        this.$store.dispatch('people/setPeople', people)
 
         this.mitt.emit('spinnerStop')
       },
@@ -342,7 +342,7 @@
       async loadFilters() {
         this.mitt.emit('spinnerStart')
 
-        this.$store.state.app.peopleFilters = await this.$store.dispatch('app/fetchPeopleFilters')
+        this.$store.state.people.peopleFilters = await this.$store.dispatch('people/fetchPeopleFilters')
 
         this.mitt.emit('spinnerStop')
       },
@@ -351,25 +351,25 @@
         this.filtersModalStatus = false
       },
       fieldTitle(fieldMachineName) {
-        return this.$store.state.app.peopleFilters.filter(filter => filter.field_machine_name === fieldMachineName)[0].field_title
+        return this.$store.state.people.peopleFilters.filter(filter => filter.field_machine_name === fieldMachineName)[0].field_title
       },
       abortFetchPeopleRequest() {
-        if (this.$store.state.app.peopleFetchController) {
-          this.$store.state.app.peopleFetchController.abort()
+        if (this.$store.state.people.peopleFetchController) {
+          this.$store.state.people.peopleFetchController.abort()
         }
       },
       removeFilter(fieldMachineName, activeFilterValue) {
-        this.$store.state.app.peopleActiveFilters[fieldMachineName] = this.$store.state.app.peopleActiveFilters[fieldMachineName].filter(filterValue => filterValue != activeFilterValue)
+        this.$store.state.people.peopleActiveFilters[fieldMachineName] = this.$store.state.people.peopleActiveFilters[fieldMachineName].filter(filterValue => filterValue != activeFilterValue)
       },
       exportToCsv() {
-        const peopleIdsToExport = this.$store.state.app.people.map((person) => person.id).join(',')
+        const peopleIdsToExport = this.$store.state.people.people.map((person) => person.id).join(',')
         this.exportModalStatus = false
         window.location.href = `${apiUrl}/api/people/export?format=csv&ids=${peopleIdsToExport}`
       },
       exportToPlain() {
         this.exportModalStatus = false
         this.exportPlainModalStatus = true
-        this.exportPlainList = this.$store.state.app.people
+        this.exportPlainList = this.$store.state.people.people
           .filter((person) => person.email)
           .map((person) => person.email).join('\n')
       },
@@ -378,7 +378,7 @@
         this.awn.success('The list of emails has been copied to the clipboard.')
       },
       openExportPeopleModal() {
-        if (this.$store.state.app.people.length === 0) {
+        if (this.$store.state.people.people.length === 0) {
           this.awn.warning('The list of people is empty, nothing to export.')
           return
         }
@@ -386,18 +386,18 @@
         this.exportModalStatus = true
       },
       clearAllFilters() {
-        this.$store.dispatch('app/setPeopleActiveFilters', {})
-        this.$store.dispatch('app/setPeopleSearchTerm', '')
+        this.$store.dispatch('people/setPeopleActiveFilters', {})
+        this.$store.dispatch('people/setPeopleSearchTerm', '')
       },
     },
     watch: {
-      '$store.state.app.peopleSearchTerm': function() {
+      '$store.state.people.peopleSearchTerm': function() {
         this.abortFetchPeopleRequest()
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
         })
       },
-      '$store.state.app.peopleActiveFilters': {
+      '$store.state.people.peopleActiveFilters': {
         handler: function() {
           this.abortFetchPeopleRequest()
           this.$nextTick(() => {
