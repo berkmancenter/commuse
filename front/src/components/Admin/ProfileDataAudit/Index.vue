@@ -346,7 +346,7 @@
       },
     },
     watch: {
-      '$route.params.id': function() {
+      '$route.params.id'() {
         this.loadData()
       },
       '$route.query.searchQuery'() {

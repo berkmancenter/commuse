@@ -9,7 +9,6 @@
           v-model="$store.state.people.peopleSearchTerm"
           placeholder="Search"
           class="input"
-          @keyup="reloadView()"
         >
         <span><img :src="searchIcon"></span>
       </div>
@@ -223,6 +222,7 @@
         exportPlainModalStatus: false,
         exportPlainList: '',
         loading: false,
+        componentRouteName: 'people.index',
       }
     },
     async created() {
@@ -292,17 +292,13 @@
     methods: {
       async loadPeople() {
         this.mitt.emit('spinnerStart')
-        const searchTermEntering = this.$store.state.people.peopleSearchTerm
+
+        this.loadQueryParams()
 
         let people = null
         try {
           people = await this.$store.dispatch('people/fetchPeople')
         } catch (error) {
-          this.mitt.emit('spinnerStop')
-          return
-        }
-
-        if (this.$store.state.people.peopleSearchTerm !== searchTermEntering) {
           this.mitt.emit('spinnerStop')
           return
         }
@@ -389,21 +385,55 @@
         this.$store.dispatch('people/setPeopleActiveFilters', {})
         this.$store.dispatch('people/setPeopleSearchTerm', '')
       },
-    },
-    watch: {
-      '$store.state.people.peopleSearchTerm': function() {
+      base64Encode(str) {
+        return btoa(str)
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=+$/, '')
+      },
+      base64Decode(str) {
+        const base64 = str
+          .replace(/-/g, '+')
+          .replace(/_/g, '/')
+
+        return atob(base64)
+      },
+      loadQueryParams() {
+        this.$store.dispatch('people/setPeopleSearchTerm', this.$route.query.query || '')
+
+        if (this.$route.query.filters) {
+          const activeFiltersDecoded = this.base64Decode(this.$route.query.filters)
+          this.$store.dispatch('people/setPeopleActiveFilters', JSON.parse(activeFiltersDecoded))
+        } else {
+          if (Object.keys(this.$store.state.people.peopleActiveFilters).length !== 0) {
+            this.$store.dispatch('people/setPeopleActiveFilters', {})
+          }
+        }
+      },
+      reloadViewAndAbortFetchPeopleRequest() {
         this.abortFetchPeopleRequest()
+        this.reloadView()
         this.$nextTick(() => {
-          this.lazyLoadInstance.update()
+          if (this.lazyLoadInstance) {
+            this.lazyLoadInstance.update()
+          }
         })
       },
+    },
+    watch: {
+      '$route.query.filters'() {
+        this.reloadViewAndAbortFetchPeopleRequest()
+      },
+      '$route.query.query'() {
+        this.reloadViewAndAbortFetchPeopleRequest()
+      },
+      async '$store.state.people.peopleSearchTerm'() {
+        await this.$router.push({ name: this.componentRouteName, query: { ...this.$route.query, query: this.$store.state.people.peopleSearchTerm }})
+      },
       '$store.state.people.peopleActiveFilters': {
-        handler: function() {
-          this.abortFetchPeopleRequest()
-          this.$nextTick(() => {
-            this.reloadView()
-            this.lazyLoadInstance.update()
-          })
+        handler: async function () {
+          const activeFiltersBased = this.base64Encode(JSON.stringify(this.$store.state.people.peopleActiveFilters))
+          await this.$router.push({ name: this.componentRouteName, query: { ...this.$route.query, filters: activeFiltersBased }})
         },
         deep: true,
       },
