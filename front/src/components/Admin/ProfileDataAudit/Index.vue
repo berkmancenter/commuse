@@ -1,10 +1,21 @@
 <template>
   <div class="admin-profile-data-audit">
-    <h3 class="is-size-3 has-text-weight-bold mb-4">Profile data audit</h3>
+    <h3 class="is-size-3 has-text-weight-bold mb-2">Profile data audit</h3>
 
     <div class="mb-4" v-if="!$route.params.id">
-      <ActionButton buttonText="Reintake changes" @click="setJustReintake()" :active="justReintake" :icon="reintakeIcon"></ActionButton>
-      <ActionButton class="ml-2" buttonText="Waiting for review" @click="setJustReview()" :active="justReview" :icon="reviewIcon"></ActionButton>
+      <ActionButton class="mt-2" buttonText="Reintake changes" @click="setJustReintake()" :active="justReintake" :icon="reintakeIcon"></ActionButton>
+      <ActionButton class="mt-2 ml-2" buttonText="Waiting for review" @click="setJustReview()" :active="justReview" :icon="reviewIcon"></ActionButton>
+      <ActionButton class="mt-2 ml-2" buttonText="Filter by field" @click="openFilterChangesModal()" :active="activeFilterChangesSelected.length > 0" :icon="filterIcon"></ActionButton>
+    </div>
+
+    <div class="admin-profile-data-audit-search mt-2 mb-4">
+      <input
+        type="text"
+        v-model="searchQuery"
+        placeholder="Search"
+        class="input"
+      >
+      <span><img :src="searchIcon"></span>
     </div>
 
     <div class="mb-4" v-if="$route.params.id">
@@ -51,6 +62,17 @@
       </tbody>
     </admin-table>
   </div>
+
+  <vue-awesome-paginate
+    :total-items="paginateTotalItems"
+    :items-per-page="20"
+    :max-pages-shown="5"
+    :hidePrevNextWhenEnds="true"
+    v-model="page"
+    @click="paginateChangePage"
+    class="mt-4"
+    v-if="paginateTotalItems > 0"
+  ></vue-awesome-paginate>
 
   <Modal
     v-model="processAuditRecordModalStatus"
@@ -112,6 +134,22 @@
       Accept/deny quietly
     </button>
   </Modal>
+
+  <Modal
+    v-model="changesFieldsModalStatus"
+    title="Set fields to filter data changes"
+    class="admin-users-filter-changes-modal"
+    @confirm="changesFieldsModalStatusConfirm()"
+    @cancel="changesFieldsModalStatus = false"
+  >
+    <VueMultiselect
+      v-model="activeFilterChanges"
+      :multiple="true"
+      :taggable="false"
+      :options="changesFields"
+    >
+    </VueMultiselect>
+  </Modal>
 </template>
 
 <script>
@@ -120,6 +158,7 @@
   import reintakeIcon from '@/assets/images/reintake.svg'
   import reviewIcon from '@/assets/images/review.svg'
   import processIcon from '@/assets/images/process.svg'
+  import filterIcon from '@/assets/images/filter.svg'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import VueMultiselect from 'vue-multiselect'
   import ActionButton from '@/components/Shared/ActionButton.vue'
@@ -139,13 +178,13 @@
     },
     data() {
       return {
+        componentRouteName: 'admin-profile-data-audit.index',
         searchIcon,
         reintakeIcon,
         reviewIcon,
         processIcon,
+        filterIcon,
         auditData: [],
-        justReintake: false,
-        justReview: false,
         editor: ClassicEditor,
         editorConfig: {
           plugins: [ Bold, Essentials, Italic, Paragraph, Undo, Link ],
@@ -157,10 +196,15 @@
         processAuditRecordModalEmailSubject: '',
         processAuditRecordModalEmailBody: '',
         processAuditRecordModalEmailValues: {},
+        paginateTotalItems: 0,
+        changesFields: [],
+        activeFilterChanges: [],
+        changesFieldsModalStatus: false,
       }
     },
     created() {
-      this.loadData()
+      this.loadData(false)
+      this.loadChangesFields()
     },
     computed: {
       processedPersonName() {
@@ -178,20 +222,32 @@
       },
     },
     methods: {
-      async loadData() {
+      async loadData(goToPageOne = true) {
         this.mitt.emit('spinnerStart')
+
+        this.loadQueryParams()
+
+        if (goToPageOne) {
+          this.page = 1
+          this.$router.replace({ name: this.componentRouteName, query: { ...this.$route.query, page: 1 }})
+        }
 
         let auditData = null
         try {
           auditData = await this.$store.dispatch('admin/fetchProfileDataAuditData', {
             justReintake: this.justReintake,
             justReview: this.justReview,
+            query: this.searchQuery,
+            paginateCurrentPage: this.page,
+            fields: this.activeFilterChangesSelected,
           })
         } catch (error) {
           this.mitt.emit('spinnerStop')
           return
         }
-        this.auditData = auditData
+
+        this.auditData = auditData.items
+        this.paginateTotalItems = auditData.metadata.total
 
         if (this.$route.params.id) {
           let item = this.auditData.filter(auditDataItem => auditDataItem.id === this.$route.params.id)[0]
@@ -202,13 +258,28 @@
 
         this.mitt.emit('spinnerStop')
       },
+      async loadChangesFields() {
+        this.mitt.emit('spinnerStart')
+
+        let changesData = null
+        try {
+          changesData = await this.$store.dispatch('admin/fetchProfileDataAuditChangesFields')
+        } catch (error) {
+          this.mitt.emit('spinnerStop')
+          return
+        }
+
+        this.changesFields = changesData
+
+        this.mitt.emit('spinnerStop')
+      },
       setJustReintake() {
         this.justReintake = !this.justReintake
-        this.loadData()
+        this.$router.push({ name: this.componentRouteName, query: { ...this.$route.query, justReintake: this.justReintake }})
       },
       setJustReview() {
         this.justReview = !this.justReview
-        this.loadData()
+        this.$router.push({ name: this.componentRouteName, query: { ...this.$route.query, justReview: this.justReview }})
       },
       async processAuditRecordModalOpen(auditRecord) {
         this.processAuditRecordModalCurrent = auditRecord
@@ -253,10 +324,48 @@
 
         this.processAuditRecordModalStatus = false
       },
+      paginateChangePage(page) {
+        this.page = page
+        this.$router.push({ name: this.componentRouteName, query: { ...this.$route.query, page: page }})
+      },
+      openFilterChangesModal() {
+        this.activeFilterChanges = this.activeFilterChangesSelected
+        this.changesFieldsModalStatus = true
+      },
+      async changesFieldsModalStatusConfirm() {
+        this.activeFilterChangesSelected = this.activeFilterChanges
+        await this.$router.push({ name: this.componentRouteName, query: { ...this.$route.query, fields: this.activeFilterChanges.join(',') }})
+        this.changesFieldsModalStatus = false
+      },
+      loadQueryParams() {
+        this.justReintake = this.$route.query.justReintake === 'true'
+        this.justReview = this.$route.query.justReview === 'true'
+        this.searchQuery = this.$route.query.searchQuery || ''
+        this.page = parseInt(this.$route.query.page) || 1
+        this.activeFilterChangesSelected = this.$route.query.fields ? this.$route.query.fields.split(',') : []
+      },
     },
     watch: {
       '$route.params.id': function() {
         this.loadData()
+      },
+      '$route.query.searchQuery'() {
+        this.loadData()
+      },
+      '$route.query.page'() {
+        this.loadData(false)
+      },
+      '$route.query.justReintake'() {
+        this.loadData()
+      },
+      '$route.query.justReview'() {
+        this.loadData()
+      },
+      '$route.query.fields'() {
+        this.loadData()
+      },
+      searchQuery(newVal) {
+        this.$router.push({ name: this.componentRouteName, query: { ...this.$route.query, searchQuery: newVal }})
       },
     },
   }
@@ -264,12 +373,45 @@
 
 <style lang="scss">
   .admin-profile-data-audit {
+    .admin-profile-data-audit-search {
+      position: relative;
+      max-width: 300px;
+      min-width: 200px;
+
+      span {
+        display: block;
+        width: 1.5rem;
+        position: absolute;
+        top: 2px;
+        bottom: 2px;
+        right: 0.5rem;
+        display: flex;
+        pointer-events: none;
+        background-color: #ffffff;
+      }
+
+      input {
+        border-bottom: 2px solid var(--main-color);
+        border-radius: 0;
+      }
+
+      input::placeholder {
+        color: rgba(54, 54, 54, 0.8);
+      }
+    }
+
     tr {
       white-space: unset;
 
       th:hover {
         background-color: #fff;
       }
+    }
+  }
+
+  .admin-users-filter-changes-modal {
+    .multiselect__content-wrapper {
+      position: static;
     }
   }
 </style>

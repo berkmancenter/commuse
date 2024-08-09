@@ -24,6 +24,9 @@ class DataAudit extends BaseController
     $db = \Config\Database::connect();
     $builder = $db->table('audit au');
 
+    $paginateCurrentPage = intval($this->request->getGet('paginateCurrentPage') ?? 1);
+    $limitStart = ($paginateCurrentPage - 1) * 20;
+
     $builder
       ->select('
         pa.first_name AS audited_first_name,
@@ -46,18 +49,88 @@ class DataAudit extends BaseController
       $builder->where('au.review', 'required');
     }
 
+    if ($request->getGet('query')) {
+      $query = "'%" . $db->escapeLikeString($request->getGet('query')) . "%'";
+
+      $builder->groupStart();
+
+      $builder->where("
+        au.changes::text ILIKE $query OR
+        pa.first_name ILIKE $query OR
+        pa.last_name ILIKE $query OR
+        pch.first_name ILIKE $query OR
+        pch.last_name ILIKE $query
+      ");
+
+      $builder->groupEnd();
+    }
+
+    if ($request->getGet('fields')) {
+      $fields = explode(',', $request->getGet('fields'));
+
+      $builder->groupStart();
+
+      foreach ($fields as $field) {
+        $fieldSanitized = preg_replace('/[^a-zA-Z0-9_]/', '', $field);
+
+        $builder->groupStart();
+
+        $builder->where("jsonb_path_exists(au.changes, '$.new.$fieldSanitized')");
+        $builder->orWhere("jsonb_path_exists(au.changes, '$.old.$fieldSanitized')");
+
+        $builder->groupEnd();
+      }
+
+      $builder->groupEnd();
+    }
+
+    $builderForCount = clone $builder;
+
     $profileAuditItems = $builder
+      ->limit(20, $limitStart)
       ->orderBy('created_at', 'DESC')
       ->get()
       ->getResultArray();
+
+    $profileAuditItemsCount = $builderForCount
+      ->countAllResults();
 
     $profileAuditItems = array_map(function($auditItem) {
       $auditItem['changes'] = json_decode($auditItem['changes']);
       return $auditItem;
     }, $profileAuditItems);
 
-    return $this->respond($profileAuditItems);
+    $response = [
+      'items' => $profileAuditItems,
+      'metadata' => [
+        'total' => $profileAuditItemsCount,
+      ],
+    ];
+
+    return $this->respond($response);
   }
+
+  public function getChangesFields() {
+    $db = \Config\Database::connect();
+    $builder = $db->table('audit au');
+
+    $builder->select('changes');
+    $builder->where('au.model_name', 'People');
+    $builder->where('au.changes IS NOT NULL');
+    $auditItem = $builder->get()->getResultArray();
+
+    // getting all fields from all changes
+    $fields = [];
+    foreach ($auditItem as $item) {
+      $changes = json_decode($item['changes'], true);
+      $fields = array_merge($fields, array_keys($changes['old']));
+    }
+
+    $fields = array_values(array_unique($fields));
+
+    return $this->respond($fields);
+  }
+
 
   /**
    * Processes an audit record based on the provided request data.

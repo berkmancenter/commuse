@@ -62,6 +62,7 @@ $routes->post('api/admin/dataEditor', 'DataEditor::index');
 $routes->post('api/admin/dataEditor/saveItem', 'DataEditor::saveItem');
 $routes->get('api/admin/profileDataAudit', 'DataAudit::profileDataAudit');
 $routes->post('api/admin/profileDataAudit/process', 'DataAudit::auditRecordProcess');
+$routes->get('api/admin/profileDataAudit/getChangesFields', 'DataAudit::getChangesFields');
 $routes->get('api/admin/systemSettings', 'SystemSettings::index');
 $routes->post('api/admin/systemSettings', 'SystemSettings::saveSettings');
 $routes->get('api/admin/publicSystemSettings', 'SystemSettings::getPublicSettings');

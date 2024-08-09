@@ -38,6 +38,12 @@ const actions = {
 
     return data
   },
+  async fetchProfileDataAuditChangesFields(context) {
+    const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit/getChangesFields`)
+    const data = await response.json()
+
+    return data
+  },
   async saveInvitation(context, invitation) {
     const response = await fetchIt(`${apiUrl}/api/admin/invitations/upsert`, {
       method: 'POST',

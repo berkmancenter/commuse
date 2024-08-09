@@ -1,5 +1,12 @@
 <template>
-  <VueFinalModal class="commuse-modal" :class="{ 'commuse-modal-vertically-aligned': centerVertically }" content-class="commuse-modal-content" overlay-transition="vfm-fade" content-transition="vfm-fade">
+  <VueFinalModal
+    class="commuse-modal"
+    :class="{ 'commuse-modal-vertically-aligned': centerVertically }"
+    content-class="commuse-modal-content"
+    overlay-transition="vfm-fade"
+    content-transition="vfm-fade"
+    :clickOutside="clickOutside"
+  >
     <div class="commuse-modal-title is-size-4">
       {{ title }}
     </div>
@@ -14,7 +21,7 @@
         <div class="ld ld-ring ld-spin"></div>
       </button>
 
-      <button class="button ml-2" @click="$emit('cancel')">
+      <button class="button ml-2" @click="$emit('cancel')" v-if="showCancelButton">
         {{ cancelButtonTitle }}
       </button>
     </div>
@@ -61,6 +68,16 @@
         type: Boolean,
         required: false,
         default: true,
+      },
+      showCancelButton: {
+        type: Boolean,
+        required: false,
+        default: true,
+      },
+      clickOutside: {
+        type: Function,
+        required: false,
+        default: () => {},
       },
     },
     components: {
