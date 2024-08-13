@@ -66,6 +66,10 @@ class DataAudit extends BaseController
       $builder->groupEnd();
     }
 
+    if ($request->getGet('id')) {
+      $builder->where('au.id', $request->getGet('id'));
+    }
+
     if ($request->getGet('fields')) {
       $fields = explode(',', $request->getGet('fields'));
 

@@ -2,7 +2,7 @@
   <div class="admin-profile-data-audit">
     <h3 class="is-size-3 has-text-weight-bold mb-2">Profile data audit</h3>
 
-    <div class="mb-4" v-if="!$route.params.id">
+    <div class="mb-4">
       <ActionButton class="mt-2" buttonText="Reintake changes" @click="setJustReintake()" :active="justReintake" :icon="reintakeIcon"></ActionButton>
       <ActionButton class="mt-2 ml-2" buttonText="Waiting for review" @click="setJustReview()" :active="justReview" :icon="reviewIcon"></ActionButton>
       <ActionButton class="mt-2 ml-2" buttonText="Filter by field" @click="openFilterChangesModal()" :active="activeFilterChangesSelected.length > 0" :icon="filterIcon"></ActionButton>
@@ -16,10 +16,6 @@
         class="input"
       >
       <span><img :src="searchIcon"></span>
-    </div>
-
-    <div class="mb-4" v-if="$route.params.id">
-      <ActionButton buttonText="Show all audit records" @click="$router.push({ name: 'admin-profile-data-audit.index' })"></ActionButton>
     </div>
 
     <admin-table :tableClasses="['admin-data-audit-table']">
@@ -201,6 +197,7 @@
         changesFields: [],
         activeFilterChanges: [],
         changesFieldsModalStatus: false,
+        searchQuery: '',
       }
     },
     created() {
@@ -243,15 +240,31 @@
             fields: this.activeFilterChangesSelected,
           })
         } catch (error) {
-          this.mitt.emit('spinnerStop')
+          // If we are not on a specific record page, we can stop the spinner
+          if (!this.$route.params.id) {
+            this.mitt.emit('spinnerStop')
+          }
+
           return
         }
 
         this.auditData = auditData.items
         this.paginateTotalItems = auditData.metadata.total
 
+        // If we are on a specific record page, we need to load it and check if it requires review
         if (this.$route.params.id) {
-          let item = this.auditData.filter(auditDataItem => auditDataItem.id === this.$route.params.id)[0]
+          let auditProcessItemData = null
+          try {
+            auditProcessItemData = await this.$store.dispatch('admin/fetchProfileDataAuditData', {
+              id: this.$route.params.id,
+            })
+          } catch (error) {
+            this.mitt.emit('spinnerStop')
+            return
+          }
+
+          let item = auditProcessItemData.items[0]
+
           if (item.review === 'required') {
             this.processAuditRecordModalOpen(item)
           }
@@ -347,7 +360,7 @@
       },
     },
     watch: {
-      '$route.params.id': function() {
+      '$route.params.id'() {
         this.loadData()
       },
       '$route.query.searchQuery'() {
