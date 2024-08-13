@@ -54,7 +54,7 @@ class PeopleModel extends Model
     $simple = true
   ): array {
     $people = $this->getPeople($extraConditions, $likeConditions, $filters);
-    $this->processData($people, $simple);
+    $this->processData($people);
 
     return $people;
   }
@@ -227,6 +227,13 @@ class PeopleModel extends Model
 
       unset($personData['custom_fields']);
       $personData['image_url'] = $personData['image_url'] ? "profile_images/{$personData['image_url']}" : '';
+
+      // Filter out future active affiliation for non-admin users
+      if (php_sapi_name() !== 'cli' && auth()->user()->can('admin.access') === false && isset($personData['activeAffiliation']) && count($personData['activeAffiliation']) > 0) {
+        $personData['activeAffiliation'] = array_filter($personData['activeAffiliation'], function ($affiliation) {
+          return $affiliation['from'] < time();
+        });
+      }
     }
   }
 }

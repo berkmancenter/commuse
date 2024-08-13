@@ -165,17 +165,20 @@ class UserModel extends ShieldUserModel
 
     $userId = intval($userId);
 
-    // Clear related caches
-    $cache = \Config\Services::cache();
-    $cache->delete("person_{$userId}");
-    $cache->delete('filters_with_values');
-    $cachePeopleSearchPath = ROOTPATH . 'writable/cache/people_*';
-    exec("rm {$cachePeopleSearchPath} > /dev/null 2> /dev/null");
-
     $existingPerson = $peopleModel->where('user_id', $userId)->first();
 
     if ($existingPerson) {
       $oldProfileData = $this->getUserProfileData($userId);
+    }
+
+    // Clear related caches
+    $cache = \Config\Services::cache();
+    $cache->delete('filters_with_values');
+    $cachePeopleSearchPath = ROOTPATH . 'writable/cache/people_*';
+    exec("rm {$cachePeopleSearchPath} > /dev/null 2> /dev/null");
+
+    if ($existingPerson) {
+      $cache->delete("person_{$oldProfileData['id']}");
     }
 
     $mappedData = [];
