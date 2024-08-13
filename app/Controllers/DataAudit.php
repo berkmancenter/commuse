@@ -196,9 +196,7 @@ class DataAudit extends BaseController
         $userData = $usersModel->getUserProfileData($personId);
 
         $curlOptions = [];
-        if ($_ENV['CI_ENVIRONMENT'] === 'development') {
-          $curlOptions['verify'] = false;
-        }
+        $curlOptions['verify'] = false;
 
         $client = \Config\Services::curlrequest($curlOptions);
 
