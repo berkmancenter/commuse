@@ -165,6 +165,7 @@
   import Modal from '@/components/Shared/Modal.vue'
   import ChangesList from './ChangesList.vue'
   import { ClassicEditor, Bold, Essentials, Italic, Paragraph, Undo, Link } from 'ckeditor5'
+  import { orderBy, identity } from 'lodash'
 
   export default {
     name: 'AdminDataAudit',
@@ -269,7 +270,7 @@
           return
         }
 
-        this.changesFields = changesData
+        this.changesFields = orderBy(changesData, [identity], ['asc'])
 
         this.mitt.emit('spinnerStop')
       },
