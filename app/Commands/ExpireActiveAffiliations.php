@@ -45,7 +45,7 @@ class ExpireActiveAffiliations extends BaseCommand
 
     $builder
       ->select('
-        people.id
+        people.user_id
       ')
       ->join('custom_field_data', 'custom_field_data.model_id = people.id', 'left')
       ->join('custom_fields', 'custom_fields.id = custom_field_data.custom_field_id', 'left')
@@ -68,18 +68,20 @@ class ExpireActiveAffiliations extends BaseCommand
     foreach ($people as $person) {
       $usersModel = new UserModel();
 
-      $userData = $usersModel->getUserProfileData($person['id']);
+      $userData = $usersModel->getUserProfileData($person['user_id']);
       $activeAffiliation = $userData['activeAffiliation'][0];
 
-      if ($userData['affiliation'] && is_array($userData['affiliation'])) {
+      if (isset($userData['affiliation']) && $userData['affiliation'] && is_array($userData['affiliation'])) {
         $userData['affiliation'][] = $activeAffiliation;
       } else {
         $userData['affiliation'] = [$activeAffiliation];
       }
 
+      CLI::write("Expiring active affiliation for user ID {$person['user_id']}.");
+
       $userData['activeAffiliation'] = [];
 
-      $usersModel->saveProfileData($userData, $person['id']);
+      $usersModel->saveProfileData($userData, $person['user_id']);
     }
 
     CLI::write('Completed successfully.');

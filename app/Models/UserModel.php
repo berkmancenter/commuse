@@ -228,7 +228,7 @@ class UserModel extends ShieldUserModel
 
     $peopleModel->db->transComplete();
 
-    if (auth()->user() && $existingPerson) {
+    if ((auth()->user() || php_sapi_name() === 'cli') && $existingPerson) {
       $this->addAuditRecord($oldProfileData, $existingPerson, $userId);
     }
 
@@ -297,7 +297,7 @@ class UserModel extends ShieldUserModel
         'model_id' => $userId,
       ];
 
-      if (isset($fieldMetadata['editableOnlyByAdmins']) && $fieldMetadata['editableOnlyByAdmins'] === true && auth()->user()->can('admin.access') === false) {
+      if (isset($fieldMetadata['editableOnlyByAdmins']) && $fieldMetadata['editableOnlyByAdmins'] === true && php_sapi_name() !== 'cli' && (!auth()->user() || auth()->user()->can('admin.access') === false)) {
         continue;
       }
 
@@ -524,19 +524,33 @@ class UserModel extends ShieldUserModel
       $review = 'not_required';
 
       // Admin changes don't need to be reviewed
-      $reviewNeeded = array_intersect(array_keys($newValues), self::REVIEW_TRIGGER_FIELDS) && auth()->user()->id === $userId;
+      $reviewNeeded = array_intersect(array_keys($newValues), self::REVIEW_TRIGGER_FIELDS) && (php_sapi_name() !== 'cli' && auth()->user()->id === $userId);
 
       if ($reviewNeeded) {
         $review = 'required';
       }
 
       if (count($newValues) > 0) {
+        if (php_sapi_name() !== 'cli') {
+          $changedUserId = auth()->id();
+        } else {
+          $users = auth()->getProvider();
+          $systemUser = $users->findByCredentials(['email' => 'system_user@example.com']);
+          $changedUserId = $systemUser->id;
+        }
+
+        if (!$reviewNeeded && isset($newValues['activeAffiliation']) && count($newValues['activeAffiliation']) === 0) {
+          // Synchronize user data with the remote service
+          $dataAuditModel = new DataAuditModel();
+          $dataAuditModel->syncUserData($newProfileData);
+        }
+
         $db = \Config\Database::connect();
         $builder = $db->table('audit');
         $builder->insert([
           'audited_id' => $userId,
           'model_name' => 'People',
-          'changed_user_id' => auth()->id(),
+          'changed_user_id' => $changedUserId,
           'changes' => json_encode([
             'new' => $newValues,
             'old' => $oldValues,
