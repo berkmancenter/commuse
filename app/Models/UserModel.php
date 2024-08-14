@@ -159,7 +159,7 @@ class UserModel extends ShieldUserModel
     }
 
     // Edit other user profile as admin
-    if (auth()->user() && auth()->user()->can('admin.access') === true && isset($requestData['user_id']) && $requestData['user_id']) {
+    if ((php_sapi_name() === 'cli' || (auth()->user() && auth()->user()->can('admin.access') === true)) && isset($requestData['user_id']) && $requestData['user_id']) {
       $userId = $requestData['user_id'];
     }
 
@@ -544,6 +544,7 @@ class UserModel extends ShieldUserModel
           isset($newValues['activeAffiliation']) &&
           (
             (count($newValues['activeAffiliation']) > 0 &&
+            isset($newValues['activeAffiliation'][0]['from']) &&
             $newValues['activeAffiliation'][0]['from'] < time()) ||
             count($oldValues['activeAffiliation']) === 0
           )

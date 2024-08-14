@@ -28,8 +28,8 @@ class CustomFields extends BaseController
         $customField['metadata']->possibleValues = join("\n", $customField['metadata']->possibleValues);
       }
 
-      if (isset($customField['metadata']->disableRangeToNowValues)) {
-        $customField['metadata']->disableRangeToNowValues = join("\n", $customField['metadata']->disableRangeToNowValues);
+      if (isset($customField['metadata']->autoExtendValuesAutoSelect)) {
+        $customField['metadata']->autoExtendValuesAutoSelect = join("\n", $customField['metadata']->autoExtendValuesAutoSelect);
       }
 
       return $customField;
@@ -108,9 +108,10 @@ class CustomFields extends BaseController
         'possibleValues' => preg_split('/\R/u', $customFieldData['metadata']['possibleValues'] ?? ''),
         'tagName' => $customFieldData['metadata']['tagName'] ?? '',
         'childFields' => $customFieldData['metadata']['childFields'] ?? [],
-        'disableRangeToNowValues' => preg_split('/\R/u', $customFieldData['metadata']['disableRangeToNowValues'] ?? ''),
         'editableOnlyByAdmins' => $customFieldData['metadata']['editableOnlyByAdmins'] ?? false,
         'multipleItems' => $customFieldData['metadata']['multipleItems'] ?? false,
+        'autoExtend' => $customFieldData['metadata']['autoExtend'] ?? false,
+        'autoExtendValuesAutoSelect' => preg_split('/\R/u', $customFieldData['metadata']['autoExtendValuesAutoSelect'] ?? ''),
       ]),
     ];
   }

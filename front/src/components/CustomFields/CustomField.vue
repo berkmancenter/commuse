@@ -40,8 +40,8 @@
         <span title="Remove item" @click="removeTagRangeItem(index)" v-if="!disabled() && !forceOneItem"><Icon :src="minusIcon" /></span>
 
         <div>
-          <label class="label">{{ metadata.tagName ?? 'Item name' }}</label>
-          <div class="control">
+          <label class="label" :for="`${machineName}-tags-${index}`">{{ metadata.tagName ?? 'Item name' }}</label>
+          <div class="control mb-2">
             <div class="control">
               <VueMultiselect
                 v-model="item.tags"
@@ -51,14 +51,17 @@
                 @tag="addTagRange"
                 :placeholder="metadata.allowNewValues ? 'Select or add new' : 'Select'"
                 :disabled="disabled()"
+                :id="`${machineName}-tags-${index}`"
+                :ref="`${machineName}-tags-${index}`"
+                @update:modelValue="updateTagsRangeTags(item, index)"
               >
               </VueMultiselect>
             </div>
           </div>
 
-          <label class="label">From</label>
+          <label class="label" :for="`${machineName}-from-${index}`">From</label>
           <div class="control">
-            <div class="control">
+            <div class="control mb-2">
               <date-picker
                 v-model:value="item.from"
                 format="MMMM D, Y"
@@ -67,11 +70,13 @@
                 input-class="input"
                 :clearable="false"
                 :disabled="disabled()"
+                :ref="`${machineName}-from-${index}`"
+                :input-attr="{ id: `${machineName}-from-${index}` }"
               ></date-picker>
             </div>
           </div>
 
-          <label class="label">To</label>
+          <label class="label" :for="`${machineName}-to-${index}`">To</label>
           <div class="control">
             <div class="control">
               <date-picker
@@ -82,7 +87,21 @@
                 input-class="input"
                 :clearable="false"
                 :disabled="disabled()"
+                :ref="`${machineName}-to-${index}`"
+                :input-attr="{ id: `${machineName}-to-${index}` }"
               ></date-picker>
+            </div>
+          </div>
+
+          <div class="mt-2" v-if="metadata.autoExtend && this.$store.state.user.currentUser.admin">
+            <label class="label" :for="`${machineName}-auto-extend-${index}`">Auto-extend</label>
+            <div class="control ml-2">
+              <input
+                type="checkbox"
+                :id="`${machineName}-auto-extend-${index}`"
+                v-model="item.autoExtend"
+                :ref="`${machineName}-auto-extend-${index}`"
+              >
             </div>
           </div>
         </div>
@@ -288,6 +307,23 @@
           return item
         })
       },
+      updateTagsRangeTags(item, index) {
+        if (this.metadata.autoExtend && this.metadata.autoExtendValuesAutoSelect && this.metadata.autoExtendValuesAutoSelect instanceof Array) {
+          let autoExtend = this.metadata.autoExtendValuesAutoSelect.some((value) => item.tags.includes(value))
+
+          if (autoExtend) {
+            item.autoExtend = true
+          }
+        }
+      },
     },
   }
 </script>
+
+<style lang="scss">
+  .custom-field {
+    .label {
+      display: inline-flex;
+    }
+  }
+</style>

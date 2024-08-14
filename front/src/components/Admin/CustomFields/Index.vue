@@ -113,19 +113,29 @@
         <hr>
 
         <div class="field">
-          <label class="label">Disabled "Now" values</label>
-          <p class="is-size-6">List of values that, when selected, disallow to select the "Now" value in the "To" field. One value per line.</p>
+          <label class="label">Allow to create multiple items</label>
           <div class="control">
-            <textarea class="textarea" v-model="fieldModalCurrent.metadata.disableRangeToNowValues"></textarea>
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.multipleItems">
           </div>
         </div>
 
         <hr>
 
         <div class="field">
-          <label class="label">Allow to create multiple items</label>
+          <label class="label">Show "Auto-extend" checkbox</label>
+          <p class="is-size-6">If selected, the field will show a checkbox called "Auto-extend" that can be used to auto-extend the range.</p>
+          <div class="control mt-2">
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.autoExtend">
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="field">
+          <label class="label">Values that, when selected, will auto-select "Auto-extend" field</label>
+          <p class="is-size-6 mb-2">One value per line.</p>
           <div class="control">
-            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.multipleItems">
+            <textarea class="textarea" v-model="fieldModalCurrent.metadata.autoExtendValuesAutoSelect"></textarea>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ const defaultTagRange = {
   from: '',
   to: '',
   tags: '',
+  autoExtend: false,
 }
 
 const state = {

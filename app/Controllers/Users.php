@@ -386,6 +386,28 @@ class Users extends BaseController
   
       $stmt = Statement::create();
       $records = $stmt->process($csv);
+
+      $customFieldsModel = model('CustomFieldModel');
+      $customFieldsTags = $customFieldsModel
+        ->select('machine_name, metadata')
+        ->whereIn('input_type', ['tags'])
+        ->findAll();
+      $customFieldsMachineNamesTags = array_map(function ($customField) {
+        return $customField['machine_name'];
+      }, $customFieldsTags);
+
+      $activeAffiliationField = $customFieldsModel
+      ->select('machine_name, metadata')
+      ->whereIn('machine_name', ['activeAffiliation'])
+      ->findAll();
+
+      $activeAffiliationFieldMetadata = json_decode(
+        array_values(
+          array_filter($activeAffiliationField, fn($item) => $item['machine_name'] === 'activeAffiliation')
+        )[0]['metadata'],
+        true
+      );
+
       foreach ($records as $record) {
         if (!$record['email']) {
           continue;
@@ -415,20 +437,31 @@ class Users extends BaseController
                 'from' => strtotime($record['active_affiliation_from']),
                 'to' => strtotime($record['active_affiliation_to']),
               ]];
+
+              // Auto extend active affiliation if needed based on the tags
+              if (
+                isset($activeAffiliationFieldMetadata['autoExtend']) &&
+                $activeAffiliationFieldMetadata['autoExtend'] &&
+                isset($activeAffiliationFieldMetadata['autoExtendValuesAutoSelect']) &&
+                is_array($activeAffiliationFieldMetadata['autoExtendValuesAutoSelect'])
+              ) {
+                $autoExtend = false;
+
+                foreach ($activeAffiliationFieldMetadata['autoExtendValuesAutoSelect'] as $value) {
+                  if (in_array($value, $record['activeAffiliation'][0]['tags'])) {
+                    $autoExtend = true;
+                    break;
+                  }
+                }
+
+                if ($autoExtend) {
+                  $record['activeAffiliation'][0]['autoExtend'] = true;
+                }
+              }
             }
 
-            $customFieldsModel = model('CustomFieldModel');
-            $customFields = $customFieldsModel
-              ->select('machine_name')
-              ->whereIn('input_type', ['tags'])
-              ->findAll();
-
-            $customFieldsMachineNames = array_map(function ($customField) {
-              return $customField['machine_name'];
-            }, $customFields);
-
-            array_walk($record, function (&$recordField, $key) use ($customFieldsMachineNames) {
-              if (in_array($key, $customFieldsMachineNames)) {
+            array_walk($record, function (&$recordField, $key) use ($customFieldsMachineNamesTags) {
+              if (in_array($key, $customFieldsMachineNamesTags)) {
                 $recordField = explode(',', $recordField);
               }
             });
