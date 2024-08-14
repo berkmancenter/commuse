@@ -539,7 +539,15 @@ class UserModel extends ShieldUserModel
           $changedUserId = $systemUser->id;
         }
 
-        if (!$reviewNeeded && isset($newValues['activeAffiliation'])) {
+        if (
+          !$reviewNeeded &&
+          isset($newValues['activeAffiliation']) &&
+          (
+            (count($newValues['activeAffiliation']) > 0 &&
+            $newValues['activeAffiliation'][0]['from'] < time()) ||
+            count($oldValues['activeAffiliation']) === 0
+          )
+        ) {
           // Synchronize user data with the remote service
           $dataAuditModel = new DataAuditModel();
           $dataAuditModel->syncUserData($newProfileData);
