@@ -439,9 +439,7 @@ class Auth extends ShieldAuth
         // Create a people record for the user.
         // Setting the public_profile here just to force the model to create a record.
         $usersModel = new AppUserModel();
-        $usersModel->saveProfileData([
-          'public_profile' => false,
-        ], auth()->id());
+        $usersModel->saveProfileData([], auth()->id());
 
         $url = base_url('profile');
 

@@ -193,7 +193,6 @@ class UserModel extends ShieldUserModel
     }
     $data = $mappedData;
 
-    $data['public_profile'] = $requestData['public_profile'] ?? false;
     $data['user_id'] = $userId;
 
     if (isset($requestData['update_search_index'])) {
