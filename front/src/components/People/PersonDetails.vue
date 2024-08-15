@@ -109,7 +109,7 @@
 
     <div class="box people-section-details-content">
       <div class="notification is-warning" v-if="person.public_profile === 'f'">
-        {{ $store.state.systemSettings.publicSystemSettings.PublicProfileWarningShowProfile.value }}
+        {{ $store.state.systemSettings.publicSystemSettings?.PublicProfileWarningShowProfile?.value }}
       </div>
 
       <div class="people-section-details-content-other">

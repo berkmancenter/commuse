@@ -10,11 +10,11 @@
         </p>
         <div class="panel-block">
           <div class="notification is-warning" v-if="!$store.state.user.userProfile.public_profile">
-            {{ $store.state.systemSettings.publicSystemSettings.PublicProfileWarningInAccountSettings.value }}
+            {{ $store.state.systemSettings?.publicSystemSettings?.PublicProfileWarningInAccountSettings?.value }}
           </div>
 
           <div class="field">
-            <label class="label" for="account-section-public-profile">{{ $store.state.systemSettings.publicSystemSettings.PublicProfileCheckboxLabel.value }}</label>
+            <label class="label" for="account-section-public-profile">{{ $store.state.systemSettings.publicSystemSettings?.PublicProfileCheckboxLabel?.value }}</label>
             <div class="control">
               <div class="control">
                 <input type="checkbox" id="account-section-public-profile" v-model="$store.state.user.userProfile.public_profile" @change="updateProfileStatus()">

@@ -303,13 +303,13 @@
       setProcessAuditRecordModalEmailTemplates() {
         if (this.processAuditRecordModalSelect === 'accept') {
           this.processAuditRecordModalEmailValues = {
-            subject: this.$store.state.systemSettings.publicSystemSettings['DataAuditUserEmailAcceptedSubject'].value,
-            body: this.$store.state.systemSettings.publicSystemSettings['DataAuditUserEmailAcceptedBody'].value,
+            subject: this.$store.state.systemSettings.publicSystemSettings?.DataAuditUserEmailAcceptedSubject?.value,
+            body: this.$store.state.systemSettings.publicSystemSettings?.DataAuditUserEmailAcceptedBody?.value,
           }
         } else {
           this.processAuditRecordModalEmailValues = {
-            subject: this.$store.state.systemSettings.publicSystemSettings['DataAuditUserEmailDeclinedSubject'].value,
-            body: this.$store.state.systemSettings.publicSystemSettings['DataAuditUserEmailDeclinedBody'].value,
+            subject: this.$store.state.systemSettings.publicSystemSettings?.DataAuditUserEmailDeclinedSubject?.value,
+            body: this.$store.state.systemSettings.publicSystemSettings?.DataAuditUserEmailDeclinedBody?.value,
           }
         }
       },
