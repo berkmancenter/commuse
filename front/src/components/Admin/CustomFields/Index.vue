@@ -123,7 +123,7 @@
 
         <div class="field">
           <label class="label">Show "Auto-extend" checkbox</label>
-          <p class="is-size-6">If selected, the field will show a checkbox called "Auto-extend" that can be used to auto-extend the range.</p>
+          <p class="is-size-6">If selected, the field will show a checkbox called "Auto-extend" that can be used to auto-extend the field period.</p>
           <div class="control mt-2">
             <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.autoExtend">
           </div>
