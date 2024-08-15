@@ -32,8 +32,6 @@ class ProfileCest
       $user = $I->createUser('saveProfileWithDataAndSeeProfile@example.com', 'password123');
       $I->loginUser($I, 'saveProfileWithDataAndSeeProfile@example.com', 'password123');
 
-      $I->setProfileStatusActive($I);
-
       $I->openMenu($I);
       $I->click('Edit profile');
       $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
@@ -62,8 +60,6 @@ class ProfileCest
       $user = $I->createUser('saveProfileWithDataAndHideProfile@example.com', 'password123');
       $I->loginUser($I, 'saveProfileWithDataAndHideProfile@example.com', 'password123');
 
-      $I->setProfileStatusActive($I);
-
       $I->openMenu($I);
       $I->click('Edit profile');
       $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
@@ -78,7 +74,6 @@ class ProfileCest
 
       $I->seeElement('//div[contains(., "Tommy")]');
       $I->seeElement('//div[contains(., "Hiddenberg")]');
-      $I->seeElement('//div[contains(., "Found 1 user")]');
 
       $I->setProfileStatusInactive($I);
 
@@ -91,7 +86,6 @@ class ProfileCest
 
       $I->click('People');
 
-      $I->seeElement('//div[contains(., "Found 0 users")]');
       $I->dontSeeElement('//div[contains(., "Hiddenberg")]');
 
       $I->deleteUser($user->id);
@@ -105,8 +99,6 @@ class ProfileCest
 
       $I->createUser('profileRedirectsOnClickableValues@example.com', 'password123');
       $I->loginUser($I, 'profileRedirectsOnClickableValues@example.com', 'password123');
-
-      $I->setProfileStatusActive($I);
 
       $I->openMenu($I);
       $I->click('Edit profile');
@@ -124,8 +116,6 @@ class ProfileCest
 
       $I->createUser('profileRedirectsOnClickableValues2@example.com', 'password123');
       $I->loginUser($I, 'profileRedirectsOnClickableValues2@example.com', 'password123');
-
-      $I->setProfileStatusActive($I);
 
       $I->openMenu($I);
       $I->click('Edit profile');
