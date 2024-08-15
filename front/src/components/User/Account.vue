@@ -14,10 +14,10 @@
           </div>
 
           <div class="field">
-            <label class="label">{{ $store.state.systemSettings.publicSystemSettings.PublicProfileCheckboxLabel.value }}</label>
+            <label class="label" for="account-section-public-profile">{{ $store.state.systemSettings.publicSystemSettings.PublicProfileCheckboxLabel.value }}</label>
             <div class="control">
               <div class="control">
-                <input type="checkbox" v-model="$store.state.user.userProfile.public_profile" @change="updateProfileStatus()">
+                <input type="checkbox" id="account-section-public-profile" v-model="$store.state.user.userProfile.public_profile" @change="updateProfileStatus()">
               </div>
             </div>
           </div>
@@ -32,19 +32,19 @@
         </p>
         <div class="panel-block">
           <div class="field">
-            <label class="label">Password</label>
+            <label class="label" for="account-section-password">Password</label>
             <div class="control">
               <div class="control">
-                <input class="input" type="password" v-model="passwordData.password">
+                <input class="input" id="account-section-password" type="password" v-model="passwordData.password">
               </div>
             </div>
           </div>
 
           <div class="field">
-            <label class="label">Confirm password</label>
+            <label class="label" for="account-section-password-confirm">Confirm password</label>
             <div class="control">
               <div class="control">
-                <input class="input" type="password" v-model="passwordData.password_confirm">
+                <input class="input" id="account-section-password-confirm" type="password" v-model="passwordData.password_confirm">
               </div>
             </div>
           </div>

@@ -83,3 +83,9 @@ form.form-commuse-blocks {
   height: auto;
   padding: 0.3rem 0.6rem;
 }
+
+form {
+  .label {
+    display: inline-flex;
+  }
+}

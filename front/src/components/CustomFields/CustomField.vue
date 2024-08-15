@@ -319,11 +319,3 @@
     },
   }
 </script>
-
-<style lang="scss">
-  .custom-field {
-    .label {
-      display: inline-flex;
-    }
-  }
-</style>
