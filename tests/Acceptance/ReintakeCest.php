@@ -58,7 +58,8 @@ class ReintakeCest
         [],
         [
         'reintake' => UserModel::REINTAKE_STATUS_REQUIRED,
-      ]);
+        ],
+      );
 
       $I->fillField('email', 'reintakeAcceptingWorks@example.com');
       $I->fillField('password', 'password123');
@@ -98,7 +99,7 @@ class ReintakeCest
       $I->fillField('password', 'password123');
       $I->click('Login');
 
-      $I->seeElement('//h3[contains(text(), "News & events")]');
-      $I->dontSeeElement('//p[contains(text(), "Reintake message")]');
+      $I->seeElement('//p[contains(text(), "Reintake message")]');
+      $I->dontSeeElement('//h3[contains(text(), "News & events")]');
     }
 }

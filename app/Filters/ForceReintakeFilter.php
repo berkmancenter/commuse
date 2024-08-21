@@ -54,7 +54,8 @@ class ForceReintakeFilter implements FilterInterface
           ->getResultArray();
 
         if (count($person)) {
-          if ($person[0]['reintake'] === UserModel::REINTAKE_STATUS_REQUIRED) {
+          if ($person[0]['reintake'] === UserModel::REINTAKE_STATUS_REQUIRED ||
+              $person[0]['reintake'] === UserModel::REINTAKE_STATUS_DENIED) {
             return redirect()->to(site_url('reintake'));
           }
         }
