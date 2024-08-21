@@ -101,5 +101,10 @@ class ReintakeCest
 
       $I->seeElement('//p[contains(text(), "Reintake message")]');
       $I->dontSeeElement('//h3[contains(text(), "News & events")]');
+      $I->seeElement('//a[contains(text(), "Accept")]');
+      $I->click('Accept');
+
+      $I->seeElement('//h3[contains(text(), "Edit profile")]');
+      $I->dontSeeElement('//p[contains(text(), "Reintake message")]');
     }
 }

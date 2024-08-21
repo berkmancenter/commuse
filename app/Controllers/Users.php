@@ -662,7 +662,8 @@ class Users extends BaseController
       ->getResultArray();
 
     if (count($person)) {
-      if ($person[0]['reintake'] === UserModel::REINTAKE_STATUS_REQUIRED) {
+      if ($person[0]['reintake'] === UserModel::REINTAKE_STATUS_REQUIRED ||
+          $person[0]['reintake'] === UserModel::REINTAKE_STATUS_DENIED) {
         $userData = $usersModel->getUserProfileData($userId);
         $userData['reintake'] = $status;
         $usersModel->saveProfileData($userData, $userId);
