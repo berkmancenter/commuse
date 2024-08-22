@@ -545,7 +545,8 @@ class UserModel extends ShieldUserModel
             (count($newValues['activeAffiliation']) > 0 &&
             isset($newValues['activeAffiliation'][0]['from']) &&
             $newValues['activeAffiliation'][0]['from'] < time()) ||
-            count($oldValues['activeAffiliation']) === 0
+            (isset($oldValues['activeAffiliation']) &&
+            count($oldValues['activeAffiliation']) === 0)
           )
         ) {
           // Synchronize user data with the remote service
