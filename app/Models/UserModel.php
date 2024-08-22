@@ -326,7 +326,7 @@ class UserModel extends ShieldUserModel
           if ($customFieldToProcess['input_type'] === 'tags') {
             if (is_array($value)) {
               $value = array_map(function ($v) {
-                $v = trim($v);
+                $v = trim($v ?? '');
 
                 return $v;
               }, $value);
