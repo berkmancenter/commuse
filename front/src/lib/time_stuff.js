@@ -17,7 +17,7 @@ function calendarDateFormat(timestamp) {
     timestamp = timestamp * 1000
   }
 
-  return moment.utc(new Date(timestamp)).format('MMMM D, YYYY')
+  return moment.utc(timestamp).format('MMMM D, YYYY')
 }
 
 export { formattedTimestamp, calendarDateFormat }
