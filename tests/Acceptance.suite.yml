@@ -8,14 +8,15 @@ modules:
     enabled:
         - WebDriver:
             url: http://127.0.0.1
-            browser: chrome
+            browser: firefox
             window_size: 1920x1080
             wait: 60
             debug_log_entries: 500
             log_js_errors: true
             capabilities:
-                goog:chromeOptions:
-                    args: ["--headless", "--no-sandbox", "--remote-debugging-port=9222"]
+                acceptInsecureCerts: true # allow self-signed certificates
+                moz:firefoxOptions:
+                    args: ["-headless"] # Run Firefox in headless mode
 # Add Codeception\Step\Retry trait to AcceptanceTester to enable retries
 step_decorators:
     - Codeception\Step\ConditionalAssertion
