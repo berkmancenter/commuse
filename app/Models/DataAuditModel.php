@@ -160,6 +160,10 @@ class DataAuditModel extends Model
       'Content-Type' => 'application/json',
     ];
 
+    if (isset($userData['bio'])) {
+      $userData['bio'] = $this->newlineToParagraphs($userData['bio']);
+    }
+
     try {
       $client->post($url, [
         'headers' => $headers,
@@ -171,4 +175,21 @@ class DataAuditModel extends Model
       return false;
     }
   }
+
+  /**
+   * Converts newline characters in a text string to HTML paragraphs.
+   *
+   * @param string $text The text to be converted.
+   * @return string The text with newline characters converted to HTML paragraphs.
+   */
+  private function newlineToParagraphs($text)
+  {
+    $text = trim($text);
+    $lines = explode("\n", $text);
+    $lines = array_filter($lines);
+
+    $paragraphs = '<p>' . implode('</p><p>', array_map('trim', $lines)) . '</p>';
+
+    return $paragraphs;
+}
 }
