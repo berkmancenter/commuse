@@ -81,8 +81,6 @@
           return
         }
 
-        this.mitt.emit('spinnerStart')
-
         const response = await this.$store.dispatch('user/changePassword', this.passwordData)
         const data = await response.json()
 
@@ -95,12 +93,8 @@
         } else {
           this.awn.warning(data.message.join('<br>'))
         }
-
-        this.mitt.emit('spinnerStop')
       },
       async updateProfileStatus() {
-        this.mitt.emit('spinnerStart')
-
         const response = await this.$store.dispatch('user/saveProfile', {
           public_profile: this.$store.state.user.userProfile.public_profile,
         })
@@ -112,15 +106,9 @@
         } else {
           this.awn.warning('Something went wrong, try again.')
         }
-
-        this.mitt.emit('spinnerStop')
       },
       async loadProfileStatus() {
-        this.mitt.emit('spinnerStart')
-
         let profileStatus = await this.$store.dispatch('user/fetchProfileStatus')
-
-        this.mitt.emit('spinnerStop')
 
         this.$store.dispatch('user/setUserProfileStatus', profileStatus)
       },

@@ -291,25 +291,20 @@
     },
     methods: {
       async loadPeople() {
-        this.mitt.emit('spinnerStart')
         const searchTermEntering = this.$store.state.people.peopleSearchTerm
 
         let people = null
         try {
           people = await this.$store.dispatch('people/fetchPeople')
         } catch (error) {
-          this.mitt.emit('spinnerStop')
           return
         }
 
         if (this.$store.state.people.peopleSearchTerm !== searchTermEntering) {
-          this.mitt.emit('spinnerStop')
           return
         }
 
         this.$store.dispatch('people/setPeople', people)
-
-        this.mitt.emit('spinnerStop')
       },
       initImgLazyLoad() {
         this.lazyLoadInstance = new LazyLoad({
@@ -340,11 +335,7 @@
         this.filtersModalStatus = true
       },
       async loadFilters() {
-        this.mitt.emit('spinnerStart')
-
         this.$store.state.people.peopleFilters = await this.$store.dispatch('people/fetchPeopleFilters')
-
-        this.mitt.emit('spinnerStop')
       },
       applyFilters() {
         this.reloadView()

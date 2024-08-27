@@ -102,25 +102,20 @@
     },
     methods: {
       async loadData() {
-        this.mitt.emit('spinnerStart')
         const searchTermEntering = this.$store.state.dataEditor.dataEditorSearchQuery
 
         let fieldsData = null
         try {
           fieldsData = await this.$store.dispatch('dataEditor/fetchDataEditorData')
         } catch (error) {
-          this.mitt.emit('spinnerStop')
           return
         }
 
         if (this.$store.state.dataEditor.dataEditorSearchQuery !== searchTermEntering) {
-          this.mitt.emit('spinnerStop')
           return
         }
 
         this.fieldsData = fieldsData
-
-        this.mitt.emit('spinnerStop')
       },
       reloadView() {
         if (this.$store.state.dataEditor.dataEditorSearchQuery.length > 1) {
@@ -139,11 +134,7 @@
         this.fieldDataFormModalVisible = true
       },
       async submitEditDataForm() {
-        this.mitt.emit('spinnerStart')
-
         const response = await this.$store.dispatch('dataEditor/saveDataEditorItem', this.fieldDataFormModalCurrent)
-
-        this.mitt.emit('spinnerStop')
 
         this.reloadView()
 

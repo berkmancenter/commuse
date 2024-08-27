@@ -23,19 +23,14 @@
     methods: {
       async initMap() {
         if (this.$store.state.people.people.length === 0) {
-          this.mitt.emit('spinnerStart')
-
           let people = null
           try {
             people = await this.$store.dispatch('people/fetchPeople')
           } catch (error) {
-            this.mitt.emit('spinnerStop')
             return
           }
 
           this.$store.dispatch('people/setPeople', people)
-
-          this.mitt.emit('spinnerStop')
         }
 
         const map = L.map(this.$refs.map, {

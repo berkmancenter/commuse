@@ -125,20 +125,14 @@
         this.loadInvitations()
       },
       async loadInvitations() {
-        this.mitt.emit('spinnerStart')
-
         const invitations = await this.$store.dispatch('admin/fetchInvitations')
 
         this.invitations = invitations
-
-        this.mitt.emit('spinnerStop')
       },
       async createInvitationModalOpen() {
         this.createInvitationModalStatus = true
       },
       async createInvitation() {
-        this.mitt.emit('spinnerStart')
-
         const response = await this.$store.dispatch('admin/saveInvitation', {
           type: this.createInvitationCurrent.type,
           expire: this.createInvitationCurrentExpire,
@@ -152,7 +146,6 @@
         }
 
         this.createInvitationModalStatus = false
-        this.mitt.emit('spinnerStop')
       },
       toggleAll() {
         const newStatus = this.$refs.toggleAllCheckbox.checked
@@ -173,8 +166,6 @@
         this.deleteInvitationCurrent = invitation
       },
       async deleteInvitation() {
-        this.mitt.emit('spinnerStart')
-
         const response = await this.$store.dispatch('admin/deleteInvitations', [this.deleteInvitationCurrent.id])
         const data = await response.json()
 
@@ -186,7 +177,6 @@
         }
 
         this.deleteInvitationModalStatus = false
-        this.mitt.emit('spinnerStop')
       },
       isValid(invitation) {
         if (invitation.expire && invitation.expire < Date.now()) {

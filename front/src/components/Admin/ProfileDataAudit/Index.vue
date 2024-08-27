@@ -221,8 +221,6 @@
     },
     methods: {
       async loadData(goToPageOne = true) {
-        this.mitt.emit('spinnerStart')
-
         this.loadQueryParams()
 
         if (goToPageOne) {
@@ -240,11 +238,6 @@
             fields: this.activeFilterChangesSelected,
           })
         } catch (error) {
-          // If we are not on a specific record page, we can stop the spinner
-          if (!this.$route.params.id) {
-            this.mitt.emit('spinnerStop')
-          }
-
           return
         }
 
@@ -259,7 +252,6 @@
               id: this.$route.params.id,
             })
           } catch (error) {
-            this.mitt.emit('spinnerStop')
             return
           }
 
@@ -269,23 +261,16 @@
             this.processAuditRecordModalOpen(item)
           }
         }
-
-        this.mitt.emit('spinnerStop')
       },
       async loadChangesFields() {
-        this.mitt.emit('spinnerStart')
-
         let changesData = null
         try {
           changesData = await this.$store.dispatch('admin/fetchProfileDataAuditChangesFields')
         } catch (error) {
-          this.mitt.emit('spinnerStop')
           return
         }
 
         this.changesFields = orderBy(changesData, [identity], ['asc'])
-
-        this.mitt.emit('spinnerStop')
       },
       setJustReintake() {
         this.justReintake = !this.justReintake
@@ -314,8 +299,6 @@
         }
       },
       async processAuditRecord(action) {
-        this.mitt.emit('spinnerStart')
-
         let response = ''
         try {
           response = await this.$store.dispatch('admin/processProfileAuditRecord', {
@@ -326,11 +309,8 @@
           })
           response = await response.json()
         } catch (error) {
-          this.mitt.emit('spinnerStop')
           return
         }
-
-        this.mitt.emit('spinnerStop')
 
         this.awn.success(response.message)
 

@@ -313,22 +313,14 @@
         this.loadProfileStructure()
       },
       async loadUsers() {
-        this.mitt.emit('spinnerStart')
-
         const users = await this.$store.dispatch('admin/fetchUsers')
 
         this.users = users
-
-        this.mitt.emit('spinnerStop')
       },
       async loadProfileStructure() {
-        this.mitt.emit('spinnerStart')
-
         let profileStructure = await this.$store.dispatch('user/fetchProfileStructure')
 
         this.profileStructure = profileStructure
-
-        this.mitt.emit('spinnerStop')
       },
       toggleAll() {
         const newStatus = this.$refs.toggleAllCheckbox.checked
@@ -346,8 +338,6 @@
         this.deleteUserModalStatus = true
       },
       async deleteUsers(users) {
-        this.mitt.emit('spinnerStart')
-
         const usersIds = this.deleteUserModalCurrent.map(user => user.id)
         const response = await this.$store.dispatch('admin/deleteUsers', usersIds)
         const data = await response.json()
@@ -363,7 +353,6 @@
         this.users.map(user => (user.selected = false, user))
 
         this.deleteUserModalStatus = false
-        this.mitt.emit('spinnerStop')
         this.$store.dispatch('people/setPeopleMarkReload', true)
       },
       setUserRoleModalOpen(user) {
@@ -371,8 +360,6 @@
         this.setUserRoleModalCurrent = user
       },
       async setUserRole() {
-        this.mitt.emit('spinnerStart')
-
         const response = await this.$store.dispatch('admin/changeUserRole', {
           users: [this.setUserRoleModalCurrent.id],
           role: this.setUserRoleCurrentRole,
@@ -386,14 +373,11 @@
         }
 
         this.setUserRoleModalStatus = false
-        this.mitt.emit('spinnerStop')
       },
       importUsersFromCsvModalOpen() {
         this.importUsersCsvModalStatus = true
       },
       async importUsersFromCsv() {
-        this.mitt.emit('spinnerStart')
-
         const file = this.$refs.importUsersCsvModalFileInput.files[0]
 
         if (file) {
@@ -412,7 +396,6 @@
           this.awn.warning('No file selected.')
         }
 
-        this.mitt.emit('spinnerStop')
         this.$store.dispatch('people/setPeopleMarkReload', true)
       },
       setReintakeStatusModalOpen(users) {
@@ -426,8 +409,6 @@
         this.setReintakeStatusModalStatus = true
       },
       async setReintakeStatus() {
-        this.mitt.emit('spinnerStart')
-
         const response = await this.$store.dispatch('admin/setReintakeStatus', {
           users: this.setReintakeStatusCurrent.map(user => user.id),
           status: this.setReintakeStatusSelected,
@@ -441,7 +422,6 @@
         }
 
         this.setReintakeStatusModalStatus = false
-        this.mitt.emit('spinnerStop')
       },
       setActiveAffiliationModalOpen(users) {
         if (users.length === 0) {
@@ -472,8 +452,6 @@
           affiliation = 'unset'
         }
 
-        this.mitt.emit('spinnerStart')
-
         const response = await this.$store.dispatch('admin/setActiveAffiliation', {
           users: this.setActiveAffiliationCurrent.map(user => user.id),
           affiliation: affiliation,
@@ -487,7 +465,6 @@
         }
 
         this.setActiveAffiliationModalStatus = false
-        this.mitt.emit('spinnerStop')
       },
     },
   }

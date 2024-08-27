@@ -176,7 +176,6 @@
       ActionButton,
     },
     created() {
-      this.mitt.emit('spinnerStart', 2)
       this.initialDataLoad()
     },
     computed: {
@@ -196,12 +195,8 @@
           return
         }
 
-        this.mitt.emit('spinnerStart')
-
         this.$store.state.user.userProfile['update_search_index'] = true
         const response = await this.$store.dispatch('user/saveProfile', this.$store.state.user.userProfile)
-
-        this.mitt.emit('spinnerStop')
 
         this.$store.dispatch('people/setPeopleMarkReload', true)
 
@@ -220,8 +215,6 @@
       },
       async uploadProfileImage() {
         if (this.$refs.userProfileImageInput.files[0]) {
-          this.mitt.emit('spinnerStart')
-
           let profileId = this.$route.params.id
 
           if (!profileId) {
@@ -232,8 +225,6 @@
             file: this.$refs.userProfileImageInput.files[0],
             id: profileId,
           })
-
-          this.mitt.emit('spinnerStop')
 
           if (response.ok) {
             const profile = this.$store.state.user.userProfile
@@ -257,8 +248,6 @@
         let profile = await this.$store.dispatch('user/fetchProfile', profileId)
         this.profileLoaded = true
 
-        this.mitt.emit('spinnerStop')
-
         if (profile.length === 0) {
           return
         }
@@ -270,8 +259,6 @@
 
         this.profileStructure = profileStructure
         this.profileStructureLoaded = true
-
-        this.mitt.emit('spinnerStop')
       },
       validate() {
         const errorMessages = []

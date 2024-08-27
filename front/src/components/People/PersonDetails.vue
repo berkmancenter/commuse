@@ -210,7 +210,6 @@
       },
     },
     created() {
-      this.mitt.emit('spinnerStart', 2)
       this.initialDataLoad()
     },
     methods: {
@@ -228,13 +227,11 @@
         }
 
         this.person = await response.json()
-        this.mitt.emit('spinnerStop')
       },
       async loadProfileStructure() {
         let profileStructure = await this.$store.dispatch('user/fetchProfileStructure')
 
         this.profileStructure = profileStructure
-        this.mitt.emit('spinnerStop')
       },
       hasFields(group) {
         return group?.custom_fields?.some(field => {

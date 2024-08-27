@@ -76,7 +76,6 @@
     methods: {
       async loadNews() {
         this.loading = true
-        this.mitt.emit('spinnerStart')
 
         const response = await this.$store.dispatch('app/fetchNews', {
           paginateCurrentPage: this.page,
@@ -87,7 +86,6 @@
 
         window.scrollTo({ top: 0 })
 
-        this.mitt.emit('spinnerStop')
         this.loading = false
 
         this.$nextTick(() => {

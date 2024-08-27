@@ -250,13 +250,9 @@
         this.loadCustomFields()
       },
       async loadCustomFields() {
-        this.mitt.emit('spinnerStart')
-
         const customFields = await this.$store.dispatch('admin/fetchCustomFields')
 
         this.customFields = customFields
-
-        this.mitt.emit('spinnerStop')
       },
       toggleAll() {
         const newStatus = this.$refs.toggleAllCheckbox.checked
@@ -273,8 +269,6 @@
         this.fieldModalVisible = true
       },
       async submitEditFieldForm() {
-        this.mitt.emit('spinnerStart')
-
         const response = await this.$store.dispatch('admin/saveCustomField', this.fieldModalCurrent)
 
         if (response.ok) {
@@ -285,7 +279,6 @@
         }
 
         this.fieldModalVisible = false
-        this.mitt.emit('spinnerStop')
       }
     },
   }

@@ -57,11 +57,7 @@
     },
     methods: {
       async loadSettings() {
-        this.mitt.emit('spinnerStart')
-
         let settings = await this.$store.dispatch('systemSettings/fetchSystemSettings')
-
-        this.mitt.emit('spinnerStop')
 
         this.$store.dispatch('systemSettings/setSystemSettings', settings)
       },
@@ -71,11 +67,7 @@
         return result.charAt(0).toUpperCase() + result.slice(1)
       },
       async saveSettings() {
-        this.mitt.emit('spinnerStart')
-
         const response = await this.$store.dispatch('systemSettings/saveSystemSettings', this.$store.state.systemSettings.systemSettings)
-
-        this.mitt.emit('spinnerStop')
 
         if (response.ok) {
           this.awn.success('System settings have been saved.')
