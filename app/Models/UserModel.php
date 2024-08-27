@@ -246,26 +246,7 @@ class UserModel extends ShieldUserModel
    * @return bool                    Returns true on success or false on failure.
    */
   private function saveCustomFieldsProfileData($requestData, $userId, $personBasicData) {
-    try {
-      if ($requestData['current_city'] || $requestData['home_city']) {
-        $geoApiKey = $_ENV['geocode_mapbox_api.key'];
-        $geoQueryArray = [$requestData['current_city'], $requestData['current_state'], $requestData['current_country']];
-        $geoQueryArray = array_filter($geoQueryArray);
-        if (count($geoQueryArray) === 0) {
-          $geoQueryArray = [$requestData['home_city'], $requestData['home_state'], $requestData['home_country']];
-          $geoQueryArray = array_filter($geoQueryArray);
-        }
-        $geoQuery = urlencode(join(',', $geoQueryArray));
-        $geoApiResponse = json_decode(file_get_contents("https://api.mapbox.com/geocoding/v5/mapbox.places/{$geoQuery}.json?access_token={$geoApiKey}"), true);
-
-        if (count($geoApiResponse['features']) > 0) {
-          $requestData['current_location_lon'] = strval($geoApiResponse['features'][0]['center'][0]);
-          $requestData['current_location_lat'] = strval($geoApiResponse['features'][0]['center'][1]);
-        }
-      }
-    } catch (\Throwable $exception) {
-      error_log($exception->getMessage());
-    }
+    $this->geoCodeUser($requestData);
 
     $peopleModel = new PeopleModel();
     $dataKeys = array_keys($requestData);
@@ -588,6 +569,74 @@ class UserModel extends ShieldUserModel
           $email->send();
         }
       }
+    }
+  }
+
+  /**
+   * Geocodes the user based on their current or home city.
+   *
+   * @param array $requestData The user data containing the current or home city.
+   * @return bool
+   */
+  private function geoCodeUser(&$requestData) {
+    try {
+      $currentCity = $requestData['current_city'] ?? '';
+      $homeCity = $requestData['home_city'] ?? '';
+
+      // Check if either city is non-empty
+      if ($currentCity || $homeCity) {
+        // Get the API key from the environment variable
+        $geoApiKey = $_ENV['geocode_mapbox_api.key'] ?? '';
+        if (empty($geoApiKey)) {
+          throw new \Exception('Geo API key is missing in environment variables.');
+        }
+
+        $geoQueryArray = [
+          $requestData['current_city'] ?? '',
+          $requestData['current_state'] ?? '',
+          $requestData['current_country'] ?? '',
+        ];
+
+        // Fallback to home location if no current location details are available
+        if (count($geoQueryArray) === 0) {
+          $geoQueryArray = [
+            $requestData['home_city'] ?? '',
+            $requestData['home_state'] ?? '',
+            $requestData['home_country'] ?? '',
+          ];
+        }
+
+        $geoQueryArray = array_filter($geoQueryArray);
+
+        // Proceed if geoQueryArray is not empty
+        if (!empty($geoQueryArray)) {
+          $geoQuery = urlencode(join(',', $geoQueryArray));
+
+          // Fetch geocode data and handle potential issues with the API request
+          $geoApiResponse = file_get_contents("https://api.mapbox.com/geocoding/v5/mapbox.places/{$geoQuery}.json?access_token={$geoApiKey}");
+          if ($geoApiResponse === false) {
+            throw new \Exception('Failed to retrieve data from Geo API.');
+          }
+
+          $geoApiResponseData = json_decode($geoApiResponse, true);
+
+          // Ensure the API response has the expected structure
+          if (isset($geoApiResponseData['features']) && count($geoApiResponseData['features']) > 0) {
+            $requestData['current_location_lon'] = strval($geoApiResponseData['features'][0]['center'][0]);
+            $requestData['current_location_lat'] = strval($geoApiResponseData['features'][0]['center'][1]);
+          }
+        }
+      }
+    } catch (\Throwable $exception) {
+      error_log($exception->getMessage());
+
+      return false;
+    }
+
+    if (isset($requestData['current_location_lon']) && isset($requestData['current_location_lat'])) {
+      return true;
+    } else {
+      return false;
     }
   }
 }
