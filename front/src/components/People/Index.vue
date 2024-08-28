@@ -228,8 +228,8 @@
     async created() {
       if (this.$store.state.people.people.length === 0 || this.$store.state.people.peopleMarkReload) {
         this.loading = true
+        this.loadFilters()
         await this.loadPeople()
-        await this.loadFilters()
         this.$store.dispatch('people/setPeopleMarkReload', false)
         this.loading = false
       }
