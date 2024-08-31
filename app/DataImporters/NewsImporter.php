@@ -62,7 +62,8 @@ class NewsImporter
         }
       }
 
-      cache()->delete('news');
+      $cacheNewsPath = ROOTPATH . 'writable/cache/news*';
+      exec("rm {$cacheNewsPath} > /dev/null 2> /dev/null");
     } catch (Exception $e) {
       log_message('error', 'Error retrieving content items from news data provider: ' . $this->jsonUrl . ' ' . $e->getMessage());
     }
