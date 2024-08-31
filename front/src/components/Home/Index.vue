@@ -31,6 +31,7 @@
         :hidePrevNextWhenEnds="true"
         v-model="page"
         @click="paginateChangePage"
+        v-if="this.newsItems.length > 0"
       ></vue-awesome-paginate>
     </div>
 
