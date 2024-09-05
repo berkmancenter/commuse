@@ -29,7 +29,7 @@ class ProcessExpiredAffiliations extends BaseCommand
    *
    * @var string
    */
-  protected $description = 'Processed expired affiliations';
+  protected $description = 'Process expired affiliations';
 
   /**
    * Executes the command.

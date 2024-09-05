@@ -147,10 +147,11 @@ class UserModel extends ShieldUserModel
    *
    * @param array $requestData  The data containing profile fields to be saved.
    * @param int   $userId       The ID of the user whose profile is being saved (optional).
+   * @param bool  $forceSync    Whether to force synchronization with the remote service (optional).
    *
    * @return array              An array containing transaction status and a response message.
    */
-  public function saveProfileData($requestData, $userId = null) {
+  public function saveProfileData($requestData, $userId = null, $forceSync = false) {
     $peopleModel = new PeopleModel();
 
     // Regular user editing
@@ -228,7 +229,7 @@ class UserModel extends ShieldUserModel
     $peopleModel->db->transComplete();
 
     if ((auth()->user() || php_sapi_name() === 'cli') && $existingPerson) {
-      $this->addAuditRecord($oldProfileData, $existingPerson, $userId);
+      $this->addAuditRecord($oldProfileData, $existingPerson, $userId, $forceSync);
     }
 
     $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';
@@ -491,8 +492,9 @@ class UserModel extends ShieldUserModel
    * @param array $oldProfileData The previous profile data before the update.
    * @param array $existingPerson The existing person's data.
    * @param int $userId The ID of the user whose profile is being updated.
+   * @param bool $forceSync Whether to force synchronization with the remote service.
    */
-  private function addAuditRecord($oldProfileData, $existingPerson, $userId) {
+  private function addAuditRecord($oldProfileData, $existingPerson, $userId, $forceSync = false) {
     // Create audit record if needed
     if ($existingPerson) {
       $keysToSkip = array_merge(self::AUDIT_SKIP_FIELDS, $this->getChildCustomFields());
@@ -502,37 +504,36 @@ class UserModel extends ShieldUserModel
       $oldValues = ArrayDiffMultidimensional::compare($oldProfileData, $newProfileData, false);
       $oldValues = array_diff_key($oldValues, array_flip($keysToSkip));
       $review = 'not_required';
+      $countedNewValues = count($newValues);
 
-      // Admin changes don't need to be reviewed
-      $reviewNeeded = array_intersect(array_keys($newValues), self::REVIEW_TRIGGER_FIELDS) && (php_sapi_name() !== 'cli' && auth()->user()->id === $userId);
+      // Check if the user is editing their own profile
+      // and if the changes require review
+      // and if the user is not an admin
+      // and if the script is not running in CLI mode
+      // to determine if the changes require review
+      $reviewNeeded = (
+        (
+          php_sapi_name() !== 'cli' &&
+          (
+            auth()->user()->id === $userId &&
+            auth()->user()->can('admin.access') === false
+          )
+        ) &&
+        array_intersect(array_keys($newValues), self::REVIEW_TRIGGER_FIELDS)
+      );
 
       if ($reviewNeeded) {
         $review = 'required';
       }
 
-      if (count($newValues) > 0) {
+      // If there are changes, create an audit record
+      if ($countedNewValues > 0) {
         if (php_sapi_name() !== 'cli') {
           $changedUserId = auth()->id();
         } else {
           $users = auth()->getProvider();
           $systemUser = $users->findByCredentials(['email' => 'system_user@example.com']);
           $changedUserId = $systemUser->id;
-        }
-
-        if (
-          !$reviewNeeded &&
-          isset($newValues['activeAffiliation']) &&
-          (
-            (count($newValues['activeAffiliation']) > 0 &&
-            isset($newValues['activeAffiliation'][0]['from']) &&
-            $newValues['activeAffiliation'][0]['from'] < time()) ||
-            (isset($oldValues['activeAffiliation']) &&
-            count($oldValues['activeAffiliation']) === 0)
-          )
-        ) {
-          // Synchronize user data with the remote service
-          $dataAuditModel = new DataAuditModel();
-          $dataAuditModel->syncUserData($newProfileData);
         }
 
         $db = \Config\Database::connect();
@@ -568,6 +569,12 @@ class UserModel extends ShieldUserModel
 
           $email->send();
         }
+      }
+
+      // Synchronize user data with the remote service when saved by an admin
+      if ($forceSync || ($countedNewValues > 0 && auth()->user()->can('admin.access') === true)) {
+        $dataAuditModel = new DataAuditModel();
+        $dataAuditModel->syncUserData($newProfileData);
       }
     }
   }
