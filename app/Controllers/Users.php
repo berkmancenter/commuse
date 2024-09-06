@@ -132,6 +132,26 @@ class Users extends BaseController
   }
 
   /**
+   * Save public profile data
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function savePublicProfileStatus()
+  {
+    $userModel = new UserModel();
+    $requestData = $this->request->getJSON(true);
+
+    list($result, $message) = $userModel->saveProfileData($requestData, null, false, true);
+
+    if ($result) {
+      return $this->respond(['message' => $message], 200);
+    } else {
+      return $this->respond(['message' => 'Error saving data'], 500);
+    }
+  }
+
+
+  /**
    * Upload user profile image
    *
    * @param int|null $id User ID (optional)
@@ -468,7 +488,7 @@ class Users extends BaseController
               }
             });
 
-            $userModel->saveProfileData($record, $userId);
+            $userModel->saveProfileData($record, $userId, true);
             $count++;
           }
         } catch (\Throwable $exceptionRecord) {
@@ -668,7 +688,7 @@ class Users extends BaseController
           $person[0]['reintake'] === UserModel::REINTAKE_STATUS_DENIED) {
         $userData = $usersModel->getUserProfileData($userId);
         $userData['reintake'] = $status;
-        $usersModel->saveProfileData($userData, $userId);
+        $usersModel->saveProfileData($userData, $userId, false, true);
 
         $this->reintakeSendNotificationEmailToAdmins($status, $person[0]);
         $this->reintakeSendNotificationEmailToUser($status, $person[0]);
@@ -754,7 +774,7 @@ class Users extends BaseController
            $userData['activeAffiliation'] = $affiliation;
          }
 
-         $usersModel->saveProfileData($userData, $userId);
+         $usersModel->saveProfileData($userData, $userId, true);
        }
      }
     } catch (\Throwable $th) {

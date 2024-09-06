@@ -95,7 +95,7 @@
         }
       },
       async updateProfileStatus() {
-        const response = await this.$store.dispatch('user/saveProfile', {
+        const response = await this.$store.dispatch('user/savePublicProfileStatus', {
           public_profile: this.$store.state.user.userProfile.public_profile,
         })
 

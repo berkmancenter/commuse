@@ -94,6 +94,18 @@ const actions = {
 
     return data
   },
+  async savePublicProfileStatus(context, profileData) {
+    const response = await fetchIt(`${apiUrl}/api/users/savePublicProfileStatus`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(profileData),
+    })
+
+    return response
+  },
   async saveProfile(context, profileData) {
     const response = await fetchIt(`${apiUrl}/api/users/saveProfile`, {
       method: 'POST',
