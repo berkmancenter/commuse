@@ -6,7 +6,7 @@ use CodeIgniter\CLI\CLI;
 use App\Models\UserModel;
 
 /**
- * Command class for importing news data.
+ * Command class for sending notifications for expired affiliations.
  */
 class ProcessExpiredAffiliations extends BaseCommand
 {
