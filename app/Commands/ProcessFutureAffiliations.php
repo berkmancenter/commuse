@@ -43,6 +43,17 @@ class ProcessFutureAffiliations extends BaseCommand
     $db = \Config\Database::connect();
     $builder = $db->table('people');
 
+    $timestamp = time();
+    $timestampRangeFrom = $timestamp - 600;
+
+    // We need server time because a cron job will run this command at midnight local server time
+    $localTimezoneName = trim(shell_exec('timedatectl show -p Timezone --value'));
+    $localTimezone = new \DateTimeZone($localTimezoneName);
+    $timeInLocalTimezone = new \DateTime('now', $localTimezone);
+    $secsToGmt = $localTimezone->getOffset($timeInLocalTimezone);
+    $timestamp = $timestamp + $secsToGmt;
+    $timestampRangeFrom = $timestampRangeFrom + $secsToGmt;
+
     $builder
       ->select('people.user_id')
       ->join('custom_field_data', 'custom_field_data.model_id = people.id', 'left')
@@ -52,7 +63,7 @@ class ProcessFutureAffiliations extends BaseCommand
         jsonb_path_exists(
           custom_field_data.value_json,
           \'$[*] ? (@.from > $timestamp_range_from && @.from < $timestamp_range_to)\',
-          \'{"timestamp_range_from": ' . (time() - 600) . ', "timestamp_range_to": ' . time() . '}\'
+          \'{"timestamp_range_from": ' . $timestampRangeFrom . ', "timestamp_range_to": ' . $timestamp . '}\'
         )
       ');
 

@@ -278,9 +278,6 @@
           message: '',
         }
       },
-      convertRemToPixels(rem) {
-        return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
-      },
       titleVisible() {
         if ((this?.metadata && this.metadata.hideTitle) || this.hideTitle) {
           return false

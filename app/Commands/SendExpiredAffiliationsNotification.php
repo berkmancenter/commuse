@@ -44,6 +44,18 @@ class SendExpiredAffiliationsNotification extends BaseCommand
     $builder = $db->table('people');
 
     $twoWeeksInSeconds = 1209600;
+    $timestamp = time();
+    $timestampRangeFrom = $timestamp + $twoWeeksInSeconds - 600;
+    $timestampRangeTo = $timestamp + $twoWeeksInSeconds;
+
+    // We need server time because a cron job will run this command at midnight local server time
+    $localTimezoneName = trim(shell_exec('timedatectl show -p Timezone --value'));
+    $localTimezone = new \DateTimeZone($localTimezoneName);
+    $timeInLocalTimezone = new \DateTime('now', $localTimezone);
+    $secsToGmt = $localTimezone->getOffset($timeInLocalTimezone);
+    $timestampRangeFrom = $timestampRangeFrom + $secsToGmt;
+    $timestampRangeTo = $timestampRangeTo + $secsToGmt;
+
     $builder
       ->select('
         people.user_id,
@@ -57,7 +69,7 @@ class SendExpiredAffiliationsNotification extends BaseCommand
         jsonb_path_exists(
           custom_field_data.value_json,
           \'$[*] ? (@.to > $timestamp_range_from && @.to < $timestamp_range_to && @.autoExtend != true && @.autoExtendOnce != true)\',
-          \'{"timestamp_range_from": ' . (time() + $twoWeeksInSeconds - 600) . ', "timestamp_range_to": ' . (time() + $twoWeeksInSeconds) . '}\'
+          \'{"timestamp_range_from": ' . $timestampRangeFrom . ', "timestamp_range_to": ' . $timestampRangeTo . '}\'
         )
       ');
 

@@ -43,6 +43,7 @@ class ProcessExpiredAffiliations extends BaseCommand
     $db = \Config\Database::connect();
     $builder = $db->table('people');
 
+    $timestamp = time();
     $builder
       ->select('
         people.user_id
@@ -54,7 +55,7 @@ class ProcessExpiredAffiliations extends BaseCommand
         jsonb_path_exists(
           custom_field_data.value_json,
           \'$[*] ? (@.to < $timestamp)\',
-          \'{"timestamp": ' . time() . '}\'
+          \'{"timestamp": ' . $timestamp . '}\'
         )
       ');
 
