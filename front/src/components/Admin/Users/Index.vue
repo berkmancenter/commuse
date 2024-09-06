@@ -3,8 +3,9 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">Users</h3>
 
     <div class="mb-4">
+      <ActionButton class="mr-2 mb-2" buttonText="Create new user" @click="createNewUserModalOpen()" :icon="newUserIcon"></ActionButton>
       <ActionButton class="mr-2 mb-2" buttonText="Import users from CSV" @click="importUsersFromCsvModalOpen()" :icon="fileIcon"></ActionButton>
-      <ActionButton class="mr-2 mb-2" buttonText="Delete users" @click="() => deleteUsersConfirm(selectedUsers)" :icon="minusIcon"></ActionButton>
+      <ActionButton class="mr-2 mb-2" buttonText="Delete users" @click="() => deleteUsersConfirm(selectedUsers)" :icon="removeUserIcon"></ActionButton>
       <ActionButton class="mr-2 mb-2" buttonText="Set ReIntake status" @click="() => setReintakeStatusModalOpen(selectedUsers)" :icon="reintakeIcon"></ActionButton>
       <ActionButton class="mr-2 mb-2" buttonText="Set active affiliation" @click="() => setActiveAffiliationModalOpen(selectedUsers)" :icon="affiliationIcon"></ActionButton>
       <ActionButton class="mr-2 mb-2" buttonText="Set active status" @click="() => setActiveStatusModalOpen(selectedUsers)" :icon="activeIcon"></ActionButton>
@@ -236,6 +237,39 @@
       </div>
     </div>
   </Modal>
+
+  <Modal
+    v-model="createNewUserModalStatus"
+    title="Create new user"
+    @confirm="createNewUser()"
+    @cancel="createNewUserModalStatus = false"
+  >
+    <form @submit.prevent="createNewUser()" ref="createNewUserForm">
+      <div class="field mt-2">
+        <div class="control">
+          <div class="mb-2">First name</div>
+
+          <input type="text" class="input" v-model="createNewUserModalCurrent.first_name" required="true">
+        </div>
+      </div>
+
+      <div class="field mt-2">
+        <div class="control">
+          <div class="mb-2">Last name</div>
+
+          <input type="text" class="input" v-model="createNewUserModalCurrent.last_name" required="true">
+        </div>
+      </div>
+
+      <div class="field mt-2">
+        <div class="control">
+          <div class="mb-2">Email</div>
+
+          <input type="email" class="input" v-model="createNewUserModalCurrent.email" required="true">
+        </div>
+      </div>
+    </form>
+  </Modal>
 </template>
 
 <script>
@@ -257,6 +291,8 @@
   import reintakeIcon from '@/assets/images/reintake.svg'
   import affiliationIcon from '@/assets/images/affiliation.svg'
   import activeIcon from '@/assets/images/active.svg'
+  import newUserIcon from '@/assets/images/new_user.svg'
+  import removeUserIcon from '@/assets/images/remove_user.svg'
 
   export default {
     name: 'AdminUsers',
@@ -281,6 +317,8 @@
         reintakeIcon,
         affiliationIcon,
         activeIcon,
+        newUserIcon,
+        removeUserIcon,
         profileStructure: [],
         users: [],
         roles: [
@@ -319,6 +357,13 @@
 
         setActiveStatusModalStatus: false,
         setActiveStatusModalStatusValue: 'not_active',
+
+        createNewUserModalStatus: false,
+        createNewUserModalCurrent: {
+          first_name: '',
+          last_name: '',
+          email: '',
+        },
       }
     },
     created() {
@@ -528,6 +573,31 @@
         }
 
         this.setActiveStatusModalStatus = false
+      },
+      createNewUserModalOpen() {
+        this.createNewUserModalStatus = true
+      },
+      async createNewUser() {
+        if (this.$refs.createNewUserForm.reportValidity() === false) {
+          return
+        }
+
+        const response = await this.$store.dispatch('admin/createNewUser', this.createNewUserModalCurrent)
+
+        if (response.ok) {
+          this.awn.success('New user has been created.')
+          this.loadUsers()
+        } else {
+          const data = await response.json()
+          this.awn.warning(data.message)
+        }
+
+        this.createNewUserModalStatus = false
+        this.createNewUserModalCurrent = {
+          first_name: '',
+          last_name: '',
+          email: '',
+        }
       },
     },
   }

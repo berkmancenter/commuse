@@ -132,6 +132,25 @@ class Users extends BaseController
   }
 
   /**
+   * Create a new user
+   * 
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function createNewUser()
+  {
+    $userModel = new UserModel();
+    $requestData = $this->request->getJSON(true);
+
+    list($result, $message) = $userModel->saveProfileData($requestData, null, false, true, true);
+
+    if ($result) {
+      return $this->respond(['message' => $message], 200);
+    } else {
+      return $this->respond(['message' => $message], 400);
+    }
+  }
+
+  /**
    * Save public profile data
    *
    * @return \CodeIgniter\HTTP\Response

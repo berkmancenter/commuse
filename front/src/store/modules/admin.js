@@ -183,6 +183,18 @@ const actions = {
 
     return response
   },
+  async createNewUser(context, data) {
+    const response = await fetchIt(`${apiUrl}/api/admin/users/createNewUser`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+
+    return response
+  },
 }
 
 const getters = {}

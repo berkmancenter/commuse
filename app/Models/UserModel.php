@@ -10,6 +10,7 @@ use App\Libraries\UserProfileStructure;
 use \Gumlet\ImageResize;
 use Rogervila\ArrayDiffMultidimensional;
 use App\Libraries\SystemSettingsWrapper;
+use CodeIgniter\Shield\Entities\User;
 
 class UserModel extends ShieldUserModel
 {
@@ -153,10 +154,11 @@ class UserModel extends ShieldUserModel
    * @param int   $userId       The ID of the user whose profile is being saved (optional).
    * @param bool  $sync         Whether to synchronize the user data with the remote service (optional).
    * @param bool  $noSync       Whether to skip synchronization with the remote service (optional).
+   * @param bool  $newUser      Whether the user is new (optional).
    *
    * @return array              An array containing transaction status and a response message.
    */
-  public function saveProfileData($requestData, $userId = null, $sync = false, $noSync = false) {
+  public function saveProfileData($requestData, $userId = null, $sync = false, $noSync = false, $newUser = false) {
     $peopleModel = new PeopleModel();
 
     // Regular user editing
@@ -170,6 +172,30 @@ class UserModel extends ShieldUserModel
     }
 
     $userId = intval($userId);
+
+    if ($newUser) {
+      $usersProvider = auth()->getProvider();
+
+      $user = $usersProvider->findByCredentials(['email' => $requestData['email']]);
+      if ($user) {
+        return [false, 'User with this email already exists'];
+      }
+
+      $usersProvider = auth()->getProvider();
+
+      $newUserData  = [
+        'username' => substr(md5((string)mt_rand()), 0, 10) . substr(md5($requestData['email']), 0, 20),
+        'email'    => $requestData['email'],
+        'password' => bin2hex(random_bytes(10)),
+        'active'   => true,
+      ];
+
+      $user = new User($newUserData);
+      $usersProvider->save($user);
+      $userId = $usersProvider->getInsertID();
+      $userSaved = $usersProvider->findById($userId);
+      $userSaved->forcePasswordReset();
+    }
 
     $existingPerson = $peopleModel->where('user_id', $userId)->first();
 
