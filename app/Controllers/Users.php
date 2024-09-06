@@ -218,6 +218,7 @@ class Users extends BaseController
         users.username,
         users.created_at,
         users.last_active AS last_login,
+        users.status as active,
         people.first_name,
         people.last_name,
         people.id AS people_id,
@@ -238,6 +239,7 @@ class Users extends BaseController
 
     foreach ($users as &$user) {
       $user['groups'] = array_map('trim', array_filter(explode(',', $user['groups'] ?? '')));
+      $user['active'] = $user['active'] !== 'banned';
     }
 
     return $this->respond($users);
@@ -742,7 +744,7 @@ class Users extends BaseController
      $userIds = $requestData['users'] ?? [];
      $affiliation = $requestData['affiliation'] ?? [];
      $usersModel = new UserModel();
-  
+
      if (!empty($userIds)) {
        foreach ($userIds as $userId) {
          $userData = $usersModel->getUserProfileData($userId);
@@ -760,5 +762,34 @@ class Users extends BaseController
     }
 
     return $this->respond(['message' => 'Active affiliation has been set successfully.'], 200);
+  }
+
+  /**
+   * Set users active status
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function setActiveStatus()
+  {
+    $this->checkAdminAccess();
+
+    try {
+      $requestData = $this->request->getJSON(true);
+      $userIds = $requestData['users'] ?? [];
+      $status = $requestData['status'] ?? 'active';
+      $usersModel = new UserModel();
+  
+      if (!empty($userIds)) {
+        foreach ($userIds as $userId) {
+          $userData = $usersModel->getUserProfileData($userId);
+          $userData['active'] = $status === 'active';
+          $usersModel->saveProfileData($userData, $userId, false, true);
+        }
+      }
+    } catch (\Throwable $th) {
+      return $this->respond(['message' => 'Error changing active status.'], 500);
+    }
+
+    return $this->respond(['message' => 'Active status has been set successfully.'], 200);
   }
 }

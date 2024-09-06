@@ -7,6 +7,7 @@
       <ActionButton class="mr-2 mb-2" buttonText="Delete users" @click="() => deleteUsersConfirm(selectedUsers)" :icon="minusIcon"></ActionButton>
       <ActionButton class="mr-2 mb-2" buttonText="Set ReIntake status" @click="() => setReintakeStatusModalOpen(selectedUsers)" :icon="reintakeIcon"></ActionButton>
       <ActionButton class="mr-2 mb-2" buttonText="Set active affiliation" @click="() => setActiveAffiliationModalOpen(selectedUsers)" :icon="affiliationIcon"></ActionButton>
+      <ActionButton class="mr-2 mb-2" buttonText="Set active status" @click="() => setActiveStatusModalOpen(selectedUsers)" :icon="activeIcon"></ActionButton>
     </div>
 
     <div class="admin-users-search mb-4">
@@ -33,6 +34,7 @@
             <th>Invitation code</th>
             <th>Created</th>
             <th>Last login</th>
+            <th>Active</th>
             <th>Admin</th>
             <th data-sort-method="none" class="no-sort">Actions</th>
           </tr>
@@ -57,6 +59,10 @@
             </td>
             <td>{{ user.created_at }}</td>
             <td>{{ user.last_login }}</td>
+            <td class="admin-users-table-is-active">
+              <div class="is-hidden">{{ user.active }}</div>
+              <Booler :value="user.active" />
+            </td>
             <td class="admin-users-table-is-admin">
               <div class="is-hidden">{{ user.groups.includes('admin') }}</div>
               <Booler :value="user.groups.includes('admin')" />
@@ -210,11 +216,36 @@
       ></CustomField>
     </div>
   </Modal>
+
+  <Modal
+    v-model="setActiveStatusModalStatus"
+    title="Set active status"
+    @confirm="setActiveStatus()"
+    @cancel="setActiveStatusModalStatus = false"
+  >
+    Set active status for selected users to:
+
+    <div class="field mt-2">
+      <div class="control">
+        <div class="select">
+          <select v-model="setActiveStatusModalStatusValue">
+            <option value="not_active">Not active</option>
+            <option value="active">Active</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </Modal>
 </template>
 
 <script>
   import Icon from '@/components/Shared/Icon.vue'
   import Booler from '@/components/Shared/Booler.vue'
+  import AdminTable from '@/components/Admin/AdminTable.vue'
+  import ActionButton from '@/components/Shared/ActionButton.vue'
+  import Modal from '@/components/Shared/Modal.vue'
+  import CustomField from '@/components/CustomFields/CustomField.vue'
+
   import minusIcon from '@/assets/images/minus.svg'
   import clipboardIcon from '@/assets/images/clipboard.svg'
   import addWhiteIcon from '@/assets/images/add_white.svg'
@@ -225,10 +256,7 @@
   import searchIcon from '@/assets/images/search.svg'
   import reintakeIcon from '@/assets/images/reintake.svg'
   import affiliationIcon from '@/assets/images/affiliation.svg'
-  import AdminTable from '@/components/Admin/AdminTable.vue'
-  import ActionButton from '@/components/Shared/ActionButton.vue'
-  import Modal from '@/components/Shared/Modal.vue'
-  import CustomField from '@/components/CustomFields/CustomField.vue'
+  import activeIcon from '@/assets/images/active.svg'
 
   export default {
     name: 'AdminUsers',
@@ -252,19 +280,25 @@
         searchIcon,
         reintakeIcon,
         affiliationIcon,
+        activeIcon,
+        profileStructure: [],
         users: [],
         roles: [
           'user',
           'admin',
         ],
         apiUrl: import.meta.env.VITE_API_URL,
+        searchTerm: '',
+
+        importUsersCsvModalStatus: false,
+
+        deleteUserModalStatus: false,
+        deleteUserModalCurrent: [],
+
         setUserRoleModalStatus: false,
         setUserRoleModalCurrent: null,
         setUserRoleCurrentRole: 'user',
-        importUsersCsvModalStatus: false,
-        deleteUserModalStatus: false,
-        deleteUserModalCurrent: [],
-        searchTerm: '',
+
         setReintakeStatusModalStatus: false,
         setReintakeStatuses: {
           not_required: 'Not required',
@@ -274,14 +308,17 @@
         },
         setReintakeStatusSelected: 'not_required',
         setReintakeStatusCurrent: [],
+
         setActiveAffiliationModalStatus: false,
         setActiveAffiliationCurrent: [],
-        profileStructure: [],
         setActiveAffiliationModalOptions: {
           'new_affiliation': 'New affiliation',
           'unset': 'Unset',
         },
         setActiveAffiliationModalOptionsSelected: 'new_affiliation',
+
+        setActiveStatusModalStatus: false,
+        setActiveStatusModalStatusValue: 'not_active',
       }
     },
     created() {
@@ -465,6 +502,32 @@
         }
 
         this.setActiveAffiliationModalStatus = false
+      },
+      setActiveStatusModalOpen(users) {
+        if (users.length === 0) {
+          this.awn.warning('No users selected.')
+
+          return
+        }
+
+        this.setActiveStatusModalStatusValue = 'not_active'
+        this.setActiveStatusModalCurrent = users
+        this.setActiveStatusModalStatus = true
+      },
+      async setActiveStatus() {
+        const response = await this.$store.dispatch('admin/setActiveStatus', {
+          users: this.setActiveStatusModalCurrent.map(user => user.id),
+          status: this.setActiveStatusModalStatusValue,
+        })
+
+        if (response.ok) {
+          this.awn.success('Active status has been updated.')
+          this.loadUsers()
+        } else {
+          this.awn.warning('Something went wrong, try again.')
+        }
+
+        this.setActiveStatusModalStatus = false
       },
     },
   }

@@ -67,6 +67,7 @@ $routes->get('api/admin/systemSettings', 'SystemSettings::index');
 $routes->post('api/admin/systemSettings', 'SystemSettings::saveSettings');
 $routes->get('api/admin/publicSystemSettings', 'SystemSettings::getPublicSettings');
 $routes->post('api/admin/users/setActiveAffiliation', 'Users::setActiveAffiliation');
+$routes->post('api/admin/users/setActiveStatus', 'Users::setActiveStatus');
 
 $frontRoutes = [
   '/',

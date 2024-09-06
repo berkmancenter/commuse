@@ -129,6 +129,10 @@ class UserModel extends ShieldUserModel
       });
     }
 
+    $users = auth()->getProvider();
+    $user = $users->findById($id);
+    $userData['active'] = $user->status !== 'banned';
+
     return $userData;
   }
 
@@ -148,10 +152,11 @@ class UserModel extends ShieldUserModel
    * @param array $requestData  The data containing profile fields to be saved.
    * @param int   $userId       The ID of the user whose profile is being saved (optional).
    * @param bool  $forceSync    Whether to force synchronization with the remote service (optional).
+   * @param bool  $forceNotSync Whether to force not to synchronize with the remote service (optional).
    *
    * @return array              An array containing transaction status and a response message.
    */
-  public function saveProfileData($requestData, $userId = null, $forceSync = false) {
+  public function saveProfileData($requestData, $userId = null, $forceSync = false, $forceNotSync = false) {
     $peopleModel = new PeopleModel();
 
     // Regular user editing
@@ -180,6 +185,16 @@ class UserModel extends ShieldUserModel
 
     if ($existingPerson) {
       $cache->delete("person_{$oldProfileData['id']}");
+    }
+
+    if (isset($requestData['active'])) {
+      $users = auth()->getProvider();
+      $user = $users->findById($userId);
+      if ($requestData['active']) {
+        $user->unban();
+      } else {
+        $user->ban();
+      }
     }
 
     $mappedData = [];
@@ -228,8 +243,8 @@ class UserModel extends ShieldUserModel
 
     $peopleModel->db->transComplete();
 
-    if ((auth()->user() || php_sapi_name() === 'cli') && $existingPerson) {
-      $this->addAuditRecord($oldProfileData, $existingPerson, $userId, $forceSync);
+    if ((php_sapi_name() === 'cli' || auth()->user()) && $existingPerson) {
+      $this->addAuditRecord($oldProfileData, $existingPerson, $userId, $forceSync, $forceNotSync);
     }
 
     $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';
@@ -493,8 +508,9 @@ class UserModel extends ShieldUserModel
    * @param array $existingPerson The existing person's data.
    * @param int $userId The ID of the user whose profile is being updated.
    * @param bool $forceSync Whether to force synchronization with the remote service.
+   * @param bool $forceNotSync Whether to force not to synchronize with the remote service.
    */
-  private function addAuditRecord($oldProfileData, $existingPerson, $userId, $forceSync = false) {
+  private function addAuditRecord($oldProfileData, $existingPerson, $userId, $forceSync = false, $forceNotSync = false) {
     // Create audit record if needed
     if ($existingPerson) {
       $keysToSkip = array_merge(self::AUDIT_SKIP_FIELDS, $this->getChildCustomFields());
@@ -572,7 +588,7 @@ class UserModel extends ShieldUserModel
       }
 
       // Synchronize user data with the remote service when saved by an admin
-      if ($forceSync || ($countedNewValues > 0 && auth()->user()->can('admin.access') === true)) {
+      if (($forceSync || ($countedNewValues > 0 && auth()->user()->can('admin.access') === true)) && $forceNotSync === false) {
         $dataAuditModel = new DataAuditModel();
         $dataAuditModel->syncUserData($newProfileData);
       }

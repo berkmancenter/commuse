@@ -171,6 +171,18 @@ const actions = {
   setActiveAffiliationModalValue(context, value) {
     context.commit('setActiveAffiliationModalValue', value)
   },
+  async setActiveStatus(context, data) {
+    const response = await fetchIt(`${apiUrl}/api/admin/users/setActiveStatus`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+
+    return response
+  },
 }
 
 const getters = {}
