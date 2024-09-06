@@ -93,6 +93,15 @@ class ProcessExpiredAffiliations extends BaseCommand
       ) {
         // Extend the affiliation by 1 year
         $userData['activeAffiliation'][0]['to'] = intval($userData['activeAffiliation'][0]['to']) + 31536000;
+      } else if (
+        isset($activeAffiliationFieldMetadata['autoExtendOnce']) &&
+        $activeAffiliationFieldMetadata['autoExtendOnce'] &&
+        isset($userData['activeAffiliation'][0]['autoExtendOnce']) &&
+        $userData['activeAffiliation'][0]['autoExtendOnce']
+      ) {
+        // Extend the affiliation by 1 year and disable autoExtendOnce
+        $userData['activeAffiliation'][0]['to'] = intval($userData['activeAffiliation'][0]['to']) + 31536000;
+        $userData['activeAffiliation'][0]['autoExtendOnce'] = false;
       } else {
         if (isset($userData['affiliation']) && $userData['affiliation'] && is_array($userData['affiliation'])) {
           $userData['affiliation'][] = $activeAffiliation;
@@ -103,7 +112,7 @@ class ProcessExpiredAffiliations extends BaseCommand
         $userData['activeAffiliation'] = [];
       }
 
-      $usersModel->saveProfileData($userData, $person['user_id']);
+      $usersModel->saveProfileData($userData, $person['user_id'], false, true);
 
       CLI::write("Processing expired affiliation for user ID {$person['user_id']}.");
     }

@@ -588,7 +588,7 @@ class UserModel extends ShieldUserModel
       }
 
       // Synchronize user data with the remote service when saved by an admin
-      if (($forceSync || ($countedNewValues > 0 && auth()->user()->can('admin.access') === true)) && $forceNotSync === false) {
+      if (($forceSync || ($forceNotSync === false && $countedNewValues > 0 && auth()->user()->can('admin.access') === true))) {
         $dataAuditModel = new DataAuditModel();
         $dataAuditModel->syncUserData($newProfileData);
       }

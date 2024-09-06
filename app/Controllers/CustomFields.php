@@ -112,6 +112,7 @@ class CustomFields extends BaseController
         'multipleItems' => $customFieldData['metadata']['multipleItems'] ?? false,
         'autoExtend' => $customFieldData['metadata']['autoExtend'] ?? false,
         'autoExtendValuesAutoSelect' => preg_split('/\R/u', $customFieldData['metadata']['autoExtendValuesAutoSelect'] ?? ''),
+        'autoExtendOnce' => $customFieldData['metadata']['autoExtendOnce'] ?? false,
       ]),
     ];
   }

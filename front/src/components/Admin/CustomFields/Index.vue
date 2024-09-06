@@ -132,6 +132,16 @@
         <hr>
 
         <div class="field">
+          <label class="label">Show "Auto-extend once" checkbox</label>
+          <p class="is-size-6">If selected, the field will show a checkbox called "Auto-extend once" that can be used to auto-extend the field period only once.</p>
+          <div class="control mt-2">
+            <input class="checkbox" type="checkbox" v-model="fieldModalCurrent.metadata.autoExtendOnce">
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="field">
           <label class="label">Values that, when selected, will auto-select "Auto-extend" field</label>
           <p class="is-size-6 mb-2">One value per line.</p>
           <div class="control">

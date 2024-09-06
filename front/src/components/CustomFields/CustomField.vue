@@ -101,6 +101,20 @@
                 :id="`${machineName}-auto-extend-${index}`"
                 v-model="item.autoExtend"
                 :ref="`${machineName}-auto-extend-${index}`"
+                :disabled="item.autoExtendOnce"
+              >
+            </div>
+          </div>
+
+          <div class="mt-2" v-if="metadata.autoExtendOnce && this.$store.state.user.currentUser.admin">
+            <label class="label" :for="`${machineName}-auto-extend-once-${index}`">Auto-extend once</label>
+            <div class="control ml-2">
+              <input
+                type="checkbox"
+                :id="`${machineName}-auto-extend-once-${index}`"
+                v-model="item.autoExtendOnce"
+                :ref="`${machineName}-auto-extend-once-${index}`"
+                :disabled="item.autoExtend"
               >
             </div>
           </div>
@@ -308,7 +322,7 @@
         })
       },
       updateTagsRangeTags(item, index) {
-        if (this.metadata.autoExtend && this.metadata.autoExtendValuesAutoSelect && this.metadata.autoExtendValuesAutoSelect instanceof Array) {
+        if (!item.autoExtendOnce && this.metadata.autoExtend && this.metadata.autoExtendValuesAutoSelect && this.metadata.autoExtendValuesAutoSelect instanceof Array) {
           let autoExtend = this.metadata.autoExtendValuesAutoSelect.some((value) => item.tags.includes(value))
 
           if (autoExtend) {
