@@ -81,7 +81,7 @@ class SendExpiredAffiliationsNotification extends BaseCommand
     }
 
     $twoWeeksFromNow = date('m/d/Y', time() + $twoWeeksInSeconds);
-    $body = "The following users have affiliations that will expire in two weeks on {$twoWeeksFromNow}:<br><br>";
+    $body = "The following users have affiliations that will expire in two weeks on {$twoWeeksFromNow}:<br>";
     $baseUrl = $_ENV['app.baseURL'];
     $body .= '<table>';
     foreach ($people as $person) {
@@ -91,6 +91,7 @@ class SendExpiredAffiliationsNotification extends BaseCommand
 
       CLI::write("Sending notification to user #{$person['user_id']} about their expired affiliation that will expire on {$twoWeeksFromNow}.");
     }
+    $body .= '</table>';
 
     $email = \Config\Services::email();
     $email->setTo(SystemSettingsWrapper::getInstance()->getSettingByKey('ReintakeAdminEmails')['value']);
