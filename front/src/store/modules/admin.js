@@ -5,6 +5,7 @@ const apiUrl = import.meta.env.VITE_API_URL
 
 const state = {
   activeAffiliationModalValue: {},
+  profileDataAuditDataFetchController: null,
 }
 
 const mutations = {
@@ -33,7 +34,13 @@ const actions = {
     return data
   },
   async fetchProfileDataAuditData(context, params) {
-    const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit?${objectToQueryParams(params)}`)
+    context.state.profileDataAuditDataFetchController = new AbortController()
+
+    const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit?${objectToQueryParams(params)}`, {
+      method: 'GET',
+      signal: context.state.profileDataAuditDataFetchController.signal,
+    })
+
     const data = await response.json()
 
     return data

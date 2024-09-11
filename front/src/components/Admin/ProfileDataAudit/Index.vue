@@ -221,6 +221,10 @@
     },
     methods: {
       async loadData(goToPageOne = true) {
+        if (this.$store.state.admin.profileDataAuditDataFetchController) {
+          this.$store.state.admin.profileDataAuditDataFetchController.abort()
+        }
+
         this.loadQueryParams()
 
         if (goToPageOne) {
