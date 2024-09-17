@@ -1,10 +1,10 @@
 <template>
   <div class="system-settings-header is-flex is-align-items-center">
     <h3 class="is-size-3 has-text-weight-bold">System settings</h3>
-    <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true" @click="saveSettings()"></ActionButton>
+    <ActionButton :button="true" :disabled="loading" class="ml-2" buttonText="Save" :icon="saveIcon" @click="saveSettings()"></ActionButton>
   </div>
 
-  <div class="system-settings-section">
+  <div class="system-settings-section" v-if="!loading">
     <form class="form-commuse-blocks mb-4" @submit.prevent="changePassword">
       <div class="panel mb-4" v-for="(systemField, key) in $store.state.systemSettings.systemSettings">
         <p class="panel-heading">
@@ -27,6 +27,13 @@
       </div>
     </form>
   </div>
+
+  <div class="system-settings-section ssc form-commuse-blocks" v-if="loading">
+    <div class="ssc-card ssc-wrapper mb-4" v-for="n in 10" :key="n">
+      <div class="ssc-head-line mb-4"></div>
+      <div class="ssc-square"></div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -46,6 +53,7 @@
           toolbar: [ 'undo', 'redo', '|', 'bold', 'italic', '|', 'link' ],
         },
         saveIcon,
+        loading: true,
       }
     },
     created() {
@@ -60,6 +68,8 @@
         let settings = await this.$store.dispatch('systemSettings/fetchSystemSettings')
 
         this.$store.dispatch('systemSettings/setSystemSettings', settings)
+
+        this.loading = false
       },
       camelCaseToTitleCase(str) {
         let result = str.replace(/([A-Z])/g, ' $1').trim()

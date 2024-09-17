@@ -1,15 +1,15 @@
 <template>
-  <div class="user-profile" v-if="profileLoaded && profileStructureLoaded">
+  <div class="user-profile">
     <form class="form-commuse-blocks" @submit.prevent="saveProfile">
       <div class="user-profile-header is-flex is-align-items-center">
         <h3 class="is-size-3 has-text-weight-bold">Edit profile</h3>
-        <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true"></ActionButton>
+        <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true" :disabled="loading"></ActionButton>
         <router-link :to="{ name: 'people.details', params: { id: $store.state.user.userProfile.id } }">
-          <ActionButton class="ml-2" buttonText="Show profile" :icon="userIcon" :button="true"></ActionButton>
+          <ActionButton class="ml-2" buttonText="Show profile" :icon="userIcon" :button="true" :disabled="loading"></ActionButton>
         </router-link>
       </div>
 
-      <div class="user-profile-form-fields">
+      <div class="user-profile-form-fields" v-if="!loading">
         <div class="panel">
           <p class="panel-heading">
             My Information
@@ -148,6 +148,37 @@
           </div>
         </div>
       </div>
+
+      <div class="ssc" v-if="loading">
+        <div class="ssc-card ssc-wrapper mb-4">
+          <div class="mb-5 ssc-head-line"></div>
+          <div class="mb ssc-line w-20 mb"></div>
+          <div class="ssc-square w-20 mb"></div>
+          <div class="mb ssc-head-line w-40 mb"></div>
+          <div class="mb ssc-line w-20"></div>
+          <div class="mb ssc-head-line"></div>
+          <div class="mb ssc-line w-20"></div>
+          <div class="mb ssc-head-line"></div>
+          <div class="mb ssc-line w-20"></div>
+          <div class="mb ssc-head-line"></div>
+          <div class="mb ssc-line w-20"></div>
+          <div class="mb ssc-head-line"></div>
+          <div class="mb ssc-line w-20"></div>
+          <div class="ssc-square"></div>
+        </div>
+
+        <div class="ssc-card ssc-wrapper mb-4" v-for="n in 2" :key="n">
+          <div class="mb-5 ssc-head-line"></div>
+          <div class="mb ssc-line w-20"></div>
+          <div class="mb ssc-head-line"></div>
+          <div class="mb ssc-line w-20"></div>
+          <div class="mb ssc-head-line"></div>
+          <div class="mb ssc-line w-20"></div>
+          <div class="mb ssc-head-line"></div>
+          <div class="mb ssc-line w-20"></div>
+          <div class="ssc-square"></div>
+        </div>
+      </div>
     </form>
   </div>
 </template>
@@ -169,6 +200,7 @@
         saveIcon,
         userIcon,
         fields: {},
+        loading: true,
       }
     },
     components: {
@@ -253,12 +285,20 @@
         }
 
         this.$store.dispatch('user/setUserProfile', profile)
+
+        if (this.profileStructureLoaded) {
+          this.loading = false
+        }
       },
       async loadProfileStructure() {
         let profileStructure = await this.$store.dispatch('user/fetchProfileStructure')
 
         this.profileStructure = profileStructure
         this.profileStructureLoaded = true
+
+        if (this.profileLoaded) {
+          this.loading = false
+        }
       },
       validate() {
         const errorMessages = []
@@ -346,6 +386,10 @@
       font-weight: normal;
       color: #800000;
       margin: 0.5rem 0;
+    }
+
+    .ssc {
+      padding-top: 5rem;
     }
   }
 </style>
