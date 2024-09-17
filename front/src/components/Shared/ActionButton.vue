@@ -1,5 +1,5 @@
 <template>
-  <component :is="tagName" class="commuse-action-button button" :class="{ 'commuse-action-button-active': active }" @click="handleClick">
+  <component :is="tagName" class="commuse-action-button button" :class="{ 'commuse-action-button-active': active }" @click="handleClick" v-bind:disabled="disabled ? true : null">
     <Icon :src="icon" :interactive="false" />
     <div>{{ buttonText }}</div>
   </component>
@@ -23,6 +23,11 @@
         default: false,
       },
       active: {
+        type: Boolean,
+        required: false,
+        default: false,
+      },
+      disabled: {
         type: Boolean,
         required: false,
         default: false,

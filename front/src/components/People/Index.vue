@@ -15,8 +15,8 @@
       </div>
 
       <div class="mt-4 mb-2">
-        <ActionButton buttonText="Filters" :icon="filterIcon" @click="openFiltersModal()"></ActionButton>
-        <ActionButton class="ml-2" buttonText="Clear all" :icon="clearFiltersIcon" @click="clearAllFilters()"></ActionButton>
+        <ActionButton :button="true" :disabled="loading" buttonText="Filters" :icon="filterIcon" @click="openFiltersModal()"></ActionButton>
+        <ActionButton :button="true" :disabled="loading" class="ml-2" buttonText="Clear all" :icon="clearFiltersIcon" @click="clearAllFilters()"></ActionButton>
       </div>
 
       <div v-if="anyActiveFilters">
@@ -44,7 +44,7 @@
     <hr>
 
     <div class="people-section-actions">
-      <ActionButton buttonText="Export" :icon="exportIcon" @click="openExportPeopleModal()"></ActionButton>
+      <ActionButton :button="true" :disabled="loading" buttonText="Export" :icon="exportIcon" @click="openExportPeopleModal()"></ActionButton>
     </div>
 
     <hr>
