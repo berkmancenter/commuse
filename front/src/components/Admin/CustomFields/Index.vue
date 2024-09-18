@@ -274,8 +274,10 @@
             return customField
           })
       },
-      openEditFieldModal(customField) {
-        this.fieldModalCurrent = customField
+      async openEditFieldModal(customField) {
+        await this.loadCustomFields()
+        this.fieldModalCurrent = this.customFields.find((field) => field.id === customField.id)
+
         this.fieldModalVisible = true
       },
       async submitEditFieldForm() {
