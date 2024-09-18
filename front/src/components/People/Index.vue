@@ -10,6 +10,7 @@
           placeholder="Search"
           class="input"
           @keyup="reloadView()"
+          :disabled="loading"
         >
         <span><img :src="searchIcon"></span>
       </div>
