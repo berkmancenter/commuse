@@ -4,35 +4,41 @@
     <ActionButton :button="true" :disabled="loading" class="ml-2" buttonText="Save" :icon="saveIcon" @click="saveSettings()"></ActionButton>
   </div>
 
-  <div class="system-settings-section" v-if="!loading">
-    <form class="form-commuse-blocks mb-4" @submit.prevent="changePassword">
-      <div class="panel mb-4" v-for="(systemField, key) in $store.state.systemSettings.systemSettings">
-        <p class="panel-heading">
-          {{ camelCaseToTitleCase(key) }}
-        </p>
-        <div class="panel-block">
-          <div class="field">
-            <div class="control">
-              <div class="control">
-                <div v-if="systemField.type === 'string'">
-                  <textarea class="textarea" type="text" v-model="systemField.value"></textarea>
-                </div>
-                <div v-if="systemField.type === 'long_text_rich'">
-                  <ckeditor :editor="editor" v-model="systemField.value" :config="editorConfig"></ckeditor>
+  <div class="system-settings-section">
+    <SkeletonPatternLoader :loading="loading">
+      <template v-slot:content>
+        <form class="form-commuse-blocks mb-4" @submit.prevent="changePassword">
+          <div class="panel mb-4" v-for="(systemField, key) in $store.state.systemSettings.systemSettings">
+            <p class="panel-heading">
+              {{ camelCaseToTitleCase(key) }}
+            </p>
+            <div class="panel-block">
+              <div class="field">
+                <div class="control">
+                  <div class="control">
+                    <div v-if="systemField.type === 'string'">
+                      <textarea class="textarea" type="text" v-model="systemField.value"></textarea>
+                    </div>
+                    <div v-if="systemField.type === 'long_text_rich'">
+                      <ckeditor :editor="editor" v-model="systemField.value" :config="editorConfig"></ckeditor>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </form>
-  </div>
+        </form>
+      </template>
 
-  <div class="system-settings-section ssc form-commuse-blocks" v-if="loading">
-    <div class="ssc-card ssc-wrapper mb-4" v-for="n in 10" :key="n">
-      <div class="ssc-head-line mb-4"></div>
-      <div class="ssc-square"></div>
-    </div>
+      <template v-slot:skeleton>
+        <div class="form-commuse-blocks">
+          <div class="ssc-card ssc-wrapper mb-4" v-for="n in 10" :key="n">
+            <div class="ssc-head-line mb-4"></div>
+            <div class="ssc-square"></div>
+          </div>
+        </div>
+      </template>
+    </SkeletonPatternLoader>
   </div>
 </template>
 
@@ -40,6 +46,7 @@
   import { ClassicEditor, Bold, Essentials, Italic, Paragraph, Undo, Link } from 'ckeditor5'
   import StickyElement from 'vue-sticky-element'
   import ActionButton from '@/components/Shared/ActionButton.vue'
+  import SkeletonPatternLoader from '@/components/Shared/SkeletonPatternLoader.vue'
   import saveIcon from '@/assets/images/save.svg'
 
   export default {
@@ -62,6 +69,7 @@
     components: {
       StickyElement,
       ActionButton,
+      SkeletonPatternLoader,
     },
     methods: {
       async loadSettings() {

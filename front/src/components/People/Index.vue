@@ -83,22 +83,28 @@
 
     <div class="is-clearfix"></div>
 
-    <div class="content people-section-content" v-if="!loading">
-      <Person
-        v-for="(person, index) in sortedPeople"
-        :key="person.id"
-        :person="person"
-        :ref="'personRef_' + index"
-      ></Person>
-    </div>
+    <SkeletonPatternLoader :loading="loading">
+      <template v-slot:content>
+        <div class="content people-section-content">
+          <Person
+            v-for="(person, index) in sortedPeople"
+            :key="person.id"
+            :person="person"
+            :ref="'personRef_' + index"
+          ></Person>
+        </div>
+      </template>
 
-    <div class="content people-section-content ssc" v-if="loading">
-      <div class="ssc-wrapper mb-4 is-flex is-flex-direction-column is-align-items-center" v-for="n in 30" :key="n">
-        <div class="ssc-head-line w-80 mb-4"></div>
-        <div class="ssc-head-line w-80 mb-4"></div>
-        <div class="ssc-square"></div>
-      </div>
-    </div>
+      <template v-slot:skeleton>
+        <div class="content people-section-content">
+          <div class="ssc-wrapper mb-4 is-flex is-flex-direction-column is-align-items-center" v-for="n in 30" :key="n">
+            <div class="ssc-head-line w-80 mb-4"></div>
+            <div class="ssc-head-line w-80 mb-4"></div>
+            <div class="ssc-square"></div>
+          </div>
+        </div>
+      </template>
+    </SkeletonPatternLoader>
   </div>
 
   <Modal
@@ -168,6 +174,7 @@
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
   import { some, orderBy } from 'lodash'
+  import SkeletonPatternLoader from '@/components/Shared/SkeletonPatternLoader.vue'
 
   const apiUrl = import.meta.env.VITE_API_URL
 
@@ -178,6 +185,7 @@
       VueMultiselect,
       ActionButton,
       Modal,
+      SkeletonPatternLoader,
     },
     data() {
       return {

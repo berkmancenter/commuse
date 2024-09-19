@@ -2,41 +2,41 @@
   <div class="news-section">
     <h3 class="is-size-3 has-text-weight-bold mb-4">News & events</h3>
 
-    <div v-if="!loading">
-      <div class="card" v-for="news in newsItems" :key="news.id">
-        <div class="card-content">
-          <div class="media">
-            <div class="media-left">
-              <figure class="image">
-                <img class="lazy" :data-src="news.image_url">
-              </figure>
-            </div>
-            <div class="media-content">
-              <p class="title is-4">
-                <div v-if="!news.remote_url">{{ news.title }}</div>
-                <div v-if="news.remote_url">
-                  <a :href="news.remote_url" target="_blank">{{ news.title }}</a>
-                </div>
-              </p>
-              <p>{{ news.short_description }}</p>
+    <SkeletonPatternLoader :loading="loading">
+      <template v-slot:content>
+        <div class="card" v-for="news in newsItems" :key="news.id">
+          <div class="card-content">
+            <div class="media">
+              <div class="media-left">
+                <figure class="image">
+                  <img class="lazy" :data-src="news.image_url">
+                </figure>
+              </div>
+              <div class="media-content">
+                <p class="title is-4">
+                  <div v-if="!news.remote_url">{{ news.title }}</div>
+                  <div v-if="news.remote_url">
+                    <a :href="news.remote_url" target="_blank">{{ news.title }}</a>
+                  </div>
+                </p>
+                <p>{{ news.short_description }}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <vue-awesome-paginate
-        :total-items="paginateTotalItems"
-        :items-per-page="20"
-        :max-pages-shown="5"
-        :hidePrevNextWhenEnds="true"
-        v-model="page"
-        @click="paginateChangePage"
-        v-if="this.newsItems.length > 0"
-      ></vue-awesome-paginate>
-    </div>
+        <vue-awesome-paginate
+          :total-items="paginateTotalItems"
+          :items-per-page="20"
+          :max-pages-shown="5"
+          :hidePrevNextWhenEnds="true"
+          v-model="page"
+          @click="paginateChangePage"
+          v-if="this.newsItems.length > 0"
+        ></vue-awesome-paginate>
+      </template>
 
-    <div v-if="loading">
-      <div class="ssc">
+      <template v-slot:skeleton>
         <div class="w-100">
           <div class="ssc-wrapper mb-4" v-for="n in 10" :key="n">
             <div class="ssc-head-line"></div>
@@ -44,16 +44,20 @@
             <div class="ssc-square"></div>
           </div>
         </div>
-      </div>
-    </div>
+      </template>
+    </SkeletonPatternLoader>
   </div>
 </template>
 
 <script>
   import LazyLoad from 'vanilla-lazyload'
+  import SkeletonPatternLoader from '@/components/Shared/SkeletonPatternLoader.vue'
 
   export default {
     name: 'HomeIndex',
+    components: {
+      SkeletonPatternLoader,
+    },
     data() {
       return {
         lazyLoadInstance: null,
