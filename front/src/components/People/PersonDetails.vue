@@ -10,7 +10,7 @@
         </div>
 
         <div class="people-section-details-side-image">
-          <img :src="imageSrc">
+          <img class="lazy" :src="imageSrc">
         </div>
       </div>
 
@@ -152,6 +152,7 @@
   import { compact, flatten } from 'lodash'
   import { getMultiFieldValue } from '@/lib/fields/multi.js'
   import { calendarDateFormat } from '@/lib/time_stuff.js'
+  import LazyLoad from 'vanilla-lazyload'
 
   export default {
     name: 'PersonDetails',
@@ -169,12 +170,20 @@
         profileStructure: [],
         getMultiFieldValue,
         calendarDateFormat,
+        lazyLoadInstance: null,
       }
     },
     components: {
       PersonDetailsGroup,
       ShowMore,
       ActionButton,
+    },
+    created() {
+      this.initialDataLoad()
+    },
+    unmounted() {
+      this.lazyLoadInstance.destroy()
+      this.lazyLoadInstance = null
     },
     computed: {
       address() {
@@ -209,13 +218,11 @@
           ?.filter((group) => { return !['my_information', 'contact_information', 'affiliation', 'location_current', 'location_information', 'multi_fields_group'].includes(group['machine_name']) })
       },
     },
-    created() {
-      this.initialDataLoad()
-    },
     methods: {
-      initialDataLoad() {
-        this.loadPerson()
+      async initialDataLoad() {
         this.loadProfileStructure()
+        await this.loadPerson()
+        this.initImgLazyLoad()
       },
       async loadPerson() {
         const response = await this.$store.dispatch('people/fetchPerson', this.$route.params.id)
@@ -277,6 +284,20 @@
         });
 
         return title
+      },
+      initImgLazyLoad() {
+        this.lazyLoadInstance = new LazyLoad({
+          callback_error: (img) => {
+            img.setAttribute('src', this.profileFallbackImage)
+          },
+          unobserve_entered: true,
+          unobserve_completed: true,
+        })
+        this.$nextTick(() => {
+          if (this.lazyLoadInstance) {
+            this.lazyLoadInstance.update()
+          }
+        })
       },
     },
   }
