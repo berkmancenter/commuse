@@ -293,6 +293,7 @@ class Users extends BaseController
   {
     $this->checkAdminAccess();
 
+    $userModel = new UserModel();
     $result = false;
     $usersProvider = auth()->getProvider();
     $peopleModel = model('PeopleModel');
@@ -339,6 +340,8 @@ class Users extends BaseController
         error_log($exception->getMessage());
       }
     }
+
+    $userModel->clearPeopleCache();
 
     if ($result) {
       return $this->respond(['message' => $okMessage], 200);

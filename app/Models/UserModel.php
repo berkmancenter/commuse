@@ -203,14 +203,10 @@ class UserModel extends ShieldUserModel
       $oldProfileData = $this->getUserProfileData($userId);
     }
 
-    // Clear related caches
-    $cache = \Config\Services::cache();
-    $cache->delete('filters_with_values');
-    $cachePeopleSearchPath = ROOTPATH . 'writable/cache/people_*';
-    exec("rm {$cachePeopleSearchPath} > /dev/null 2> /dev/null");
-
     if ($existingPerson) {
-      $cache->delete("person_{$oldProfileData['id']}");
+      $this->clearPeopleCache($oldProfileData['id']);
+    } else {
+      $this->clearPeopleCache();
     }
 
     if (isset($requestData['active'])) {
@@ -694,5 +690,32 @@ class UserModel extends ShieldUserModel
     } else {
       return false;
     }
+  }
+
+  /**
+   * Clears the people cache.
+   *
+   * @return void
+   */
+  public function clearPeopleCache($userProfileDataId = null) {
+    $cache = \Config\Services::cache();
+    $cache->delete('filters_with_values');
+    $cachePeopleSearchPath = ROOTPATH . 'writable/cache/people_*';
+    exec("rm {$cachePeopleSearchPath} > /dev/null 2> /dev/null");
+
+    if ($userProfileDataId) {
+      $this->clearUserCache($userProfileDataId);
+    }
+  }
+
+  /** 
+   * Clears the cache for a specific user.
+   * 
+   * @param int $userId The ID of the user whose cache is to be cleared.
+   * @return void
+   */
+  public function clearUserCache($userId) {
+    $cache = \Config\Services::cache();
+    $cache->delete("person_{$userId}");
   }
 }
