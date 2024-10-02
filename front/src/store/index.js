@@ -5,6 +5,7 @@ import systemSettings from './modules/systemSettings'
 import dataEditor from './modules/dataEditor'
 import people from './modules/people'
 import admin from './modules/admin'
+import buzz from './modules/buzz'
 
 export default createStore({
   modules: {
@@ -14,5 +15,6 @@ export default createStore({
     dataEditor,
     people,
     admin,
+    buzz,
   }
 })

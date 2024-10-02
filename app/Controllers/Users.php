@@ -169,7 +169,6 @@ class Users extends BaseController
     }
   }
 
-
   /**
    * Upload user profile image
    *

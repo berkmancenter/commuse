@@ -7,7 +7,7 @@
   <div class="system-settings-section">
     <SkeletonPatternLoader :loading="loading">
       <template v-slot:content>
-        <form class="form-commuse-blocks mb-4" @submit.prevent="changePassword">
+        <form class="commuse-blocks mb-4" @submit.prevent="changePassword">
           <div class="panel mb-4" v-for="(systemField, key) in $store.state.systemSettings.systemSettings">
             <p class="panel-heading">
               {{ camelCaseToTitleCase(key) }}
@@ -31,7 +31,7 @@
       </template>
 
       <template v-slot:skeleton>
-        <div class="form-commuse-blocks">
+        <div class="commuse-blocks">
           <div class="ssc-card ssc-wrapper mb-4" v-for="n in 10" :key="n">
             <div class="ssc-head-line mb-4"></div>
             <div class="ssc-square"></div>

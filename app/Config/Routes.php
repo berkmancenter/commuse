@@ -71,6 +71,13 @@ $routes->post('api/admin/users/setActiveAffiliation', 'Users::setActiveAffiliati
 $routes->post('api/admin/users/setActiveStatus', 'Users::setActiveStatus');
 $routes->post('api/admin/users/createNewUser', 'Users::createNewUser');
 
+// Buzz routes
+$routes->get('api/buzz', 'BuzzController::index');
+$routes->get('api/buzz/(:num)', 'BuzzController::show/$1');
+$routes->post('api/buzz/upsert', 'BuzzController::upsert');
+$routes->post('api/buzz/like/(:num)', 'BuzzController::like/$1');
+$routes->delete('api/buzz/(:num)', 'BuzzController::delete/$1');
+
 $frontRoutes = [
   '/',
   'people',
@@ -79,6 +86,7 @@ $frontRoutes = [
   'account',
   'people/(:num)',
   'people_map',
+  'buzz',
   'admin/users',
   'admin/invitations',
   'admin/custom_fields',

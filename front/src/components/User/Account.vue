@@ -4,7 +4,7 @@
 
     <SkeletonPatternLoader :loading="loading">
       <template v-slot:content>
-        <form class="form-commuse-blocks mb-4" @submit.prevent="changePassword">
+        <form class="commuse-blocks mb-4" @submit.prevent="changePassword">
           <div class="panel">
             <p class="panel-heading">
               People Portal Profile Status
@@ -26,7 +26,7 @@
           </div>
         </form>
 
-        <form class="form-commuse-blocks" @submit.prevent="changePassword">
+        <form class="commuse-blocks" @submit.prevent="changePassword">
           <div class="panel">
             <p class="panel-heading">
               Change Password
@@ -61,7 +61,7 @@
       </template>
 
       <template v-slot:skeleton>
-        <div class="form-commuse-blocks">
+        <div class="commuse-blocks">
           <div class="ssc-card ssc-wrapper mb-4" v-for="n in 2" :key="n">
             <div class="ssc-head-line mb-4"></div>
             <div class="ssc-square"></div>

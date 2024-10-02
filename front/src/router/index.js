@@ -57,6 +57,14 @@ const router = createRouter({
       },
     },
     {
+      path: '/buzz',
+      component: () => import('@/components/Buzz/Index.vue'),
+      name: 'buzz.index',
+      meta: {
+        title: 'Buzz',
+      },
+    },
+    {
       path: '/admin/users',
       component: () => import('@/components/Admin/Users/Index.vue'),
       name: 'admin-users.index',
