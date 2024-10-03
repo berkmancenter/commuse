@@ -17,23 +17,32 @@ class BuzzController extends BaseController
    */
   public function index()
   {
+    $since = $this->request->getGet('since');
+
     $buzzModel = new BuzzModel();
 
-    $buzzItems = $buzzModel
-      ->select('
+    $query = $buzzModel->select('
         buzz.*,
-        people.id as user_id,
+        people.id as person_id,
+        people.user_id,
         users.username,
         people.first_name,
         people.last_name,
-        people.image_url'
-      )
+        people.image_url')
       ->join('users', 'users.id = buzz.user_id')
       ->join('people', 'people.user_id = users.id')
-      ->orderBy('buzz.created_at', 'desc')
-      ->findAll();
+      ->orderBy('buzz.created_at', 'asc');
+
+    if ($since) {
+      $query->where('buzz.updated_at >', $since);
+    }
+
+    $buzzItems = $query->findAll();
 
     foreach ($buzzItems as &$item) {
+      $item['id'] = (int) $item['id'];
+      $item['person_id'] = (int) $item['person_id'];
+      $item['user_id'] = (int) $item['user_id'];
       $item['image_url'] = $item['image_url'] ? "profile_images/{$item['image_url']}" : '';
       $item['name'] = "{$item['first_name']} {$item['last_name']}";
       $item['tags'] = json_decode($item['tags']);
@@ -74,9 +83,11 @@ class BuzzController extends BaseController
   {
     $buzzModel = new BuzzModel();
     $requestData = $this->request->getJSON(true);
+    $requestData = array_intersect_key($requestData, array_flip(['content', 'id', 'parent_id']));
+    $id = $requestData['id'] ?? null;
 
     if (!isset($requestData['content'])) {
-      return $this->fail('Invalid input data');
+      return $this->fail('Invalid input data.');
     }
 
     $buzzData = [
@@ -93,15 +104,23 @@ class BuzzController extends BaseController
     // Filter out not allowed html tags from the content
     $buzzData['content'] = strip_tags($buzzData['content'], '<a><b><i><u><strong><em><ul><ol><li><br><p>');
 
-    $id = $requestData['id'] ?? null;
+    // Check if the content is empty
+    if (empty(trim(strip_tags($buzzData['content'])))) {
+      return $this->fail('Content cannot be empty.');
+    }
 
     if ($id) {
+      $buzz = $buzzModel->find($id);
+      if ((int) $buzz['user_id'] !== auth()->id()) {
+        return $this->failForbidden('You are not authorized to update this item.');
+      }
+
       $buzzModel->update($id, $buzzData);
     } else {
       $buzzModel->insert($buzzData);
     }
 
-    return $this->respondUpdated($buzzData, 'Buzz item saved successfully');
+    return $this->respondUpdated($buzzData, 'Buzz item saved successfully.');
   }
 
   /**
@@ -128,7 +147,7 @@ class BuzzController extends BaseController
                                   ->first();
 
     if ($existingLike) {
-      return $this->fail('User has already liked this item');
+      return $this->fail('User has already liked this item.');
     }
 
     $buzzLikeData = [
@@ -143,7 +162,7 @@ class BuzzController extends BaseController
     $buzz = $buzzModel->find($id);
     $buzzModel->update($id, ['likes' => $buzz['likes'] + 1]);
 
-    return $this->respond(['message' => 'Buzz item liked successfully']);
+    return $this->respond(['message' => 'Buzz item liked successfully.']);
   }
 
   /**
@@ -159,6 +178,10 @@ class BuzzController extends BaseController
 
     if (!$buzz) {
       return $this->failNotFound('Buzz item not found');
+    }
+
+    if ((int) $buzz['user_id'] !== auth()->id()) {
+      return $this->failForbidden('You are not authorized to delete this item');
     }
 
     $buzzModel->delete($id);

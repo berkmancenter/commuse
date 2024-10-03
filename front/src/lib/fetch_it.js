@@ -13,7 +13,7 @@ const fetchIt = async (url, options = {}) => {
 
   let response
   try {
-    response = await fetch(url, options)
+    response = fetch(url, options)
   } catch (error) {
     // Aborted requests are ok, we don't need to notify the client
     if (error.message.includes('aborted') === false) {

@@ -5,10 +5,10 @@
       Buzz
     </h3>
 
-    <div class="buzz-section-editor">
+    <div class="buzz-section-editor" :class="{ 'buzz-section-editor-editing': editing }">
       <div class="panel mb-4">
         <div class="panel-block">
-          <ckeditor :editor="editor" v-model="$store.state.buzz.itemContent" :config="editorConfig"></ckeditor>
+          <ckeditor :editor="editor" v-model="$store.state.buzz.editorItem.content" :config="editorConfig"></ckeditor>
 
           <div class="buzz-section-editor-buttons mt-2">
             <ActionButton class="mt-2 mr-2" buttonText="Post" @click="postMessage()" :icon="sendIcon"></ActionButton>
@@ -20,7 +20,7 @@
 
     <SkeletonPatternLoader :loading="loading">
       <template v-slot:content>
-        <div class="buzz-section-item box" v-for="item in $store.state.buzz.items">
+        <div class="buzz-section-item box" v-for="item in $store.state.buzz.items" :key="item.id">
           <article class="media">
             <div class="media-left buzz-section-item-media">
               <figure class="image is-64x64">
@@ -32,16 +32,31 @@
             <div class="media-content">
               <div class="content">
                 <div class="buzz-section-item-meta mb-2">
-                  <router-link class="buzz-section-item-meta-name" :to="'/people/' + item.user_id">
+                  <router-link class="buzz-section-item-meta-name" :to="'/people/' + item.person_id">
                     <strong class="mr-2">{{ item.name }}</strong>
                   </router-link>
-                  <small>{{ formatTime(item.created_at) }}</small>
+                  <small :title="localTime(item.created_at)">{{ agoTime(item.created_at) }}</small>
                   <div class="buzz-section-item-meta-tags mt-2 mb-4" v-if="item.tags.length > 0">
                     <span class="tag mr-1" v-for="tag in item.tags">{{ tag }}</span>
                   </div>
                 </div>
 
                 <div class="buzz-section-item-content" v-html="item.content"></div>
+
+                <VDropdown class="buzz-section-item-dots" v-if="$store.state.user.currentUser.id === item.user_id">
+                  <div>
+                    <Icon :src="dotsIcon"></Icon>
+                  </div>
+
+                  <template #popper>
+                    <a class="dropdown-item" @click="editItem(item)" v-close-popper>
+                      Edit
+                    </a>
+                    <a class="dropdown-item" @click="openDeleteModal(item.id)" v-close-popper>
+                      Delete
+                    </a>
+                  </template>
+                </VDropdown>
               </div>
             </div>
           </article>
@@ -59,12 +74,22 @@
       </template>
     </SkeletonPatternLoader>
   </div>
+
+  <Modal
+    v-model="deleteMessageModalStatus"
+    title="Delete message"
+    @confirm="deleteMessage(id)"
+    @cancel="deleteMessageModalStatus = false"
+  >
+    Are you sure you delete the message?
+  </Modal>
 </template>
 
 <script>
   import sendIcon from '@/assets/images/send.svg'
   import clearPostIcon from '@/assets/images/clear_post.svg'
   import buzzIcon from '@/assets/images/buzz.svg'
+  import dotsIcon from '@/assets/images/dots.svg'
 
   import LazyLoad from 'vanilla-lazyload'
   import SkeletonPatternLoader from '@/components/Shared/SkeletonPatternLoader.vue'
@@ -73,6 +98,7 @@
   import Icon from '@/components/Shared/Icon.vue'
   import profileFallbackImage from '@/assets/images/profile_fallback.png'
   import moment from 'moment'
+  import Modal from '@/components/Shared/Modal.vue'
 
   export default {
     name: 'BuzzIndex',
@@ -80,26 +106,32 @@
       SkeletonPatternLoader,
       ActionButton,
       Icon,
+      Modal,
     },
     data() {
       return {
         sendIcon,
         clearPostIcon,
         buzzIcon,
+        dotsIcon,
 
         apiUrl: import.meta.env.VITE_API_URL,
         lazyLoadInstance: null,
+        profileFallbackImage,
         relativeTimeUpdater: null,
         listUpdater: null,
-        profileFallbackImage,
         paginateTotalItems: 0,
-        buzzItems: [],
         loading: true,
+        editing: false,
+
         editor: ClassicEditor,
         editorConfig: {
           plugins: [ Bold, Essentials, Italic, Paragraph, Undo, Link ],
           toolbar: [ 'undo', 'redo', '|', 'bold', 'italic', '|', 'link' ],
         },
+
+        deleteMessageModalStatus: false,
+        deleteMessageModalCurrentId: null,
       }
     },
     computed: {
@@ -127,9 +159,15 @@
           this.loading = true
         }
 
-        const response = await this.$store.dispatch('buzz/fetchItems')
+        const latestTimestamp = this.$store.state.buzz.items.length
+                                ? this.$store.state.buzz.items[0].created_at
+                                : null
 
-        this.$store.commit('buzz/setItems', response)
+        const response = await this.$store.dispatch('buzz/fetchItems', latestTimestamp)
+
+        if (response.length > 0) {
+          this.$store.commit('buzz/updateItems', response)
+        }
 
         this.loading = false
 
@@ -151,7 +189,7 @@
         this.$store.commit('buzz/clearCurrentItem')
       },
       async postMessage() {
-        const content = this.$store.state.buzz.itemContent
+        const content = this.$store.state.buzz.editorItem.content
 
         if (!content.trim()) {
           this.awn.warning('Message cannot be empty.')
@@ -159,9 +197,14 @@
           return
         }
 
-        const response = await this.$store.dispatch('buzz/postMessage', {
-          content,
-        })
+        const response = await this.$store.dispatch('buzz/postMessage', this.$store.state.buzz.editorItem)
+
+        if (response.ok === false) {
+          const body = await response.json()
+          this.awn.warning(body.messages.error)
+
+          return
+        }
 
         this.clearEditor()
         this.reloadBuzz()
@@ -170,7 +213,10 @@
           this.lazyLoadInstance.update()
         })
       },
-      formatTime(timestamp) {
+      localTime(timestamp) {
+        return moment.utc(timestamp).local().format('YYYY-MM-DD HH:mm')
+      },
+      agoTime(timestamp) {
         return moment.utc(timestamp).fromNow()
       },
       startRelativeTimeUpdater() {
@@ -182,6 +228,38 @@
         this.listUpdater = setInterval(() => {
           this.reloadBuzz()
         }, 5000)
+      },
+      async editItem(item) {
+        this.editing = false
+        await this.$nextTick(() => {
+          this.editing = true
+
+          setTimeout(() => {
+            this.editing = false
+          }, 1000)
+        })
+
+        this.$store.commit('buzz/setCurrentItem', item)
+        window.scrollTo(0, 0)
+      },
+      openDeleteModal(id) {
+        this.deleteMessageModalCurrentId = id
+        this.deleteMessageModalStatus = true
+      },
+      async deleteMessage() {
+        const response = await this.$store.dispatch('buzz/deleteMessage', this.deleteMessageModalCurrentId)
+
+        if (response.ok === false) {
+          const body = await response.json()
+          this.awn.warning(body.messages.error)
+
+          return
+        }
+
+        this.$store.commit('buzz/removeItem', this.deleteMessageModalCurrentId)
+
+        this.deleteMessageModalStatus = false
+        this.deleteMessageModalCurrentId = null
       },
     },
   }
@@ -207,6 +285,19 @@
       .ck-editor__editable {
         min-height: 100px;
       }
+
+      &-editing .ck-editor {
+        animation: pulse-border 1s infinite;
+      }
+
+      @keyframes pulse-border {
+        0% {
+          box-shadow: 0 0 0 0 var(--blue-stronger-color);
+        }
+        100% {
+          box-shadow: 0 0 10px 10px transparent;
+        }
+      }
     }
 
     .panel-block {
@@ -214,6 +305,8 @@
     }
 
     &-item {
+      position: relative;
+
       &-media {
         overflow: hidden;
         border-radius: 50%;
@@ -235,6 +328,29 @@
         &-tags {
           .tag {
             background-color: var(--main-color-lighter);
+          }
+        }
+      }
+
+      &-dots {
+        position: absolute;
+        top: 0.8rem;
+        right: 1rem;
+        cursor: pointer;
+        padding: 0.2rem;
+        border-radius: 50%;
+
+        &:hover {
+          background-color: var(--main-color-lighter);
+        }
+
+        img {
+          padding: 0;
+          height: 2rem;
+          width: 2rem;
+
+          &:hover {
+            background-color: unset;
           }
         }
       }

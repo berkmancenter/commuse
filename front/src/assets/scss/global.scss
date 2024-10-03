@@ -36,7 +36,7 @@ body, button, input, optgroup, select, textarea {
   max-width: 45%;
   min-width: unset;
 
-  @media all and (max-width: 1600px) {
+  @media all and (max-width: 1920px) {
     max-width: 60%;
   }
 
@@ -44,7 +44,7 @@ body, button, input, optgroup, select, textarea {
     max-width: 70%;
   }
 
-  @media all and (max-width: 900px) {
+  @media all and (max-width: 1000px) {
     max-width: 100%;
   }
 
@@ -92,4 +92,8 @@ form {
 
 .ssc {
   width: 100%;
+}
+
+.dropdown-item {
+  font-size: 100%;
 }

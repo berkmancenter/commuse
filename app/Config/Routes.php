@@ -76,7 +76,7 @@ $routes->get('api/buzz', 'BuzzController::index');
 $routes->get('api/buzz/(:num)', 'BuzzController::show/$1');
 $routes->post('api/buzz/upsert', 'BuzzController::upsert');
 $routes->post('api/buzz/like/(:num)', 'BuzzController::like/$1');
-$routes->delete('api/buzz/(:num)', 'BuzzController::delete/$1');
+$routes->post('api/buzz/delete/(:num)', 'BuzzController::delete/$1');
 
 $frontRoutes = [
   '/',
