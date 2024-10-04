@@ -2,15 +2,8 @@
   <div class="admin-data-editor">
     <h3 class="is-size-3 has-text-weight-bold mb-4">Data editor</h3>
 
-    <div class="admin-data-editor-search mb-4">
-      <input
-        type="text"
-        v-model="$store.state.dataEditor.dataEditorSearchQuery"
-        placeholder="Search data to edit"
-        class="input"
-        @keyup="reloadView()"
-      >
-      <span><img :src="searchIcon"></span>
+    <div class="mb-2">
+      <SearchInput v-model="$store.state.dataEditor.dataEditorSearchQuery" />
     </div>
 
     <form class="form">
@@ -78,6 +71,7 @@
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import VueMultiselect from 'vue-multiselect'
   import Modal from '@/components/Shared/Modal.vue'
+  import SearchInput from '@/components/Shared/SearchInput.vue'
 
   export default {
     name: 'AdminDataEditor',
@@ -87,6 +81,7 @@
       Booler,
       VueMultiselect,
       Modal,
+      SearchInput,
     },
     data() {
       return {
@@ -151,6 +146,7 @@
     watch: {
       '$store.state.dataEditor.dataEditorSearchQuery': function() {
         this.abortFetchDataEditorRequest()
+        this.reloadView()
       },
     },
   }

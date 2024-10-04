@@ -8,6 +8,7 @@
         "php": "^7.4 || ^8.0",
         "codeigniter4/framework": "^4.0",
         "codeigniter4/shield": "^1.0@beta",
+        "elasticsearch/elasticsearch": "^7.17",
         "gumlet/php-image-resize": "^2.0",
         "guzzlehttp/guzzle": "^7.7",
         "league/csv": "^9.15",
@@ -26,7 +27,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "autoload": {
         "exclude-from-classmap": [

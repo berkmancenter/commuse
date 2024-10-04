@@ -8,14 +8,8 @@
       <ActionButton class="mt-2 ml-2" buttonText="Filter by field" @click="openFilterChangesModal()" :active="activeFilterChangesSelected.length > 0" :icon="filterIcon"></ActionButton>
     </div>
 
-    <div class="admin-profile-data-audit-search mt-2 mb-4">
-      <input
-        type="text"
-        v-model="searchQuery"
-        placeholder="Search"
-        class="input"
-      >
-      <span><img :src="searchIcon"></span>
+    <div class="mt-2 mb-4">
+      <SearchInput v-model="searchQuery" />
     </div>
 
     <admin-table :tableClasses="['admin-data-audit-table']">
@@ -162,6 +156,7 @@
   import ChangesList from './ChangesList.vue'
   import { ClassicEditor, Bold, Essentials, Italic, Paragraph, Undo, Link } from 'ckeditor5'
   import { orderBy, identity } from 'lodash'
+  import SearchInput from '@/components/Shared/SearchInput.vue'
 
   export default {
     name: 'AdminDataAudit',
@@ -172,6 +167,7 @@
       ActionButton,
       Modal,
       ChangesList,
+      SearchInput,
     },
     data() {
       return {
@@ -371,33 +367,6 @@
 
 <style lang="scss">
   .admin-profile-data-audit {
-    .admin-profile-data-audit-search {
-      position: relative;
-      max-width: 300px;
-      min-width: 200px;
-
-      span {
-        display: block;
-        width: 1.5rem;
-        position: absolute;
-        top: 2px;
-        bottom: 2px;
-        right: 0.5rem;
-        display: flex;
-        pointer-events: none;
-        background-color: #ffffff;
-      }
-
-      input {
-        border-bottom: 2px solid var(--main-color);
-        border-radius: 0;
-      }
-
-      input::placeholder {
-        color: rgba(54, 54, 54, 0.8);
-      }
-    }
-
     tr {
       white-space: unset;
 
