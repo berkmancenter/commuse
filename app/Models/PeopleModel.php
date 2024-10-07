@@ -42,18 +42,19 @@ class PeopleModel extends Model
   /**
    * Get people with custom fields.
    *
-   * @param array $extraConditions
-   * @param array $likeConditions
-   * @param array $filters
-   * @return array
+   * @param array $extraConditions Additional conditions to apply
+   * @param array $likeConditions Conditions to apply to LIKE
+   * @param array $whereInConditions Conditions to apply to WHERE IN
+   * @param array $filters Filters to apply
+   * @return array List of processed people
    */
   public function getPeopleWithCustomFields(
     array $extraConditions = [],
     array $likeConditions = [],
-    array $filters = [],
-    $simple = true
+    array $whereInConditions = [],
+    array $filters = []
   ): array {
-    $people = $this->getPeople($extraConditions, $likeConditions, $filters);
+    $people = $this->getPeople($extraConditions, $likeConditions, $whereInConditions, $filters);
     $this->processData($people);
 
     return $people;
@@ -62,15 +63,17 @@ class PeopleModel extends Model
   /**
    * Get people with custom fields.
    *
-   * @param array $extraConditions
-   * @param array $likeConditions
-   * @param array $filters
-   * @return array
+   * @param array $extraConditions Additional conditions to apply
+   * @param array $likeConditions Conditions to apply to LIKE
+   * @param array $whereInConditions Conditions to apply to WHERE IN
+   * @param array $filters Filters to apply
+   * @return array List of people
    */
   private function getPeople(
-    array $extraConditions,
-    array $likeConditions,
-    array $filters
+    array $extraConditions = [],
+    array $likeConditions = [],
+    array $whereInConditions = [],
+    array $filters = []
   ): array {
     $builder = $this->db->table('people');
 
@@ -86,6 +89,7 @@ class PeopleModel extends Model
         people.preferred_pronouns,
         people.user_id,
         people.public_profile,
+        people.created_at,
         people.updated_at,
         json_agg(
           json_build_object(
@@ -117,6 +121,15 @@ class PeopleModel extends Model
 
     if (!empty($likeConditions)) {
       $builder->like($likeConditions);
+    }
+
+    if (!empty($whereInConditions)) {
+      foreach ($whereInConditions as $column => $values) {
+        if (!is_array($values) || empty($values)) {
+          continue;
+        }
+        $builder->whereIn($column, $values);
+      }
     }
 
     $builder->groupBy('people.id');
@@ -235,5 +248,116 @@ class PeopleModel extends Model
         });
       }
     }
+  }
+
+  /**
+   * Index a single person to Elasticsearch.
+   *
+   * @param int $personId The ID of the person
+   * @param array $data The data of the person
+   * @param bool $isUpdate Whether this is an update operation
+   * @return bool
+   */
+  public function indexInSearchIndex($personId, $data, $isUpdate = false) : bool
+  {
+    $elasticClient = service('elasticsearchClient');
+
+    $searchContent = array_map(function ($field) {
+      if (is_array($field)) {
+        return json_encode($field);
+      }
+
+      return $field;
+    }, $data);
+
+    $searchContent = strtolower(
+      str_replace(
+        ['"', '[', ']', '{', '}'],
+        '',
+        join(' ', $searchContent),
+      )
+    );
+
+    return $elasticClient->indexDocument($this->getSearchIndexName(), $personId, [
+      'id' => $personId,
+      'search_content' => $searchContent,
+      'created_at' => $data['created_at'],
+    ], $isUpdate);
+  }
+
+  /**
+   * Sync upserts to Elasticsearch after an insert.
+   *
+   * @param int $id The ID of the person
+   * @param array $data The data of the person
+   * @return bool
+   */
+  public function syncToElasticsearchAfterInsert(int $personId, array $data) : bool
+  {
+    return $this->indexInSearchIndex($personId, $data);
+  }
+  
+  /**
+   * Sync upserts to Elasticsearch after an update.
+   *
+   * @param int $id The ID of the person
+   * @param array $data The data of the person
+   * @return bool
+   */
+  public function syncToElasticsearchAfterUpdate(int $personId, array $data) : bool
+  {
+    return $this->indexInSearchIndex($personId, $data, true);
+  }
+
+  /**
+   * Remove document from Elasticsearch after a delete.
+   *
+   * @param int $id The ID of the person
+   * @return bool
+   */
+  public function removeFromSearchIndex(int $id) : bool
+  {
+    $esService = service('elasticsearchClient');
+
+    return $esService->deleteDocument($this->getSearchIndexName(), $id);
+  }
+
+  /**
+   * Generate the Elasticsearch index name based on the environment.
+   *
+   * @return string
+   */
+  public function getSearchIndexName(): string
+  {
+    $env = ENVIRONMENT;
+
+    return "commuse_{$env}_people";
+  }
+
+    /**
+   * Clears the people cache.
+   *
+   * @return void
+   */
+  public function clearPeopleCache($userProfileDataId = null) {
+    $cache = \Config\Services::cache();
+    $cache->delete('filters_with_values');
+    $cachePeopleSearchPath = ROOTPATH . 'writable/cache/people_*';
+    exec("rm {$cachePeopleSearchPath} > /dev/null 2> /dev/null");
+
+    if ($userProfileDataId) {
+      $this->clearUserCache($userProfileDataId);
+    }
+  }
+
+  /** 
+   * Clears the cache for a specific user.
+   * 
+   * @param int $userId The ID of the user whose cache is to be cleared.
+   * @return void
+   */
+  public function clearUserCache($userId) {
+    $cache = \Config\Services::cache();
+    $cache->delete("person_{$userId}");
   }
 }

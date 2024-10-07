@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
 use App\Models\BuzzModel;
-use App\Models\BuzzLikeModel;
 
 class BuzzController extends BaseController
 {
@@ -17,6 +16,8 @@ class BuzzController extends BaseController
    */
   public function index()
   {
+    $buzzModel = new BuzzModel();
+
     // Retrieve optional search query from request
     $query = $this->request->getGet('query');
     $since = $this->request->getGet('since');
@@ -63,7 +64,7 @@ class BuzzController extends BaseController
     }
 
     // Execute the search query
-    $results = $elasticClient->search('commuse_buzz', $searchQuery);
+    $results = $elasticClient->search($buzzModel->getSearchIndexName(), $searchQuery);
 
     // Check for errors in the Elasticsearch response
     if (isset($results['error'])) {

@@ -22,7 +22,7 @@ class People extends BaseController
    */
   public function index()
   {
-    $requestData = json_decode(file_get_contents('php://input'), true);
+    $requestData = $this->request->getJSON(true);
     $query = $requestData['q'];
     $filters = $requestData['filters'];
     ksort($filters);
@@ -37,13 +37,54 @@ class People extends BaseController
 
     $peopleModel = new PeopleModel();
 
+    $extraConditions = [
+      'people.public_profile' => true,
+    ];
+
+    $whereInConditions = [];
+    if ($query && strlen($query) > 1) {
+      $elasticClient = service('elasticsearchClient');
+
+      // Construct the base query for Elasticsearch
+      $searchQuery = [
+        'query' => [
+          'bool' => [
+            'must' => [
+              'match' => [
+                'search_content' => [
+                  'query' => $query,
+                  'operator' => 'and',
+                ],
+              ],
+            ],
+          ],
+        ],
+        'size' => 10000,
+      ];
+
+      // Execute the search query
+      $results = $elasticClient->search($peopleModel->getSearchIndexName(), $searchQuery);
+  
+      // Check for errors in the Elasticsearch response
+      if (isset($results['error'])) {
+        return $this->fail($results['error']);
+      }
+
+      $peopleIds = array_map(function($result) {
+        return $result['_source']['id'];
+      }, $results['hits']['hits']);
+
+      if (empty($peopleIds) === false) {
+        $whereInConditions['people.id'] = $peopleIds;
+      } else {
+        $whereInConditions['people.id'] = [0];
+      }
+    }
+
     $people = $peopleModel->getPeopleWithCustomFields(
-      [
-        'people.public_profile' => true,
-      ],
-      [
-        'people.full_text_search' => strtolower($requestData['q']),
-      ],
+      $extraConditions,
+      [],
+      $whereInConditions,
       $requestData['filters'],
     );
 

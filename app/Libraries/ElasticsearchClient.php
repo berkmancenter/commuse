@@ -57,37 +57,39 @@ class ElasticsearchClient
    * Index a document in Elasticsearch.
    *
    * @param string $index  The index name.
-   * @param string|int $id The document ID.
+   * @param int $id The document ID.
    * @param array $body    The document body.
    *
-   * @return void
+   * @return bool
    */
-  public function indexDocument(string $index, $id, array $body, bool $isUpdate = false)
+  public function indexDocument(string $index, int $id, array $body, bool $isUpdate = false): bool
   {
     $params = [
       'index' => $index,
       'id'    => $id,
       'body'  => $body,
     ];
-  
+
     if ($isUpdate) {
       $params['body'] = [
         'doc'           => $body,
         'doc_as_upsert' => true,
       ];
-  
+
       try {
         $this->client->update($params);
-        $this->logger->info("Updated document ID: {$id} in index: {$index}");
+        return true;
       } catch (ElasticsearchException $e) {
         $this->logger->error("Elasticsearch update error for document ID {$id}: " . $e->getMessage());
+        return false;
       }
     } else {
       try {
         $this->client->index($params);
-        $this->logger->info("Indexed document ID: {$id} in index: {$index}");
+        return true;
       } catch (ElasticsearchException $e) {
         $this->logger->error("Elasticsearch index error for document ID {$id}: " . $e->getMessage());
+        return false;
       }
     }
   }
@@ -98,9 +100,9 @@ class ElasticsearchClient
    * @param string $index The index name.
    * @param string|int $id The document ID.
    *
-   * @return void
+   * @return bool
    */
-  public function deleteDocument(string $index, $id)
+  public function deleteDocument(string $index, $id): bool
   {
     $params = [
       'index' => $index,
@@ -109,12 +111,14 @@ class ElasticsearchClient
 
     try {
       $this->client->delete($params);
-      $this->logger->info("Deleted document ID: {$id} from index: {$index}");
+      return true;
     } catch (ElasticsearchException $e) {
       if ($e instanceof \Elasticsearch\Common\Exceptions\Missing404Exception) {
-        $this->logger->info("Document not found for deletion in Elasticsearch: $id");
+        $this->logger->error("Document not found for deletion in Elasticsearch: $id");
+        return false;
       } else {
         $this->logger->error("Elasticsearch delete error for document ID {$id}: " . $e->getMessage());
+        return false;
       }
     }
   }
@@ -125,9 +129,9 @@ class ElasticsearchClient
    * @param string $index The name of the index to search.
    * @param array $queryBody The search query body as an associative array.
    *
-   * @return array Result of the search query.
+   * @return array|bool Result of the search query or false if it fails.
    */
-  public function search(string $index, array $queryBody): array
+  public function search(string $index, array $queryBody)
   {
     $params = [
       'index' => $index,
@@ -135,10 +139,12 @@ class ElasticsearchClient
     ];
 
     try {
-      return $this->client->search($params);
+      $result = $this->client->search($params);
+      $this->logger->info("Search performed on index: {$index}");
+      return $result;
     } catch (ElasticsearchException $e) {
       $this->logger->error('Elasticsearch search error: ' . $e->getMessage());
-      return ['error' => $e->getMessage()];
+      return false;
     }
   }
 }

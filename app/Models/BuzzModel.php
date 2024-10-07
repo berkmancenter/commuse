@@ -37,7 +37,7 @@ class BuzzModel extends Model
       $buzzItem['author_name'] = "{$buzzItem['first_name']} {$buzzItem['last_name']}";
       unset($buzzItem['first_name'], $buzzItem['last_name']);
 
-      $elasticClient->indexDocument('commuse_buzz', $buzzItem['id'], $buzzItem, $isUpdate);
+      $elasticClient->indexDocument($this->getSearchIndexName(), $buzzItem['id'], $buzzItem, $isUpdate);
     }
   }
 
@@ -69,10 +69,22 @@ class BuzzModel extends Model
     if (isset($data['id'])) {
       $ids = is_array($data['id']) ? $data['id'] : [$data['id']];
       foreach ($ids as $id) {
-        $esService->deleteDocument('commuse_buzz', $id);
+        $esService->deleteDocument($this->getSearchIndexName(), $id);
       }
     }
 
     return true;
+  }
+
+  /**
+   * Generate the Elasticsearch index name based on the environment.
+   *
+   * @return string
+   */
+  public function getSearchIndexName(): string
+  {
+    $env = ENVIRONMENT;
+
+    return "commuse_{$env}_buzz";
   }
 }

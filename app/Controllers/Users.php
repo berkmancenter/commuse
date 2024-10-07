@@ -340,7 +340,7 @@ class Users extends BaseController
       }
     }
 
-    $userModel->clearPeopleCache();
+    $peopleModel->clearPeopleCache();
 
     if ($result) {
       return $this->respond(['message' => $okMessage], 200);

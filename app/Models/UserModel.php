@@ -22,7 +22,7 @@ class UserModel extends ShieldUserModel
   ];
 
   const AUDIT_SKIP_FIELDS = [
-    'updated_at', 'full_text_search',
+    'updated_at',
   ];
 
   const REVIEW_TRIGGER_FIELDS = [
@@ -204,11 +204,12 @@ class UserModel extends ShieldUserModel
     }
 
     if ($existingPerson) {
-      $this->clearPeopleCache($oldProfileData['id']);
+      $peopleModel->clearPeopleCache($oldProfileData['id']);
     } else {
-      $this->clearPeopleCache();
+      $peopleModel->clearPeopleCache();
     }
 
+    // Ban/unban user
     if (isset($requestData['active'])) {
       $users = auth()->getProvider();
       $user = $users->findById($userId);
@@ -233,26 +234,11 @@ class UserModel extends ShieldUserModel
 
     $data['user_id'] = $userId;
 
-    if (isset($requestData['update_search_index'])) {
-      $data['full_text_search'] = array_map(function ($field) {
-        if (is_array($field)) {
-          return json_encode($field);
-        }
-  
-        return $field;
-      }, $requestData);
-      $data['full_text_search'] = strtolower(
-        str_replace(
-          ['"', '[', ']', '{', '}'],
-          '',
-          join(' ', $data['full_text_search']
-        )
-      ));
-    }
-
     $peopleModel->db->transStart();
 
+    $isUpdate = false;
     if ($existingPerson) {
+      $isUpdate = true;
       $peopleModel->update($existingPerson['id'], $data);
     } else {
       $peopleModel->insert($data);
@@ -265,9 +251,13 @@ class UserModel extends ShieldUserModel
 
     $peopleModel->db->transComplete();
 
+    $newProfileData = $this->getUserProfileData($userId);
+
     if ((php_sapi_name() === 'cli' || auth()->user()) && $existingPerson) {
-      $this->addAuditRecord($oldProfileData, $existingPerson, $userId, $sync, $noSync);
+      $this->addAuditRecord($oldProfileData, $newProfileData, $userId, $sync, $noSync);
     }
+
+    $peopleModel->indexInSearchIndex($newProfileData['id'], $newProfileData, $isUpdate);
 
     $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';
 
@@ -527,100 +517,96 @@ class UserModel extends ShieldUserModel
    * review (as defined by REVIEW_TRIGGER_FIELDS), an email notification is sent to the designated reviewers.
    *
    * @param array $oldProfileData The previous profile data before the update.
-   * @param array $existingPerson The existing person's data.
    * @param int $userId The ID of the user whose profile is being updated.
    * @param bool $sync Whether to synchronize the user data with the remote service.
    * @param bool $noSync Whether to skip synchronization with the remote service.
+   * @return void
    */
-  private function addAuditRecord($oldProfileData, $existingPerson, $userId, $sync = false, $noSync = false) {
-    // Create audit record if needed
-    if ($existingPerson) {
-      $keysToSkip = array_merge(self::AUDIT_SKIP_FIELDS, $this->getChildCustomFields());
-      $newProfileData = $this->getUserProfileData($userId);
-      $newValues = ArrayDiffMultidimensional::compare($newProfileData, $oldProfileData, false);
-      $newValues = array_diff_key($newValues, array_flip($keysToSkip));
-      $oldValues = ArrayDiffMultidimensional::compare($oldProfileData, $newProfileData, false);
-      $oldValues = array_diff_key($oldValues, array_flip($keysToSkip));
-      $review = 'not_required';
-      $countedNewValues = count($newValues);
+  private function addAuditRecord($oldProfileData, $newProfileData, $userId, bool $sync = false, bool $noSync = false) : void {
+    $keysToSkip = array_merge(self::AUDIT_SKIP_FIELDS, $this->getChildCustomFields());
+    $newValues = ArrayDiffMultidimensional::compare($newProfileData, $oldProfileData, false);
+    $newValues = array_diff_key($newValues, array_flip($keysToSkip));
+    $oldValues = ArrayDiffMultidimensional::compare($oldProfileData, $newProfileData, false);
+    $oldValues = array_diff_key($oldValues, array_flip($keysToSkip));
+    $review = 'not_required';
+    $countedNewValues = count($newValues);
 
-      // Check if the user is editing their own profile
-      // and if the changes require review
-      // and if the user is not an admin
-      // and if the script is not running in CLI mode
-      // to determine if the changes require review
-      $reviewNeeded = (
+    // Check if the user is editing their own profile
+    // and if the changes require review
+    // and if the user is not an admin
+    // and if the script is not running in CLI mode
+    // to determine if the changes require review
+    $reviewNeeded = (
+      (
+        php_sapi_name() !== 'cli' &&
         (
-          php_sapi_name() !== 'cli' &&
-          (
-            auth()->user()->id === $userId &&
-            auth()->user()->can('admin.access') === false
-          )
-        ) &&
-        array_intersect(array_keys($newValues), self::REVIEW_TRIGGER_FIELDS)
-      );
+          auth()->user()->id === $userId &&
+          auth()->user()->can('admin.access') === false
+        )
+      ) &&
+      array_intersect(array_keys($newValues), self::REVIEW_TRIGGER_FIELDS)
+    );
+
+    if ($reviewNeeded) {
+      $review = 'required';
+    }
+
+    // If there are changes, create an audit record
+    if ($countedNewValues > 0) {
+      if (php_sapi_name() !== 'cli') {
+        $changedUserId = auth()->id();
+      } else {
+        $users = auth()->getProvider();
+        $systemUser = $users->findByCredentials(['email' => 'system_user@example.com']);
+        $changedUserId = $systemUser->id;
+      }
+
+      $db = \Config\Database::connect();
+      $builder = $db->table('audit');
+      $builder->insert([
+        'audited_id' => $userId,
+        'model_name' => 'People',
+        'changed_user_id' => $changedUserId,
+        'changes' => json_encode([
+          'new' => $newValues,
+          'old' => $oldValues,
+        ]),
+        'review' => $review,
+      ]);
 
       if ($reviewNeeded) {
         $review = 'required';
-      }
 
-      // If there are changes, create an audit record
-      if ($countedNewValues > 0) {
-        if (php_sapi_name() !== 'cli') {
-          $changedUserId = auth()->id();
-        } else {
-          $users = auth()->getProvider();
-          $systemUser = $users->findByCredentials(['email' => 'system_user@example.com']);
-          $changedUserId = $systemUser->id;
+        $email = \Config\Services::email();
+        $name = $newProfileData['first_name'] . ' ' . $newProfileData['last_name'];
+        $userEmail = '';
+        if ($newProfileData['email']) {
+          $userEmail = ' ' . $newProfileData['email'];
         }
+        $insertedId = $db->insertID();
+        $dataAuditLink = site_url("admin/profile_data_audit/{$insertedId}");
+        $email->setTo(SystemSettingsWrapper::getInstance()->getSettingByKey('DataAuditReviewAdminEmails')['value']);
+        $email->setSubject("Profile edit made by {$name}{$userEmail}");
+        $email->setMessage("
+          Action required to accept profile changes made by {$name}{$userEmail}.<br><br>" . "
+          Click to process it: <a href=\"{$dataAuditLink}\">{$dataAuditLink}</a>.
+        ");
 
-        $db = \Config\Database::connect();
-        $builder = $db->table('audit');
-        $builder->insert([
-          'audited_id' => $userId,
-          'model_name' => 'People',
-          'changed_user_id' => $changedUserId,
-          'changes' => json_encode([
-            'new' => $newValues,
-            'old' => $oldValues,
-          ]),
-          'review' => $review,
-        ]);
-
-        if ($reviewNeeded) {
-          $review = 'required';
-
-          $email = \Config\Services::email();
-          $name = $existingPerson['first_name'] . ' ' . $existingPerson['last_name'];
-          $userEmail = '';
-          if ($existingPerson['email']) {
-            $userEmail = ' ' . $existingPerson['email'];
-          }
-          $insertedId = $db->insertID();
-          $dataAuditLink = site_url("admin/profile_data_audit/{$insertedId}");
-          $email->setTo(SystemSettingsWrapper::getInstance()->getSettingByKey('DataAuditReviewAdminEmails')['value']);
-          $email->setSubject("Profile edit made by {$name}{$userEmail}");
-          $email->setMessage("
-            Action required to accept profile changes made by {$name}{$userEmail}.<br><br>" . "
-            Click to process it: <a href=\"{$dataAuditLink}\">{$dataAuditLink}</a>.
-          ");
-
-          $email->send();
-        }
+        $email->send();
       }
+    }
 
-      // Synchronize user data with the remote service when saved by an admin
-      if (
-        $noSync === false &&
-        (
-          $sync === true ||
-          ($countedNewValues > 0 &&
-          auth()->user()->can('admin.access') === true)
-        )
-      ) {
-        $dataAuditModel = new DataAuditModel();
-        $dataAuditModel->syncUserData($newProfileData);
-      }
+    // Synchronize user data with the remote service when saved by an admin
+    if (
+      $noSync === false &&
+      (
+        $sync === true ||
+        ($countedNewValues > 0 &&
+        auth()->user()->can('admin.access') === true)
+      )
+    ) {
+      $dataAuditModel = new DataAuditModel();
+      $dataAuditModel->syncUserData($newProfileData);
     }
   }
 
@@ -690,32 +676,5 @@ class UserModel extends ShieldUserModel
     } else {
       return false;
     }
-  }
-
-  /**
-   * Clears the people cache.
-   *
-   * @return void
-   */
-  public function clearPeopleCache($userProfileDataId = null) {
-    $cache = \Config\Services::cache();
-    $cache->delete('filters_with_values');
-    $cachePeopleSearchPath = ROOTPATH . 'writable/cache/people_*';
-    exec("rm {$cachePeopleSearchPath} > /dev/null 2> /dev/null");
-
-    if ($userProfileDataId) {
-      $this->clearUserCache($userProfileDataId);
-    }
-  }
-
-  /** 
-   * Clears the cache for a specific user.
-   * 
-   * @param int $userId The ID of the user whose cache is to be cleared.
-   * @return void
-   */
-  public function clearUserCache($userId) {
-    $cache = \Config\Services::cache();
-    $cache->delete("person_{$userId}");
   }
 }

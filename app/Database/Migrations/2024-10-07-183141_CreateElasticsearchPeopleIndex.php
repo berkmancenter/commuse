@@ -3,17 +3,17 @@
 namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
-use App\Models\BuzzModel;
+use App\Models\PeopleModel;
 
-class CreateElasticsearchBuzzIndex extends Migration
+class CreateElasticsearchPeopleIndex extends Migration
 {
   public function up()
   {
     $elasticClient = service('elasticsearchClient');
-    $buzzModel = new BuzzModel();
+    $peopleModel = new PeopleModel();
 
     $params = [
-      'index' => $buzzModel->getSearchIndexName(),
+      'index' => $peopleModel->getSearchIndexName(),
       'body'  => [
         'settings' => [
           'analysis' => [
@@ -39,36 +39,11 @@ class CreateElasticsearchBuzzIndex extends Migration
             'id' => [
               'type' => 'integer',
             ],
-            'content' => [
-              'type' => 'text',
-            ],
             'search_content' => [
               'type' => 'text',
               'analyzer' => 'ngram_analyzer',
             ],
-            'tags' => [
-              'type' => 'keyword',
-            ],
-            'author_name' => [
-              'type' => 'text',
-            ],
-            'user_id' => [
-              'type' => 'integer',
-            ],
-            'likes' => [
-              'type' => 'integer',
-            ],
-            'person_id' => [
-              'type' => 'integer',
-            ],
-            'image_url' => [
-              'type' => 'text',
-            ],
             'created_at' => [
-              'type' => 'date',
-              'format' => 'yyyy-MM-dd HH:mm:ss||strict_date_optional_time||epoch_millis',
-            ],
-            'updated_at' => [
               'type' => 'date',
               'format' => 'yyyy-MM-dd HH:mm:ss||strict_date_optional_time||epoch_millis',
             ],
@@ -83,9 +58,9 @@ class CreateElasticsearchBuzzIndex extends Migration
 
   public function down()
   {
-    $buzzModel = new BuzzModel();
+    $peopleModel = new PeopleModel();
 
     $elasticClient = service('elasticsearchClient');
-    $elasticClient->getClient()->indices()->delete(['index' => $buzzModel->getSearchIndexName()]);
+    $elasticClient->getClient()->indices()->delete(['index' => $peopleModel->getSearchIndexName()]);
   }
 }

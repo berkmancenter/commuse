@@ -12,7 +12,14 @@ class IndexBuzzItems extends BaseCommand
   protected $name        = 'index:buzz';
   protected $description = 'Indexes all buzz items into Elasticsearch.';
 
-  public function run(array $params)
+  /**
+   * Indexes all buzz items in the database.
+   *
+   * @param array $params The command parameters.
+   *
+   * @return void
+   */
+  public function run(array $_params)
   {
     $buzzModel = new BuzzModel();
 
