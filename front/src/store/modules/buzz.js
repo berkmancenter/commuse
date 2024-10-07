@@ -1,4 +1,5 @@
 import fetchIt from '@/lib/fetch_it'
+import { objectToQueryParams } from '@/lib/url_params'
 
 const apiUrl = import.meta.env.VITE_API_URL
 
@@ -10,6 +11,7 @@ const defaultItem = {
 const state = {
   editorItem: JSON.parse(JSON.stringify(defaultItem)),
   items: [],
+  fetchItemsController: null,
 }
 
 const mutations = {
@@ -42,17 +44,18 @@ const mutations = {
 }
 
 const actions = {
-  async fetchItems(context, latestTimestamp) {
-    let url = `${apiUrl}/api/buzz`
-    if (latestTimestamp) {
-      url = `${apiUrl}/api/buzz?since=${latestTimestamp}`
-    }
+  async fetchItems(context, params) {
+    let url = `${apiUrl}/api/buzz?${objectToQueryParams(params)}`
+
+    context.state.fetchItemsController = new AbortController()
 
     const response = await fetchIt(url, {
+      method: 'GET',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
+      signal: context.state.fetchItemsController.signal,
     })
 
     const data = await response.json()
@@ -94,6 +97,9 @@ const actions = {
   removeItem(context, itemId) {
     context.commit('removeItem', itemId)
   },
+  clearItems(context) {
+    context.commit('setItems', [])
+  }
 }
 
 const getters = {}

@@ -3,16 +3,7 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">People</h3>
 
     <div class="people-section-filters mb-4">
-      <div class="people-section-filters-search">
-        <input
-          type="text"
-          v-model="$store.state.people.peopleSearchTerm"
-          placeholder="Search"
-          class="input"
-          @keyup="reloadView()"
-        >
-        <span><img :src="searchIcon"></span>
-      </div>
+      <SearchInput v-model="$store.state.people.peopleSearchTerm" />
 
       <div class="mt-4 mb-2">
         <ActionButton :button="true" :disabled="loading" buttonText="Filters" :icon="filterIcon" @click="openFiltersModal()"></ActionButton>
@@ -163,7 +154,6 @@
   import Person from '@/components/People/Person.vue'
   import profileFallbackImage from '@/assets/images/profile_fallback.png'
   import VueMultiselect from 'vue-multiselect'
-  import searchIcon from '@/assets/images/search.svg'
   import filterIcon from '@/assets/images/filter.svg'
   import closeIcon from '@/assets/images/close.svg'
   import arrowUpIcon from '@/assets/images/arrow_up.svg'
@@ -174,6 +164,7 @@
   import Modal from '@/components/Shared/Modal.vue'
   import { some, orderBy } from 'lodash'
   import SkeletonPatternLoader from '@/components/Shared/SkeletonPatternLoader.vue'
+  import SearchInput from '@/components/Shared/SearchInput.vue'
 
   const apiUrl = import.meta.env.VITE_API_URL
 
@@ -185,12 +176,12 @@
       ActionButton,
       Modal,
       SkeletonPatternLoader,
+      SearchInput,
     },
     data() {
       return {
         lazyLoadInstance: null,
         profileFallbackImage: profileFallbackImage,
-        searchIcon,
         filterIcon,
         closeIcon,
         clearFiltersIcon,
@@ -392,6 +383,7 @@
     watch: {
       '$store.state.people.peopleSearchTerm': function() {
         this.abortFetchPeopleRequest()
+        this.reloadView()
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
         })
@@ -441,39 +433,9 @@
       }
     }
 
-    .people-section-search-input {
-      width: 200px;
-    }
-
     .people-section-filters {
       > div {
         margin-right: 1rem;
-      }
-
-      input {
-        border-bottom: 2px solid var(--main-color);
-        border-radius: 0;
-      }
-
-      input::placeholder {
-        color: rgba(54, 54, 54, 0.8);
-      }
-
-      .people-section-filters-search {
-        position: relative;
-        max-width: 300px;
-
-        span {
-          display: block;
-          width: 1.5rem;
-          height: 1.5rem;
-          position: absolute;
-          top: 0;
-          right: 0.5rem;
-          height: 100%;
-          display: flex;
-          pointer-events: none;
-        }
       }
     }
 

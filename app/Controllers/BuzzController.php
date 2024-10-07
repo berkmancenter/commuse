@@ -17,36 +17,75 @@ class BuzzController extends BaseController
    */
   public function index()
   {
+    // Retrieve optional search query from request
+    $query = $this->request->getGet('query');
     $since = $this->request->getGet('since');
 
-    $buzzModel = new BuzzModel();
+    $elasticClient = service('elasticsearchClient');
 
-    $query = $buzzModel->select('
-        buzz.*,
-        people.id as person_id,
-        people.user_id,
-        users.username,
-        people.first_name,
-        people.last_name,
-        people.image_url')
-      ->join('users', 'users.id = buzz.user_id')
-      ->join('people', 'people.user_id = users.id')
-      ->orderBy('buzz.created_at', 'asc');
+    // Construct the base query for Elasticsearch
+    $searchQuery = [
+      'query' => [
+        'bool' => [
+          'must' => [
+            // Use a match_all query if no specific search query is provided
+            'match_all' => new \stdClass()
+          ],
+        ],
+      ],
+      'sort' => [
+        'created_at' => [ 'order' => 'asc' ],
+      ],
+      'size' => 100,
+    ];
 
-    if ($since) {
-      $query->where('buzz.updated_at >', $since);
+    // Add specific search conditions if a query is present
+    if (!empty($query)) {
+      $searchQuery['query']['bool']['must'] = [
+        'match' => [
+          'search_content' => [
+            'query' => $query,
+            'operator' => 'and',
+          ],
+        ],
+      ];
     }
 
-    $buzzItems = $query->findAll();
-
-    foreach ($buzzItems as &$item) {
-      $item['id'] = (int) $item['id'];
-      $item['person_id'] = (int) $item['person_id'];
-      $item['user_id'] = (int) $item['user_id'];
-      $item['image_url'] = $item['image_url'] ? "profile_images/{$item['image_url']}" : '';
-      $item['name'] = "{$item['first_name']} {$item['last_name']}";
-      $item['tags'] = json_decode($item['tags']);
+    // Add a filter on the update date if 'since' parameter is provided
+    if ($since && $since !== 'null') {
+      $searchQuery['query']['bool']['filter'][] = [
+        'range' => [
+          'updated_at' => [
+            'gt' => $since,
+          ],
+        ],
+      ];
     }
+
+    // Execute the search query
+    $results = $elasticClient->search('commuse_buzz', $searchQuery);
+
+    // Check for errors in the Elasticsearch response
+    if (isset($results['error'])) {
+      return $this->fail($results['error']);
+    }
+
+    // Extract and format the results
+    $hits = $results['hits']['hits'];
+    $buzzItems = array_map(function ($hit) {
+      $doc = $hit['_source'];
+
+      return [
+        'id'       => (int) $doc['id'],
+        'content'  => $doc['content'],
+        'tags'     => json_decode($doc['tags']),
+        'person_id'  => (int) $doc['person_id'],
+        'user_id'  => (int) $doc['user_id'],
+        'image_url'=> $doc['image_url'] ? "profile_images/{$doc['image_url']}" : '',
+        'name'     => $doc['author_name'],
+        'created_at' => $doc['created_at'],
+      ];
+    }, $hits);
 
     return $this->respond($buzzItems);
   }
@@ -116,8 +155,11 @@ class BuzzController extends BaseController
       }
 
       $buzzModel->update($id, $buzzData);
+      $buzzModel->indexSingleBuzzItem($id, true);
     } else {
       $buzzModel->insert($buzzData);
+      $buzzId = $buzzModel->getInsertID();
+      $buzzModel->indexSingleBuzzItem($buzzId);
     }
 
     return $this->respondUpdated($buzzData, 'Buzz item saved successfully.');

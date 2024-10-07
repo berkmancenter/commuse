@@ -11,14 +11,8 @@
       <ActionButton class="mr-2 mb-2" buttonText="Set active status" @click="() => setActiveStatusModalOpen(selectedUsers)" :icon="activeIcon"></ActionButton>
     </div>
 
-    <div class="admin-users-search mb-4">
-      <input
-        type="text"
-        v-model="searchTerm"
-        placeholder="Search"
-        class="input"
-      >
-      <span><img :src="searchIcon"></span>
+    <div class="mb-2">
+      <SearchInput v-model="searchTerm" />
     </div>
 
     <form class="form">
@@ -279,6 +273,7 @@
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
   import CustomField from '@/components/CustomFields/CustomField.vue'
+  import SearchInput from '@/components/Shared/SearchInput.vue'
 
   import minusIcon from '@/assets/images/minus.svg'
   import clipboardIcon from '@/assets/images/clipboard.svg'
@@ -303,6 +298,7 @@
       ActionButton,
       Modal,
       CustomField,
+      SearchInput,
     },
     data() {
       return {
@@ -607,32 +603,6 @@
   .admin-users-import-csv {
     input {
       display: none;
-    }
-  }
-
-  .admin-users-search {
-    position: relative;
-    max-width: 300px;
-
-    span {
-      display: block;
-      width: 1.5rem;
-      position: absolute;
-      top: 2px;
-      bottom: 2px;
-      right: 0.5rem;
-      display: flex;
-      pointer-events: none;
-      background-color: #ffffff;
-    }
-
-    input {
-      border-bottom: 2px solid var(--main-color);
-      border-radius: 0;
-    }
-
-    input::placeholder {
-      color: rgba(54, 54, 54, 0.8);
     }
   }
 </style>

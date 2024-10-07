@@ -5,6 +5,10 @@
       Buzz
     </h3>
 
+    <div class="mb-4">
+      <SearchInput v-model="searchTerm" />
+    </div>
+
     <div class="buzz-section-editor" :class="{ 'buzz-section-editor-editing': editing }">
       <div class="panel mb-4">
         <div class="panel-block">
@@ -24,7 +28,7 @@
           <article class="media">
             <div class="media-left buzz-section-item-media">
               <figure class="image is-64x64">
-                <router-link :to="'/people/' + item.user_id">
+                <router-link :to="'/people/' + item.person_id">
                   <img :data-src="`${apiUrl}/api/files/get/${item.image_url}`" class="lazy" />
                 </router-link>
               </figure>
@@ -99,6 +103,7 @@
   import profileFallbackImage from '@/assets/images/profile_fallback.png'
   import moment from 'moment'
   import Modal from '@/components/Shared/Modal.vue'
+  import SearchInput from '@/components/Shared/SearchInput.vue'
 
   export default {
     name: 'BuzzIndex',
@@ -107,6 +112,7 @@
       ActionButton,
       Icon,
       Modal,
+      SearchInput,
     },
     data() {
       return {
@@ -123,6 +129,7 @@
         paginateTotalItems: 0,
         loading: true,
         editing: false,
+        searchTerm: '',
 
         editor: ClassicEditor,
         editorConfig: {
@@ -154,16 +161,20 @@
       clearInterval(this.listUpdater)
     },
     methods: {
-      async reloadBuzz(showLoading = false) {
-        if (showLoading) {
+      async reloadBuzz(replace = false) {
+        if (replace) {
           this.loading = true
+          this.$store.dispatch('buzz/clearItems')
         }
 
         const latestTimestamp = this.$store.state.buzz.items.length
                                 ? this.$store.state.buzz.items[0].created_at
                                 : null
 
-        const response = await this.$store.dispatch('buzz/fetchItems', latestTimestamp)
+        const response = await this.$store.dispatch('buzz/fetchItems', {
+          since: latestTimestamp,
+          query: this.searchTerm,
+        })
 
         if (response.length > 0) {
           this.$store.commit('buzz/updateItems', response)
@@ -236,7 +247,7 @@
 
           setTimeout(() => {
             this.editing = false
-          }, 1000)
+          }, 1500)
         })
 
         this.$store.commit('buzz/setCurrentItem', item)
@@ -258,8 +269,26 @@
 
         this.$store.commit('buzz/removeItem', this.deleteMessageModalCurrentId)
 
+        if (this.deleteMessageModalCurrentId === this.$store.state.buzz.editorItem.id) {
+          this.clearEditor()
+        }
+
         this.deleteMessageModalStatus = false
         this.deleteMessageModalCurrentId = null
+      },
+      abortFetchItemsRequest() {
+        if (this.$store.state.buzz.fetchItemsController) {
+          this.$store.state.buzz.fetchItemsController.abort()
+        }
+      },
+    },
+    watch: {
+      'searchTerm': function() {
+        this.abortFetchItemsRequest()
+        this.reloadBuzz(true)
+        this.$nextTick(() => {
+          this.lazyLoadInstance.update()
+        })
       },
     },
   }
@@ -287,7 +316,7 @@
       }
 
       &-editing .ck-editor {
-        animation: pulse-border 1s infinite;
+        animation: pulse-border 1.5s infinite;
       }
 
       @keyframes pulse-border {
