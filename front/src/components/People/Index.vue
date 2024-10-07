@@ -296,6 +296,8 @@
         try {
           people = await this.$store.dispatch('people/fetchPeople')
         } catch (error) {
+          this.awn.alert('Something went wrong, try to reload the page.')
+
           return
         }
 

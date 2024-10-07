@@ -31,7 +31,7 @@ const actions = {
     context.state.peopleFetchController = new AbortController()
 
     const response = await fetchIt(`${apiUrl}/api/people`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

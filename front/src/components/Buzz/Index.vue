@@ -162,6 +162,8 @@
     },
     methods: {
       async reloadBuzz(replace = false) {
+        const searchTermEntering = this.searchTerm
+
         if (replace) {
           this.loading = true
           this.$store.dispatch('buzz/clearItems')
@@ -175,6 +177,10 @@
           since: latestTimestamp,
           query: this.searchTerm,
         })
+
+        if (searchTermEntering !== this.searchTerm) {
+          return
+        }
 
         if (response.length > 0) {
           this.$store.commit('buzz/updateItems', response)
