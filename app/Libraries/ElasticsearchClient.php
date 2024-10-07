@@ -27,8 +27,19 @@ class ElasticsearchClient
   public function __construct()
   {
     $this->client = ClientBuilder::create()
-      ->setHosts([$_ENV['elasticSearch.host']])
-      ->build();
+      ->setHosts([$_ENV['elasticSearch.host']]);
+
+    if (isset($_ENV['elasticSearch.username']) &&
+        isset($_ENV['elasticSearch.password']) &&
+        $_ENV['elasticSearch.username'] &&
+        $_ENV['elasticSearch.password']
+    ) {
+      $this->client = $this->client
+        ->setBasicAuthentication($_ENV['elasticSearch.username'], $_ENV['elasticSearch.password']);
+    }
+
+    $this->client = $this->client->build();
+
     $this->logger = service('logger');
   }
 
