@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace App\Filters;
 
-use App\Models\UserModel;
+use App\Models\PeopleModel;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -54,8 +54,8 @@ class ForceReintakeFilter implements FilterInterface
           ->getResultArray();
 
         if (count($person)) {
-          if ($person[0]['reintake'] === UserModel::REINTAKE_STATUS_REQUIRED ||
-              $person[0]['reintake'] === UserModel::REINTAKE_STATUS_DENIED) {
+          if ($person[0]['reintake'] === PeopleModel::REINTAKE_STATUS_REQUIRED ||
+              $person[0]['reintake'] === PeopleModel::REINTAKE_STATUS_DENIED) {
             return redirect()->to(site_url('reintake'));
           }
         }

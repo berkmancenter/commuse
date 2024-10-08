@@ -45,7 +45,7 @@ class Users extends BaseController
    */
   public function profile($id = null)
   {
-    $usersModel = new UserModel();
+    $peopleModel = new PeopleModel();
 
     $userId = auth()->id();
 
@@ -53,7 +53,7 @@ class Users extends BaseController
       $userId = $id;
     }
 
-    $userData = $usersModel->getUserProfileData($userId);
+    $userData = $peopleModel->getProfileData($userId);
 
     if (!$userData) {
       return $this->respond([]);
@@ -75,8 +75,6 @@ class Users extends BaseController
    */
   public function profileStatus()
   {
-    $usersModel = new UserModel();
-
     $userId = auth()->id();
 
     $db = \Config\Database::connect();
@@ -106,8 +104,8 @@ class Users extends BaseController
    */
   public function profileStructure()
   {
-    $usersModel = new UserModel();
-    $profileStructure = $usersModel->getUserProfileStructure();
+    $peopleModel = new PeopleModel();
+    $profileStructure = $peopleModel->getProfileStructure();
 
     return $this->respond($profileStructure);
   }
@@ -119,10 +117,10 @@ class Users extends BaseController
    */
   public function saveProfile()
   {
-    $userModel = new UserModel();
+    $peopleModel = new PeopleModel();
     $requestData = $this->request->getJSON(true);
 
-    list($result, $message) = $userModel->saveProfileData($requestData);
+    list($result, $message) = $peopleModel->saveProfileData($requestData);
 
     if ($result) {
       return $this->respond(['message' => $message], 200);
@@ -138,10 +136,10 @@ class Users extends BaseController
    */
   public function createNewUser()
   {
-    $userModel = new UserModel();
+    $peopleModel = new PeopleModel();
     $requestData = $this->request->getJSON(true);
 
-    list($result, $message) = $userModel->saveProfileData($requestData, null, false, true, true);
+    list($result, $message) = $peopleModel->saveProfileData($requestData, null, false, true, true);
 
     if ($result) {
       return $this->respond(['message' => $message], 200);
@@ -157,10 +155,10 @@ class Users extends BaseController
    */
   public function savePublicProfileStatus()
   {
-    $userModel = new UserModel();
+    $peopleModel = new PeopleModel();
     $requestData = $this->request->getJSON(true);
 
-    list($result, $message) = $userModel->saveProfileData($requestData, null, false, true);
+    list($result, $message) = $peopleModel->saveProfileData($requestData, null, false, true);
 
     if ($result) {
       return $this->respond(['message' => $message], 200);
@@ -407,7 +405,7 @@ class Users extends BaseController
 
     $result = false;
     $count = 0;
-    $userModel = new UserModel();
+    $peopleModel = new PeopleModel();
     $usersProvider = auth()->getProvider();
 
     $file = $this->request->getFile('csv');
@@ -509,7 +507,7 @@ class Users extends BaseController
               }
             });
 
-            $userModel->saveProfileData($record, $userId, true);
+            $peopleModel->saveProfileData($record, $userId, true);
             $count++;
           }
         } catch (\Throwable $exceptionRecord) {
@@ -543,7 +541,7 @@ class Users extends BaseController
    */
   public function getUsersCsvImportTemplate() {
     $csvImportFields = [];
-    $csvImportFields = array_merge($csvImportFields, array_diff(UserModel::BASE_FIELDS, ['public_profile']));
+    $csvImportFields = array_merge($csvImportFields, array_diff(PeopleModel::BASE_FIELDS, ['public_profile']));
 
     $customFieldsModel = model('CustomFieldModel');
     $customFields = $customFieldsModel
@@ -630,13 +628,13 @@ class Users extends BaseController
       $requestData = $this->request->getJSON(true);
       $userIds = $requestData['users'] ?? [];
       $status = $requestData['status'] ?? 'not_required';
-      $usersModel = new UserModel();
+      $peopleModel = new PeopleModel();
 
       if (!empty($userIds)) {
         foreach ($userIds as $userId) {
-          $userData = $usersModel->getUserProfileData($userId);
+          $userData = $peopleModel->getProfileData($userId);
           $userData['reintake'] = $status;
-          $usersModel->saveProfileData($userData, $userId);
+          $peopleModel->saveProfileData($userData, $userId);
         }
       }
     } catch (\Throwable $th) {
@@ -666,7 +664,7 @@ class Users extends BaseController
    */
   public function reintakeAccept()
   {
-    $this->reintakeSet(UserModel::REINTAKE_STATUS_ACCEPTED);
+    $this->reintakeSet(PeopleModel::REINTAKE_STATUS_ACCEPTED);
 
     return redirect()->to(site_url('profile'));
   }
@@ -680,7 +678,7 @@ class Users extends BaseController
    */
   public function reintakeDeny()
   {
-    $this->reintakeSet(UserModel::REINTAKE_STATUS_DENIED);
+    $this->reintakeSet(PeopleModel::REINTAKE_STATUS_DENIED);
     auth()->logout();
 
     return redirect()->to(site_url());
@@ -694,7 +692,7 @@ class Users extends BaseController
    */
   private function reintakeSet($status) {
     $userId = auth()->id();
-    $usersModel = new UserModel();
+    $peopleModel = new PeopleModel();
 
     $db = \Config\Database::connect();
     $builder = $db->table('people p');
@@ -705,11 +703,11 @@ class Users extends BaseController
       ->getResultArray();
 
     if (count($person)) {
-      if ($person[0]['reintake'] === UserModel::REINTAKE_STATUS_REQUIRED ||
-          $person[0]['reintake'] === UserModel::REINTAKE_STATUS_DENIED) {
-        $userData = $usersModel->getUserProfileData($userId);
+      if ($person[0]['reintake'] === PeopleModel::REINTAKE_STATUS_REQUIRED ||
+          $person[0]['reintake'] === PeopleModel::REINTAKE_STATUS_DENIED) {
+        $userData = $peopleModel->getProfileData($userId);
         $userData['reintake'] = $status;
-        $usersModel->saveProfileData($userData, $userId, false, true);
+        $peopleModel->saveProfileData($userData, $userId, false, true);
 
         $this->reintakeSendNotificationEmailToAdmins($status, $person[0]);
         $this->reintakeSendNotificationEmailToUser($status, $person[0]);
@@ -747,7 +745,7 @@ class Users extends BaseController
     $email = \Config\Services::email();
 
 
-    if (UserModel::REINTAKE_STATUS_ACCEPTED === $status) {
+    if (PeopleModel::REINTAKE_STATUS_ACCEPTED === $status) {
       $subject = str_replace(
         ['###ACCEPTED_BY_FIRST_NAME###', '###ACCEPTED_BY_LAST_NAME###', '###ACCEPTED_BY_EMAIL###'],
         [$person['first_name'], $person['last_name'], $person['email']],
@@ -784,18 +782,18 @@ class Users extends BaseController
      $requestData = $this->request->getJSON(true);
      $userIds = $requestData['users'] ?? [];
      $affiliation = $requestData['affiliation'] ?? [];
-     $usersModel = new UserModel();
+     $peopleModel = new PeopleModel();
 
      if (!empty($userIds)) {
        foreach ($userIds as $userId) {
-         $userData = $usersModel->getUserProfileData($userId);
+         $userData = $peopleModel->getProfileData($userId);
          if ($affiliation === 'unset') {
            $userData['activeAffiliation'] = [];
          } else {
            $userData['activeAffiliation'] = $affiliation;
          }
 
-         $usersModel->saveProfileData($userData, $userId, true);
+         $peopleModel->saveProfileData($userData, $userId, true);
        }
      }
     } catch (\Throwable $th) {
@@ -818,13 +816,13 @@ class Users extends BaseController
       $requestData = $this->request->getJSON(true);
       $userIds = $requestData['users'] ?? [];
       $status = $requestData['status'] ?? 'active';
-      $usersModel = new UserModel();
+      $peopleModel = new PeopleModel();
   
       if (!empty($userIds)) {
         foreach ($userIds as $userId) {
-          $userData = $usersModel->getUserProfileData($userId);
+          $userData = $peopleModel->getProfileData($userId);
           $userData['active'] = $status === 'active';
-          $usersModel->saveProfileData($userData, $userId, false, true);
+          $peopleModel->saveProfileData($userData, $userId, false, true);
         }
       }
     } catch (\Throwable $th) {

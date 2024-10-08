@@ -3,7 +3,7 @@ namespace App\Commands;
 
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
-use App\Models\UserModel;
+use App\Models\PeopleModel;
 
 /**
  * Command class for processing future affiliations that have become active.
@@ -75,12 +75,12 @@ class ProcessFutureAffiliations extends BaseCommand
     }
 
     foreach ($people as $person) {
-      $usersModel = new UserModel();
+      $peopleModel = new PeopleModel();
 
-      $userData = $usersModel->getUserProfileData($person['user_id']);
+      $userData = $peopleModel->getProfileData($person['user_id']);
 
       // This will trigger a sync call to the remote service
-      $usersModel->saveProfileData($userData, $person['user_id'], true);
+      $peopleModel->saveProfileData($userData, $person['user_id'], true);
 
       CLI::write("Processing future affiliation for user ID {$person['user_id']}.");
     }

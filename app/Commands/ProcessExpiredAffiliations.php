@@ -3,7 +3,7 @@ namespace App\Commands;
 
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
-use App\Models\UserModel;
+use App\Models\PeopleModel;
 
 /**
  * Command class for sending notifications for expired affiliations.
@@ -80,9 +80,9 @@ class ProcessExpiredAffiliations extends BaseCommand
     );
 
     foreach ($people as $person) {
-      $usersModel = new UserModel();
+      $peopleModel = new PeopleModel();
 
-      $userData = $usersModel->getUserProfileData($person['user_id']);
+      $userData = $peopleModel->getProfileData($person['user_id']);
       $activeAffiliation = $userData['activeAffiliation'][0];
 
       // Auto extend expired affiliation if needed based on the autoExtend value
@@ -113,7 +113,7 @@ class ProcessExpiredAffiliations extends BaseCommand
         $userData['activeAffiliation'] = [];
       }
 
-      $usersModel->saveProfileData($userData, $person['user_id'], false, true);
+      $peopleModel->saveProfileData($userData, $person['user_id'], false, true);
 
       CLI::write("Processing expired affiliation for user ID {$person['user_id']}.");
     }

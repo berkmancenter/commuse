@@ -3,7 +3,7 @@
 
 namespace Tests\Acceptance;
 
-use App\Models\UserModel;
+use App\Models\PeopleModel;
 use Tests\Support\AcceptanceTester;
 use \App\Libraries\SystemSettingsWrapper;
 
@@ -39,7 +39,7 @@ class ReintakeCest
       $I->createUser('reintakeMessageShowsForReintakeStatus@example.com', 'password123',
         [],
         [
-        'reintake' => UserModel::REINTAKE_STATUS_REQUIRED,
+        'reintake' => PeopleModel::REINTAKE_STATUS_REQUIRED,
       ]);
 
       $I->fillField('email', 'reintakeMessageShowsForReintakeStatus@example.com');
@@ -57,7 +57,7 @@ class ReintakeCest
       $I->createUser('reintakeAcceptingWorks@example.com', 'password123',
         [],
         [
-        'reintake' => UserModel::REINTAKE_STATUS_REQUIRED,
+        'reintake' => PeopleModel::REINTAKE_STATUS_REQUIRED,
         ],
       );
 
@@ -81,7 +81,7 @@ class ReintakeCest
       $I->createUser('reintakeDenyingWorks@example.com', 'password123',
         [],
         [
-        'reintake' => UserModel::REINTAKE_STATUS_REQUIRED,
+        'reintake' => PeopleModel::REINTAKE_STATUS_REQUIRED,
       ]);
 
       $I->fillField('email', 'reintakeDenyingWorks@example.com');

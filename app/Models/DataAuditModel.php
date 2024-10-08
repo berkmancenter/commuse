@@ -60,8 +60,8 @@ class DataAuditModel extends Model
     if ($auditItem = reset($auditItem)) {
       $personId = $auditItem['audited_id'];
 
-      $usersModel = new UserModel();
-      $userData = $usersModel->getUserProfileData($personId);
+      $peopleModel = new PeopleModel();
+      $userData = $peopleModel->getProfileData($personId);
 
       // Synchronize user data with the remote service
       $syncResult = $this->syncUserData($userData);
@@ -117,8 +117,8 @@ class DataAuditModel extends Model
     if ($auditItem = reset($auditItem)) {
       $personId = $auditItem['audited_id'];
 
-      $usersModel = new UserModel();
-      $userData = $usersModel->getUserProfileData($personId);
+      $peopleModel = new PeopleModel();
+      $userData = $peopleModel->getProfileData($personId);
 
       if (!$userData['email']) {
         return false;

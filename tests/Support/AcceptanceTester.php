@@ -7,7 +7,7 @@ namespace Tests\Support;
 require __DIR__ . DIRECTORY_SEPARATOR . '../../vendor/codeigniter4/framework/system/Test/bootstrap.php';
 
 use CodeIgniter\Shield\Entities\User;
-use App\Models\UserModel;
+use App\Models\PeopleModel;
 
 /**
  * Inherited Methods
@@ -29,7 +29,7 @@ class AcceptanceTester extends \Codeception\Actor
     use _generated\AcceptanceTesterActions;
 
     public function createUser(string $email = 'user@example.com', string $password = '', $extraUserFields = [], $extraPeopleFields = []): User {
-      $userModel = new UserModel();
+      $peopleModel = new PeopleModel();
 
       if ($password === '') {
         $password = bin2hex(random_bytes(10));
@@ -51,7 +51,7 @@ class AcceptanceTester extends \Codeception\Actor
       $userId = $usersProvider->getInsertID();
       $userSaved = $usersProvider->findById($userId);
 
-      $userModel->saveProfileData($extraPeopleFields, $userId);
+      $peopleModel->saveProfileData($extraPeopleFields, $userId);
 
       return $userSaved;
     }

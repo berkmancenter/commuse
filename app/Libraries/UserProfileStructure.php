@@ -39,7 +39,7 @@ class UserProfileStructure
    *
    * @return array
    */
-  public function getUserProfileStructure()
+  public function getProfileStructure()
   {
     $userProfileData = $this->getUserProfileGroupsAndFields();
 

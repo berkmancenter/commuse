@@ -3,7 +3,6 @@
 namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
-use App\Models\UserModel;
 use App\Models\PeopleModel;
 use CodeIgniter\Shield\Entities\User;
 
@@ -18,12 +17,12 @@ class CreateSystemUser extends Migration
         'active'   => true,
       ];
 
-      $userModel = new UserModel();
+      $peopleModel = new PeopleModel();
       $usersProvider = auth()->getProvider();
       $user = new User($newUserData);
       $usersProvider->save($user);
       $userId = $usersProvider->getInsertID();
-      $userModel->saveProfileData([
+      $peopleModel->saveProfileData([
         'first_name' => 'System',
         'last_name' => 'User',
         'user_id' => $userId,

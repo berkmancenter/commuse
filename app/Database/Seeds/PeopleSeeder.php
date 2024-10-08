@@ -4,7 +4,7 @@ namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
 use CodeIgniter\Shield\Entities\User;
-use App\Models\UserModel;
+use App\Models\PeopleModel;
 
 class PeopleSeeder extends Seeder
 {
@@ -13,7 +13,7 @@ class PeopleSeeder extends Seeder
         $faker = \Faker\Factory::create();
         $faker->addProvider(new \Faker\Provider\en_US\Address($faker));
         $users = auth()->getProvider();
-        $userModel = new UserModel();
+        $peopleModel = new PeopleModel();
 
         $topics = [
             'AI',
@@ -67,7 +67,7 @@ class PeopleSeeder extends Seeder
                 'updated_at' => date('Y-m-d H:i:s'),
             ];
 
-            $userModel->saveProfileData($data, $userId);
+            $peopleModel->saveProfileData($data, $userId);
         }
     }
 }
