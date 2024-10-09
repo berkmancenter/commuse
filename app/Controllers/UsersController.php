@@ -16,7 +16,7 @@ use App\Libraries\SystemSettingsWrapper;
  * This class is responsible for handling user-related operations such as
  * retrieving user data, managing profiles, and performing administrative tasks.
  */
-class Users extends BaseController
+class UsersController extends BaseController
 {
   use ResponseTrait;
 

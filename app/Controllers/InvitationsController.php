@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
 
-class Invitations extends BaseController
+class InvitationsController extends BaseController
 {
   use ResponseTrait;
 

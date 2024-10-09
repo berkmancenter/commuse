@@ -2,10 +2,9 @@
 namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
-use App\Models\UserModel;
 use App\Models\DataAuditModel;
 
-class DataAudit extends BaseController
+class DataAuditController extends BaseController
 {
   use ResponseTrait;
 

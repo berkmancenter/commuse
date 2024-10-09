@@ -8,7 +8,7 @@ use App\Libraries\Cache;
 /**
  * This class is responsible for handling news-related operations.
  */
-class News extends BaseController
+class NewsController extends BaseController
 {
   use ResponseTrait;
 

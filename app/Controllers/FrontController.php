@@ -5,7 +5,7 @@ namespace App\Controllers;
 /**
  * This class is responsible for handling the front-end requests.
  */
-class Front extends BaseController
+class FrontController extends BaseController
 {
   /**
    * This method is the entry point for the front-end requests.

@@ -3,7 +3,7 @@ namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
 
-class CustomFields extends BaseController
+class CustomFieldsController extends BaseController
 {
   use ResponseTrait;
 

@@ -7,7 +7,7 @@ use CodeIgniter\API\ResponseTrait;
 /**
  * This controller handles file-related operations.
  */
-class Files extends BaseController
+class FilesController extends BaseController
 {
   use ResponseTrait;
 

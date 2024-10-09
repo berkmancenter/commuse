@@ -7,7 +7,7 @@ use CodeIgniter\API\ResponseTrait;
 /**
  * This controller handles data editing operations.
  */
-class DataEditor extends BaseController
+class DataEditorController extends BaseController
 {
   use ResponseTrait;
 

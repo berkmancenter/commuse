@@ -11,7 +11,7 @@ use League\Csv\Writer;
 /**
  * Controller for handling people-related operations.
  */
-class People extends BaseController
+class PeopleController extends BaseController
 {
   use ResponseTrait;
 

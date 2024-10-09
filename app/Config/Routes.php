@@ -11,7 +11,7 @@ $routes = Services::routes();
  * --------------------------------------------------------------------
  */
 $routes->setDefaultNamespace('App\Controllers');
-$routes->setDefaultController('Front');
+$routes->setDefaultController('FrontController');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override();
@@ -27,57 +27,79 @@ $routes->set404Override();
  * --------------------------------------------------------------------
  */
 
-// We get a performance increase by specifying the default
-// route since we don't have to scan directories.
-$routes->get('api/news', 'News::index');
+// News controller routes
+$routes->get('api/news', 'NewsController::index');
 
-$routes->post('api/people', 'People::index');
-$routes->get('api/people/interests', 'People::interests');
-$routes->get('api/people/(:num)', 'People::person/$1');
-$routes->get('api/people/filters', 'People::filters');
-$routes->get('api/people/export', 'People::export');
-$routes->get('api/people/indexRemote', 'People::indexRemote');
+// People controller routes
+$routes->post('api/people', 'PeopleController::index');
+$routes->get('api/people/interests', 'PeopleController::interests');
+$routes->get('api/people/(:num)', 'PeopleController::person/$1');
+$routes->get('api/people/filters', 'PeopleController::filters');
+$routes->get('api/people/export', 'PeopleController::export');
+$routes->get('api/people/indexRemote', 'PeopleController::indexRemote');
 
-$routes->get('api/users/current', 'Users::current');
-$routes->get('api/users/profileStatus', 'Users::profileStatus');
-$routes->get('api/users/profile/(:any)', 'Users::profile/$1');
-$routes->get('api/users/profileStructure', 'Users::profileStructure');
-$routes->post('api/users/saveProfile', 'Users::saveProfile');
-$routes->post('api/users/savePublicProfileStatus', 'Users::savePublicProfileStatus');
-$routes->post('api/users/uploadProfileImage/(:any)', 'Users::uploadProfileImage/$1');
+// Users controller routes
+$routes->get('api/users/current', 'UsersController::current');
+$routes->get('api/users/profileStatus', 'UsersController::profileStatus');
+$routes->get('api/users/profile/(:any)', 'UsersController::profile/$1');
+$routes->get('api/users/profileStructure', 'UsersController::profileStructure');
+$routes->post('api/users/saveProfile', 'UsersController::saveProfile');
+$routes->post('api/users/savePublicProfileStatus', 'UsersController::savePublicProfileStatus');
+$routes->post('api/users/uploadProfileImage/(:any)', 'UsersController::uploadProfileImage/$1');
+$routes->post('api/admin/users/setActiveStatus', 'UsersController::setActiveStatus');
+$routes->post('api/admin/users/createNewUser', 'UsersController::createNewUser');
+$routes->post('api/admin/users/setActiveAffiliation', 'UsersController::setActiveAffiliation');
+$routes->get('api/admin/users', 'UsersController::adminIndex');
+$routes->post('api/admin/users/delete', 'UsersController::delete');
+$routes->post('api/admin/users/changeRole', 'UsersController::changeRole');
+$routes->post('api/admin/users/importFromCsv', 'UsersController::importFromCsv');
+$routes->get('api/admin/users/csvImportTemplate', 'UsersController::getUsersCsvImportTemplate');
+$routes->post('api/admin/users/setReintakeStatus', 'UsersController::setReintakeStatus');
+$routes->get('changePassword', 'UsersController::changePasswordView');
+$routes->get('reintake', 'UsersController::reintakeView');
+$routes->get('reintakeAccept', 'UsersController::reintakeAccept');
+$routes->get('reintakeDeny', 'UsersController::reintakeDeny');
+$routes->get('reintake', 'UsersController::reintakeView');
+$routes->post('changePassword', 'UsersController::changePassword');
 
-$routes->get('api/files/get/(.+)', 'Files::get/$1');
+// Register controller routes
+$routes->get('register', 'RegisterController::registerView');
+$routes->post('register', 'RegisterController::registerAction');
 
-$routes->get('api/admin/invitations', 'Invitations::index');
-$routes->post('api/admin/invitations/upsert', 'Invitations::upsert');
-$routes->post('api/admin/invitations/delete', 'Invitations::delete');
-$routes->get('api/admin/users', 'Users::adminIndex');
-$routes->post('api/admin/users/delete', 'Users::delete');
-$routes->post('api/admin/users/changeRole', 'Users::changeRole');
-$routes->post('api/admin/users/importFromCsv', 'Users::importFromCsv');
-$routes->get('api/admin/users/csvImportTemplate', 'Users::getUsersCsvImportTemplate');
-$routes->post('api/admin/users/setReintakeStatus', 'Users::setReintakeStatus');
-$routes->get('api/admin/customFields', 'CustomFields::index');
-$routes->post('api/admin/customFields/upsert', 'CustomFields::upsert');
-$routes->post('api/admin/dataEditor', 'DataEditor::index');
-$routes->post('api/admin/dataEditor/saveItem', 'DataEditor::saveItem');
-$routes->get('api/admin/profileDataAudit', 'DataAudit::profileDataAudit');
-$routes->post('api/admin/profileDataAudit/process', 'DataAudit::auditRecordProcess');
-$routes->get('api/admin/profileDataAudit/getChangesFields', 'DataAudit::getChangesFields');
-$routes->get('api/admin/systemSettings', 'SystemSettings::index');
-$routes->post('api/admin/systemSettings', 'SystemSettings::saveSettings');
-$routes->get('api/admin/publicSystemSettings', 'SystemSettings::getPublicSettings');
-$routes->post('api/admin/users/setActiveAffiliation', 'Users::setActiveAffiliation');
-$routes->post('api/admin/users/setActiveStatus', 'Users::setActiveStatus');
-$routes->post('api/admin/users/createNewUser', 'Users::createNewUser');
+// Files controller routes
+$routes->get('api/files/get/(.+)', 'FilesController::get/$1');
 
-// Buzz routes
+// Invitations controller routes
+$routes->get('api/admin/invitations', 'InvitationsController::index');
+$routes->post('api/admin/invitations/upsert', 'InvitationsController::upsert');
+$routes->post('api/admin/invitations/delete', 'InvitationsController::delete');
+
+// Custom fields controller routes
+$routes->get('api/admin/customFields', 'CustomFieldsController::index');
+$routes->post('api/admin/customFields/upsert', 'CustomFieldsController::upsert');
+
+// Data editor controller routes
+$routes->post('api/admin/dataEditor', 'DataEditorController::index');
+$routes->post('api/admin/dataEditor/saveItem', 'DataEditorController::saveItem');
+
+// Data audit controller routes
+$routes->get('api/admin/profileDataAudit', 'DataAuditController::profileDataAudit');
+$routes->post('api/admin/profileDataAudit/process', 'DataAuditController::auditRecordProcess');
+$routes->get('api/admin/profileDataAudit/getChangesFields', 'DataAuditController::getChangesFields');
+
+// System settings controller routes
+$routes->get('api/admin/systemSettings', 'SystemSettingsController::index');
+$routes->post('api/admin/systemSettings', 'SystemSettingsController::saveSettings');
+$routes->get('api/admin/publicSystemSettings', 'SystemSettingsController::getPublicSettings');
+
+// Buzz controller routes
 $routes->get('api/buzz', 'BuzzController::index');
 $routes->get('api/buzz/(:num)', 'BuzzController::show/$1');
 $routes->post('api/buzz/upsert', 'BuzzController::upsert');
 $routes->post('api/buzz/like/(:num)', 'BuzzController::like/$1');
 $routes->post('api/buzz/delete/(:num)', 'BuzzController::delete/$1');
 
+// Front-end application routes
 $frontRoutes = [
   '/',
   'people',
@@ -97,17 +119,8 @@ $frontRoutes = [
 ];
 
 foreach ($frontRoutes as $route) {
-  $routes->get($route, 'Front::index');
+  $routes->get($route, 'FrontController::index');
 }
-
-$routes->get('register', 'RegisterController::registerView');
-$routes->post('register', 'RegisterController::registerAction');
-$routes->get('changePassword', 'Users::changePasswordView');
-$routes->get('reintake', 'Users::reintakeView');
-$routes->get('reintakeAccept', 'Users::reintakeAccept');
-$routes->get('reintakeDeny', 'Users::reintakeDeny');
-$routes->get('reintake', 'Users::reintakeView');
-$routes->post('changePassword', 'Users::changePassword');
 
 service('auth')->routes($routes);
 

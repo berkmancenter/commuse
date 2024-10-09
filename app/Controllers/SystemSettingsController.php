@@ -9,7 +9,7 @@ use App\Libraries\Cache;
 /**
  * This class is responsible for handling system settings-related operations.
  */
-class SystemSettings extends BaseController
+class SystemSettingsController extends BaseController
 {
   use ResponseTrait;
 
