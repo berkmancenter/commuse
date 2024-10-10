@@ -54,10 +54,6 @@ const actions = {
   async saveInvitation(context, invitation) {
     const response = await fetchIt(`${apiUrl}/api/admin/invitations/upsert`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({
         invitation: invitation,
       }),
@@ -68,10 +64,6 @@ const actions = {
   async deleteInvitations(context, invitations) {
     const response = await fetchIt(`${apiUrl}/api/admin/invitations/delete`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({
         invitations: invitations,
       }),
@@ -82,10 +74,6 @@ const actions = {
   async deleteUsers(context, users) {
     const response = await fetchIt(`${apiUrl}/api/admin/users/delete`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({
         users: users,
       }),
@@ -96,10 +84,6 @@ const actions = {
   async changeUserRole(context, data) {
     const response = await fetchIt(`${apiUrl}/api/admin/users/changeRole`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({
         users: data.users,
         role: data.role,
@@ -111,10 +95,6 @@ const actions = {
   async setActiveAffiliation(context, data) {
     const response = await fetchIt(`${apiUrl}/api/admin/users/setActiveAffiliation`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(data),
     })
 
@@ -125,10 +105,6 @@ const actions = {
     formData.append('csv', file);
     const response = await fetchIt(`${apiUrl}/api/admin/users/importFromCsv`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: formData,
     })
 
@@ -137,10 +113,6 @@ const actions = {
   async saveCustomField(context, data) {
     const response = await fetchIt(`${apiUrl}/api/admin/customFields/upsert`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({
         customField: data,
       }),
@@ -151,10 +123,6 @@ const actions = {
   async setReintakeStatus(context, data) {
     const response = await fetchIt(`${apiUrl}/api/admin/users/setReintakeStatus`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({
         users: data.users,
         status: data.status,
@@ -166,10 +134,6 @@ const actions = {
   async processProfileAuditRecord(context, data) {
     const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit/process`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(data),
     })
 
@@ -181,10 +145,6 @@ const actions = {
   async setActiveStatus(context, data) {
     const response = await fetchIt(`${apiUrl}/api/admin/users/setActiveStatus`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(data),
     })
 
@@ -193,10 +153,6 @@ const actions = {
   async createNewUser(context, data) {
     const response = await fetchIt(`${apiUrl}/api/admin/users/createNewUser`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(data),
     })
 

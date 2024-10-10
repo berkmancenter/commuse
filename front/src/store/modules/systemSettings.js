@@ -32,10 +32,6 @@ const actions = {
   async saveSystemSettings(context, settings) {
     const response = await fetchIt(`${apiUrl}/api/admin/systemSettings`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(settings),
     })
 

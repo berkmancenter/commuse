@@ -28,14 +28,14 @@ const mutations = {
 
 const actions = {
   async fetchPeople(context) {
+    if (context.state.peopleFetchController) {
+      context.state.peopleFetchController.abort()
+    }
+
     context.state.peopleFetchController = new AbortController()
 
     const response = await fetchIt(`${apiUrl}/api/people`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       signal: context.state.peopleFetchController.signal,
       body: JSON.stringify({
         q: context.state.peopleSearchTerm,

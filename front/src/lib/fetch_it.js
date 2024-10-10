@@ -7,9 +7,8 @@ const fetchIt = async (url, options = {}) => {
     options.credentials = 'include'
   }
 
-  options.headers = {
-    'Accept': 'application/json',
-  }
+  options.headers ||= {}
+  options.headers['Accept'] = 'application/json'
 
   let response
   try {

@@ -22,10 +22,6 @@ const actions = {
 
     const response = await fetchIt(`${apiUrl}/api/admin/dataEditor`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       signal: context.state.dataEditorFetchController.signal,
       body: JSON.stringify({
         q: context.state.dataEditorSearchQuery,
@@ -39,10 +35,6 @@ const actions = {
   async saveDataEditorItem(context, itemData) {
     const response = await fetchIt(`${apiUrl}/api/admin/dataEditor/saveItem`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(itemData),
     })
 

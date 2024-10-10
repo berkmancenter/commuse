@@ -290,18 +290,8 @@
     },
     methods: {
       async loadPeople() {
-        const searchTermEntering = this.$store.state.people.peopleSearchTerm
-
         let people = null
-        try {
-          people = await this.$store.dispatch('people/fetchPeople')
-        } catch (error) {
-          return
-        }
-
-        if (this.$store.state.people.peopleSearchTerm !== searchTermEntering) {
-          return
-        }
+        people = await this.$store.dispatch('people/fetchPeople')
 
         this.$store.dispatch('people/setPeople', people)
       },
@@ -343,11 +333,6 @@
       fieldTitle(fieldMachineName) {
         return this.$store.state.people.peopleFilters.filter(filter => filter.field_machine_name === fieldMachineName)[0].field_title
       },
-      abortFetchPeopleRequest() {
-        if (this.$store.state.people.peopleFetchController) {
-          this.$store.state.people.peopleFetchController.abort()
-        }
-      },
       removeFilter(fieldMachineName, activeFilterValue) {
         this.$store.state.people.peopleActiveFilters[fieldMachineName] = this.$store.state.people.peopleActiveFilters[fieldMachineName].filter(filterValue => filterValue != activeFilterValue)
       },
@@ -382,7 +367,6 @@
     },
     watch: {
       '$store.state.people.peopleSearchTerm': function() {
-        this.abortFetchPeopleRequest()
         this.reloadView()
         this.$nextTick(() => {
           this.lazyLoadInstance.update()
@@ -390,7 +374,6 @@
       },
       '$store.state.people.peopleActiveFilters': {
         handler: function() {
-          this.abortFetchPeopleRequest()
           this.$nextTick(() => {
             this.reloadView()
             this.lazyLoadInstance.update()

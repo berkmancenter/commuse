@@ -51,10 +51,6 @@ const actions = {
 
     const response = await fetchIt(url, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       signal: context.state.fetchItemsController.signal,
     })
 
@@ -65,10 +61,6 @@ const actions = {
   postMessage(context, itemData) {
     const response = fetchIt(`${apiUrl}/api/buzz/upsert`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(itemData),
     })
 
@@ -77,10 +69,6 @@ const actions = {
   async deleteMessage(context, messageId) {
     const response = await fetchIt(`${apiUrl}/api/buzz/delete/${messageId}`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
     })
 
     return response
