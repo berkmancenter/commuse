@@ -119,11 +119,7 @@
 
         this.$store.dispatch('people/setPeopleMarkReload', true)
 
-        if (response.ok) {
-          this.awn.success('Profile status has been updated.')
-        } else {
-          this.awn.warning('Something went wrong, try again.')
-        }
+        this.awn.success(response.message)
       },
       async loadProfileStatus() {
         let profileStatus = await this.$store.dispatch('user/fetchProfileStatus')

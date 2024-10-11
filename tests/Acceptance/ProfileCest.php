@@ -22,7 +22,7 @@ class ProfileCest
       $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
       $I->click('Save');
 
-      $I->seeElement('//div[contains(., "Profile has been saved.")]');
+      $I->seeElement('//div[contains(., "Profile updated successfully.")]');
 
       $I->deleteUser($user->id);
     }
@@ -41,7 +41,7 @@ class ProfileCest
 
       $I->click('Save');
 
-      $I->seeElement('//div[contains(., "Profile has been saved.")]');
+      $I->seeElement('//div[contains(., "Profile updated successfully.")]');
 
       $I->click('People');
 
@@ -68,7 +68,7 @@ class ProfileCest
       $I->fillField('//label[contains(text(), "Bio")]/following-sibling::div//textarea', 'You can call me Tommy, I am a tester.');
 
       $I->click('Save');
-      $I->seeElement('//div[contains(., "Profile has been saved.")]');
+      $I->seeElement('//div[contains(., "Profile updated successfully.")]');
 
       $I->click('People');
 
@@ -80,7 +80,7 @@ class ProfileCest
       $I->click('Edit profile');
       $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
       $I->click('Save');
-      $I->seeElement('//div[contains(., "Profile has been saved.")]');
+      $I->seeElement('//div[contains(., "Profile updated successfully.")]');
 
       $I->wait(1);
 
@@ -107,7 +107,7 @@ class ProfileCest
       $I->fillField('//label[contains(text(), "Last name")]/following-sibling::div//input', 'Hiddenberg');
       $I->fillField('//label[contains(text(), "Current country")]/following-sibling::div//input', 'Spain');
       $I->click('Save');
-      $I->seeElement('//div[contains(., "Profile has been saved.")]');
+      $I->seeElement('//div[contains(., "Profile updated successfully.")]');
 
       $I->waitForJs("return document.querySelector('.awn-toast') == null", 10);
       $I->click('.top-nav-user-menu-toggler');
@@ -124,14 +124,14 @@ class ProfileCest
       $I->fillField('//label[contains(text(), "Last name")]/following-sibling::div//input', 'Viselberg');
       $I->fillField('//label[contains(text(), "Current country")]/following-sibling::div//input', 'Norway');
       $I->click('Save');
-      $I->seeElement('//div[contains(., "Profile has been saved.")]');
+      $I->seeElement('//div[contains(., "Profile updated successfully.")]');
 
       $I->click('People');
 
       $I->waitForElementVisible('//div[contains(text(), "Filters")]', 10);
       $I->click('Filters');
-      $I->waitForElementVisible('//div[contains(text(), "Current country")]', 10);
-      $I->click('//div[contains(text(), "Current country")]/following-sibling::div');
+      $I->waitForElementVisible('//label[contains(text(), "Current country")]', 10);
+      $I->click('//label[contains(text(), "Current country")]/following-sibling::div');
       $I->click('//span[contains(text(), "Norway")]');
       $I->click('Close');
       $I->waitForJs("return document.querySelector('.commuse-modal') == null", 10);
@@ -149,8 +149,8 @@ class ProfileCest
       $I->seeElement('//div[contains(., "Viselberg")]');
 
       $I->click('Filters');
-      $I->waitForElementVisible('//div[contains(text(), "Current country")]', 10);
-      $I->click('//div[contains(text(), "Current country")]/following-sibling::div');
+      $I->waitForElementVisible('//label[contains(text(), "Current country")]', 10);
+      $I->click('//label[contains(text(), "Current country")]/following-sibling::div');
       $I->click('//span[contains(text(), "Spain")]');
       $I->click('Close');
       $I->waitForJs("return document.querySelector('.commuse-modal') == null", 10);

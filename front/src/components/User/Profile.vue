@@ -238,11 +238,7 @@
 
         this.$store.dispatch('people/setPeopleMarkReload', true)
 
-        if (response.ok) {
-          this.awn.success('Profile has been saved.')
-        } else {
-          this.awn.warning('Something went wrong, try again.')
-        }
+        this.awn.success(response.message)
       },
       async initialDataLoad() {
         this.loadProfile()

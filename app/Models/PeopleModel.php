@@ -605,7 +605,7 @@ class PeopleModel extends Model
 
     $peopleModel->indexInSearchIndex($newProfileData['id'], $newProfileData, $isUpdate);
 
-    $message = $existingPerson ? 'Profile updated successfully' : 'Profile created successfully';
+    $message = $existingPerson ? 'Profile updated successfully.' : 'Profile created successfully.';
 
     return [$this->db->transStatus(), $message];
   }

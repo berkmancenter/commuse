@@ -96,7 +96,7 @@ class AcceptanceTester extends \Codeception\Actor
       $I->click('Account settings');
       $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
       $I->checkOption('(//input[@type="checkbox"])[1]');
-      $I->seeElement('//div[contains(., "Profile status has been updated.")]');
+      $I->seeElement('//div[contains(., "Profile updated successfully.")]');
     }
 
     public function setProfileStatusInactive($I) {
@@ -104,6 +104,6 @@ class AcceptanceTester extends \Codeception\Actor
       $I->click('Account settings');
       $I->waitForElementVisible('(//input[@type="checkbox"])[1]');
       $I->uncheckOption('(//input[@type="checkbox"])[1]');
-      $I->seeElement('//div[contains(., "Profile status has been updated.")]');
+      $I->seeElement('//div[contains(., "Profile updated successfully.")]');
     }
 }

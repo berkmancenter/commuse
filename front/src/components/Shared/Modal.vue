@@ -6,6 +6,7 @@
     content-transition="vfm-fade"
     @opened="opened()"
     @closed="closed()"
+    :clickOutside="clickOutside"
   >
     <div class="commuse-modal-title is-size-4">
       <div class="commuse-modal-title-text">{{ title }}</div>
@@ -20,13 +21,13 @@
       </div>
 
       <div class="commuse-modal-buttons pt-5 mt-5">
-        <button class="commuse-modal-buttons-confirm button is-success ld-ext-right" :class="{ running: working }" accesskey="s" @click="$emit('confirm')" ref="confirmButton">
+        <button class="commuse-modal-buttons-confirm button is-success ld-ext-right" :class="{ running: working }" v-if="showConfirmButton" accesskey="s" @click="$emit('confirm')" ref="confirmButton">
           {{ confirmButtonTitle }}
           <div class="ld ld-ring ld-spin"></div>
         </button>
 
-        <button class="button ml-2" @click="$emit('cancel')">
-          Cancel
+        <button class="button ml-2" @click="$emit('cancel')" v-if="showCancelButton">
+          {{ cancelButtonTitle }}
         </button>
       </div>
     </div>
@@ -56,10 +57,30 @@
         required: false,
         default: 'Confirm',
       },
+      cancelButtonTitle: {
+        type: String,
+        required: false,
+        default: 'Cancel',
+      },
       focusOnConfirm: {
         type: Boolean,
         required: false,
         default: true,
+      },
+      showConfirmButton: {
+        type: Boolean,
+        required: false,
+        default: true,
+      },
+      showCancelButton: {
+        type: Boolean,
+        required: false,
+        default: true,
+      },
+      clickOutside: {
+        type: Function,
+        required: false,
+        default: () => {},
       },
     },
     components: {
