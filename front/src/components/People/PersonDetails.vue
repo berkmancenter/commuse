@@ -129,7 +129,7 @@
       </SkeletonPatternLoader>
     </div>
 
-    <div class="box people-section-details-content">
+    <div class="people-section-details-content">
       <SkeletonPatternLoader :loading="loading">
         <template v-slot:content>
           <div class="notification is-warning" v-if="person.public_profile === 'f'">

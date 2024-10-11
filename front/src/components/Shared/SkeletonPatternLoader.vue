@@ -10,13 +10,13 @@
 </template>
 
 <script>
-export default {
-  name: 'SkeletonPatternLoader',
-  props: {
-    loading: {
-      type: Boolean,
-      required: true,
-    },
+  export default {
+    name: 'SkeletonPatternLoader',
+    props: {
+      loading: {
+        type: Boolean,
+        required: true,
+      },
+    }
   }
-}
 </script>
