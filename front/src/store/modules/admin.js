@@ -17,19 +17,19 @@ const mutations = {
 const actions = {
   async fetchInvitations(context) {
     const response = await fetchIt(`${apiUrl}/api/admin/invitations`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },
   async fetchUsers(context) {
     const response = await fetchIt(`${apiUrl}/api/admin/users`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },
   async fetchCustomFields(context) {
     const response = await fetchIt(`${apiUrl}/api/admin/customFields`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },
@@ -41,13 +41,13 @@ const actions = {
       signal: context.state.profileDataAuditDataFetchController.signal,
     })
 
-    const data = await response.json()
+    const data = await response
 
     return data
   },
   async fetchProfileDataAuditChangesFields(context) {
     const response = await fetchIt(`${apiUrl}/api/admin/profileDataAudit/getChangesFields`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },

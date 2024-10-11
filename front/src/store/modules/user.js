@@ -72,35 +72,31 @@ const mutations = {
 const actions = {
   async fetchCurrentUser(context) {
     const response = await fetchIt(`${apiUrl}/api/users/current`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },
   async fetchProfile(context, id) {
     const response = await fetchIt(`${apiUrl}/api/users/profile/${id}`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },
   async fetchProfileStatus(context) {
     const response = await fetchIt(`${apiUrl}/api/users/profileStatus`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },
   async fetchProfileStructure(context) {
     const response = await fetchIt(`${apiUrl}/api/users/profileStructure`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },
   async savePublicProfileStatus(context, profileData) {
     const response = await fetchIt(`${apiUrl}/api/users/savePublicProfileStatus`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(profileData),
     })
 
@@ -109,10 +105,6 @@ const actions = {
   async saveProfile(context, profileData) {
     const response = await fetchIt(`${apiUrl}/api/users/saveProfile`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(profileData),
     })
 
@@ -123,10 +115,6 @@ const actions = {
     formData.append('image', data.file);
     const response = await fetchIt(`${apiUrl}/api/users/uploadProfileImage/${data.id}`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: formData,
     })
 
@@ -139,10 +127,6 @@ const actions = {
 
     const response = await fetchIt(`${apiUrl}/changePassword`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
       body: formData,
     })
 

@@ -7,32 +7,40 @@ const fetchIt = async (url, options = {}) => {
     options.credentials = 'include'
   }
 
-  options.headers ||= {}
-  options.headers['Accept'] = 'application/json'
-
-  let response
-  try {
-    response = fetch(url, options)
-  } catch (error) {
-    // Aborted requests are ok, we don't need to notify the client
-    if (error.message.includes('aborted') === false) {
-      globals.awn.warning('Something went wrong, try again.')
-    }
+  options.headers = {
+    'Accept': 'application/json',
+    ...options.headers,
   }
 
-  const responsePromise = new Promise((resolve, reject) => {
-    if (response && response.redirected === true && response.url.includes('/login')) {
+  try {
+    const response = await fetch(url, options)
+
+    if (response.redirected && response.url.includes('/login')) {
       window.location.href = response.url
+
+      return Promise.reject('Redirecting to login')
     }
 
-    if (response) {
-      resolve(response)
-    } else {
-      reject()
-    }
-  })
+    if (!response.ok) {
+      globals.awn.warning('Something went wrong, try again.')
 
-  return responsePromise
+      return Promise.reject('Fetch failed with status ' + response.status)
+    }
+
+    const data = await response.json().catch(() => {
+      globals.awn.warning('Invalid JSON response.')
+
+      return Promise.reject('Invalid JSON response')
+    })
+
+    return Promise.resolve(data)
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      globals.awn.warning('Something went wrong, try again.')
+    }
+
+    return Promise.reject(error)
+  }
 }
 
 export default fetchIt

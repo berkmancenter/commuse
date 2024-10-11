@@ -266,7 +266,7 @@
 
           if (response.ok) {
             const profile = this.$store.state.user.userProfile
-            const data = await response.json()
+            const data = await response
             profile.image_url = data.image
             this.$store.dispatch('user/setUserProfile', profile)
             this.$store.dispatch('people/setPeopleMarkReload', true)

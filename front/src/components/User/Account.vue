@@ -100,7 +100,7 @@
         }
 
         const response = await this.$store.dispatch('user/changePassword', this.passwordData)
-        const data = await response.json()
+        const data = await response
 
         if (response.ok) {
           this.passwordData = {

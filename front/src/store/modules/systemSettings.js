@@ -19,13 +19,13 @@ const mutations = {
 const actions = {
   async fetchSystemSettings(context) {
     const response = await fetchIt(`${apiUrl}/api/admin/systemSettings`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },
   async fetchPublicSystemSettings(context) {
     const response = await fetchIt(`${apiUrl}/api/admin/publicSystemSettings`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },

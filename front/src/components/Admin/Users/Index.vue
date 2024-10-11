@@ -418,7 +418,7 @@
       async deleteUsers(users) {
         const usersIds = this.deleteUserModalCurrent.map(user => user.id)
         const response = await this.$store.dispatch('admin/deleteUsers', usersIds)
-        const data = await response.json()
+        const data = await response
 
         if (response.ok) {
           this.awn.success(data.message)
@@ -463,7 +463,7 @@
 
           if (response.ok) {
             this.loadUsers()
-            const data = await response.json()
+            const data = await response
             this.awn.success(data.message)
           } else {
             this.awn.warning('Something went wrong, try again.')
@@ -584,7 +584,7 @@
           this.awn.success('New user has been created.')
           this.loadUsers()
         } else {
-          const data = await response.json()
+          const data = await response
           this.awn.warning(data.message)
         }
 

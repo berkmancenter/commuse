@@ -43,13 +43,13 @@ const actions = {
       }),
     })
 
-    const data = await response.json()
+    const data = await response
 
     return data
   },
   async fetchPeopleFilters(context) {
     const response = await fetchIt(`${apiUrl}/api/people/filters`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },

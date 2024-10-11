@@ -18,7 +18,7 @@ const mutations = {
 const actions = {
   async fetchNews(context, params) {
     const response = await fetchIt(`${apiUrl}/api/news?${objectToQueryParams(params)}`)
-    const data = await response.json()
+    const data = await response
 
     return data
   },

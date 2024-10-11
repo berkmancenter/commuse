@@ -217,7 +217,7 @@
         const response = await this.$store.dispatch('buzz/postMessage', this.$store.state.buzz.editorItem)
 
         if (response.ok === false) {
-          const body = await response.json()
+          const body = await response
           this.awn.warning(body.messages.error)
 
           return
@@ -267,7 +267,7 @@
         const response = await this.$store.dispatch('buzz/deleteMessage', this.deleteMessageModalCurrentId)
 
         if (response.ok === false) {
-          const body = await response.json()
+          const body = await response
           this.awn.warning(body.messages.error)
 
           return

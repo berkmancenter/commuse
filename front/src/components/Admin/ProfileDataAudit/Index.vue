@@ -307,7 +307,7 @@
             decision: this.processAuditRecordModalSelect,
             action,
           })
-          response = await response.json()
+          response = await response
         } catch (error) {
           return
         }

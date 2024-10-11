@@ -167,7 +167,7 @@
       },
       async deleteInvitation() {
         const response = await this.$store.dispatch('admin/deleteInvitations', [this.deleteInvitationCurrent.id])
-        const data = await response.json()
+        const data = await response
 
         if (response.ok) {
           this.awn.success(data.message)

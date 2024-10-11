@@ -309,7 +309,7 @@
           return
         }
 
-        this.person = await response.json()
+        this.person = await response
       },
       async loadProfileStructure() {
         let profileStructure = await this.$store.dispatch('user/fetchProfileStructure')
