@@ -241,7 +241,7 @@
     <form @submit.prevent="createNewUser()" ref="createNewUserForm">
       <div class="field mt-2">
         <div class="control">
-          <div class="mb-2">First name</div>
+          <label class="label">First name</label>
 
           <input type="text" class="input" v-model="createNewUserModalCurrent.first_name" required="true">
         </div>
@@ -249,7 +249,7 @@
 
       <div class="field mt-2">
         <div class="control">
-          <div class="mb-2">Last name</div>
+          <label class="label">Last name</label>
 
           <input type="text" class="input" v-model="createNewUserModalCurrent.last_name" required="true">
         </div>
@@ -257,7 +257,7 @@
 
       <div class="field mt-2">
         <div class="control">
-          <div class="mb-2">Email</div>
+          <label class="label">Email</label>
 
           <input type="email" class="input" v-model="createNewUserModalCurrent.email" required="true">
         </div>

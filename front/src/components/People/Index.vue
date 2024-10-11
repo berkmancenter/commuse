@@ -107,7 +107,7 @@
     @cancel="filtersModalStatus = false"
   >
     <template v-for="filter in $store.state.people.peopleFilters">
-      <div class="mb-2">{{ filter.field_title }}</div>
+      <label class="label">{{ filter.field_title }}</label>
 
       <VueMultiselect
         class="mb-2"
