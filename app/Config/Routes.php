@@ -36,6 +36,7 @@ $routes->get('api/people/interests', 'PeopleController::interests');
 $routes->get('api/people/(:num)', 'PeopleController::person/$1');
 $routes->get('api/people/filters', 'PeopleController::filters');
 $routes->get('api/people/export', 'PeopleController::export');
+$routes->get('api/people/exportAllData', 'People::exportAllData');
 $routes->get('api/people/indexRemote', 'PeopleController::indexRemote');
 
 // Users controller routes

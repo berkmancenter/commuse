@@ -175,8 +175,9 @@
   >
     Export people as:
 
-    <div class="mt-2">
+    <div class="mt-2 is-flex is-flex-direction-column">
       <button class="button" @click="exportToCsv()">CSV (firstname, lastname, email)</button>
+      <button class="button mt-2" v-if="this.$store.state.user.currentUser.admin" @click="exportAllDataToCsv()">CSV (full data set)</button>
       <button class="button mt-2" @click="exportToPlain()">Plain text list of emails</button>
     </div>
   </Modal>
@@ -396,6 +397,11 @@
         const peopleIdsToExport = this.$store.state.people.people.map((person) => person.id).join(',')
         this.exportModalStatus = false
         window.location.href = `${apiUrl}/api/people/export?format=csv&ids=${peopleIdsToExport}`
+      },
+      exportAllDataToCsv() {
+        const peopleIdsToExport = this.$store.state.people.people.map((person) => person.id).join(',')
+        this.exportModalStatus = false
+        window.location.href = `${apiUrl}/api/people/exportAllData?format=csv&ids=${peopleIdsToExport}`
       },
       exportToPlain() {
         this.exportModalStatus = false
