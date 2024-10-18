@@ -50,8 +50,7 @@ class PeopleModel extends Model
   public function getPeopleWithCustomFields(
     array $extraConditions = [],
     array $likeConditions = [],
-    array $filters = [],
-    $simple = true
+    array $filters = []
   ): array {
     $people = $this->getPeople($extraConditions, $likeConditions, $filters);
     $this->processData($people);
@@ -112,7 +111,14 @@ class PeopleModel extends Model
       ->where('users.id IS NOT NULL');
 
     if (!empty($extraConditions)) {
-      $builder->where($extraConditions);
+      foreach ($extraConditions as $key => $value) {
+        if (is_array($value)) {
+          $builder->whereIn($key, $value);
+          continue;
+        } else {
+          $builder->where($key, $value);
+        }
+      }
     }
 
     if (!empty($likeConditions)) {

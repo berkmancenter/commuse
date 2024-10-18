@@ -36,6 +36,7 @@ $routes->get('api/people/interests', 'People::interests');
 $routes->get('api/people/(:num)', 'People::person/$1');
 $routes->get('api/people/filters', 'People::filters');
 $routes->get('api/people/export', 'People::export');
+$routes->get('api/people/exportAllData', 'People::exportAllData');
 $routes->get('api/people/indexRemote', 'People::indexRemote');
 
 $routes->get('api/users/current', 'Users::current');
