@@ -15,16 +15,26 @@
 
         <div class="people-section-active-filters mt-2 ml-4">
           <template v-for="(activeFilterValues, fieldMachineName) in $store.state.people.peopleActiveFilters">
-            <div class="people-section-active-filter" v-if="activeFilterValues.length > 0">
+            <div class="people-section-active-filter" v-if="isNotEmpty(activeFilterValues)">
               <div class="people-section-active-filter-title mt-1">
                 <span>></span>
                 {{ fieldTitle(fieldMachineName) }}
               </div>
               <div class="people-section-active-filter-values">
-                <div class="people-section-active-filter-value" v-for="(activeFilterValue) in activeFilterValues">
+                <div class="people-section-active-filter-value" v-if="Array.isArray(activeFilterValues)" v-for="(activeFilterValue) in activeFilterValues">
                   <span>{{ activeFilterValue }}</span>
                   <img :src="closeIcon" @click="removeFilter(fieldMachineName, activeFilterValue)">
                 </div>
+                <div class="people-section-active-filter-value" v-if="activeFilterValues.tags" v-for="(tag) in activeFilterValues.tags">
+                  <span>{{ tag }}</span>
+                  <img :src="closeIcon" @click="removeFilterTag(fieldMachineName, tag)">
+                </div>
+                <template v-if="activeFilterValues.from || activeFilterValues.to">
+                  <div class="people-section-active-filter-value">
+                    <span>{{ calendarDateFormat(activeFilterValues.from) }} - {{ calendarDateFormat(activeFilterValues.to) }}</span>
+                    <img :src="closeIcon" @click="removeDateRange(fieldMachineName)">
+                  </div>
+                </template>
               </div>
             </div>
           </template>
@@ -107,15 +117,51 @@
     @cancel="filtersModalStatus = false"
   >
     <template v-for="filter in $store.state.people.peopleFilters">
-      <label class="label">{{ filter.field_title }}</label>
+      <div v-if="filter.field_input_type !== 'tags_range'">
+        <label class="label">{{ filter.field_title }}</label>
 
-      <VueMultiselect
-        class="mb-2"
-        v-model="$store.state.people.peopleActiveFilters[filter.field_machine_name]"
-        :multiple="true"
-        :options="filter.values"
-      >
-      </VueMultiselect>
+        <VueMultiselect
+          class="mb-2"
+          v-model="$store.state.people.peopleActiveFilters[filter.field_machine_name]"
+          :multiple="true"
+          :options="filter.values"
+        >
+        </VueMultiselect>
+      </div>
+
+      <div v-if="filter.field_input_type === 'tags_range' && isFilterInitialized(filter.field_machine_name)">
+        <label class="label">{{ filter.field_title }}</label>
+
+        <VueMultiselect
+          class="mb-2"
+          v-model="$store.state.people.peopleActiveFilters[filter.field_machine_name]['tags']"
+          :multiple="true"
+          :options="filter.values"
+        >
+        </VueMultiselect>
+
+        <div class="people-section-filters-filter-time-range mb-2">
+          <date-picker
+            v-model:value="$store.state.people.peopleActiveFilters[filter.field_machine_name]['from']"
+            placeholder="From"
+            format="MMMM D, Y"
+            type="date"
+            value-type="format"
+            input-class="input"
+            :append-to-body="false"
+          ></date-picker>
+
+          <date-picker
+            v-model:value="$store.state.people.peopleActiveFilters[filter.field_machine_name]['to']"
+            placeholder="To"
+            format="MMMM D, Y"
+            type="date"
+            value-type="format"
+            input-class="input"
+            :append-to-body="false"
+          ></date-picker>
+        </div>
+      </div>
     </template>
   </Modal>
 
@@ -165,6 +211,7 @@
   import { some, orderBy } from 'lodash'
   import SkeletonPatternLoader from '@/components/Shared/SkeletonPatternLoader.vue'
   import SearchInput from '@/components/Shared/SearchInput.vue'
+  import { calendarDateFormat } from '@/lib/time_stuff'
 
   const apiUrl = import.meta.env.VITE_API_URL
 
@@ -222,6 +269,8 @@
         exportPlainModalStatus: false,
         exportPlainList: '',
         loading: false,
+        peopleActiveFiltersWatcherActive: true,
+        calendarDateFormat,
       }
     },
     async created() {
@@ -250,7 +299,14 @@
         }
       },
       anyActiveFilters() {
-        return some(this.$store.state.people.peopleActiveFilters, filter => filter.length > 0)
+        return some(
+          this.$store.state.people.peopleActiveFilters,
+          filter =>
+            filter.length > 0 ||
+            (filter.tags && filter.tags.length > 0) ||
+            filter.from ||
+            filter.to
+        )
       },
       sortedPeople() {
         const sortingField = this.sortingActive.field
@@ -364,6 +420,40 @@
         this.$store.dispatch('people/setPeopleActiveFilters', {})
         this.$store.dispatch('people/setPeopleSearchTerm', '')
       },
+      isFilterInitialized(fieldMachineName) {
+        this.peopleActiveFiltersWatcherActive = false
+
+        if (!this.$store.state.people.peopleActiveFilters[fieldMachineName]) {
+          this.$store.state.people.peopleActiveFilters[fieldMachineName] = {
+            tags: [],
+            from: '',
+            to: '',
+          }
+        }
+
+        this.$nextTick(() => {
+          this.peopleActiveFiltersWatcherActive = true
+        })
+
+        return true
+      },
+      isNotEmpty(value) {
+        if (Array.isArray(value)) {
+          return value.length > 0
+        } else if (typeof value === 'object') {
+          return (value.tags && value.tags.length > 0) || value.from || value.to
+        }
+
+        return false
+      },
+      removeFilterTag(fieldMachineName, tag) {
+        const tags = this.$store.state.people.peopleActiveFilters[fieldMachineName].tags
+        this.$store.state.people.peopleActiveFilters[fieldMachineName].tags = tags.filter(t => t !== tag)
+      },
+      removeDateRange(fieldMachineName) {
+        this.$store.state.people.peopleActiveFilters[fieldMachineName].from = ''
+        this.$store.state.people.peopleActiveFilters[fieldMachineName].to = ''
+      },
     },
     watch: {
       '$store.state.people.peopleSearchTerm': function() {
@@ -374,6 +464,10 @@
       },
       '$store.state.people.peopleActiveFilters': {
         handler: function() {
+          if (this.peopleActiveFiltersWatcherActive === false) {
+            return
+          }
+
           this.$nextTick(() => {
             this.reloadView()
             this.lazyLoadInstance.update()
@@ -498,6 +592,18 @@
           margin-left: auto;
         }
       }
+    }
+  }
+
+  .people-section-filters-filter-time-range {
+    display: flex;
+
+    > div {
+      width: 50%;
+    }
+
+    > div:first-child {
+      margin-right: 1rem;
     }
   }
 </style>

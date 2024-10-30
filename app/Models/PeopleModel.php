@@ -210,25 +210,63 @@ class PeopleModel extends Model
 
       switch ($fieldDb['input_type']) {
         case 'short_text':
-          $joinedInValues = implode(', ', array_map(function($filterValue) { return "'$filterValue'"; }, $filterValues));
-          $havingFilters[] = "MAX(CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' AND custom_field_data.value ILIKE any(array[({$joinedInValues})]) THEN 1 ELSE 0 END) = 1";
+          $joinedInValues = implode(', ', array_map(function($filterValue) {
+            return "'" . addslashes($filterValue) . "'";
+          }, $filterValues));
+          $havingFilters[] = "MAX(CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' AND (custom_field_data.value ILIKE ANY(ARRAY[{$joinedInValues}])) THEN 1 ELSE 0 END) = 1";
           break;
         case 'tags':
           $havingFilters[] = "bool_and( CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN lower(custom_field_data.value_json::text)::jsonb @> lower('{$jsonValues}')::jsonb END)";
           break;
         case 'tags_range':
-          $tagHavingFilterStart = "WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN";
-          $tagHavingFilterParts = [];
-          foreach ($filterValues as $value) {
-            $tagHavingFilterParts[] = "
-              EXISTS (
-                SELECT 1
-                FROM jsonb_array_elements(custom_field_data.value_json) AS elem
-                WHERE (lower(elem::text)::jsonb)->'tags' @> lower('[\"{$value}\"]')::jsonb
-            )";
+          if (
+            (isset($filterValues['tags']) && count($filterValues['tags'])) ||
+            isset($filterValues['from']) ||
+            isset($filterValues['to'])
+          ) {
+            $tagHavingFilterStart = "WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN";
+            $tagHavingFilterParts = [];
+
+            // Handle tags filtering
+            if (isset($filterValues['tags']) && count($filterValues['tags'])) {
+              foreach ($filterValues['tags'] as $value) {
+                $tagHavingFilterParts[] = "
+                  EXISTS (
+                    SELECT 1
+                    FROM jsonb_array_elements(custom_field_data.value_json) AS elem
+                    WHERE (lower(elem::text)::jsonb)->'tags' @> lower('[\"{$value}\"]')::jsonb
+                )";
+              }
+            }
+
+            // Handle from/to filtering; can work independently from tags
+            $dateFrom = isset($filterValues['from']) ? strtotime($filterValues['from']) : null;
+            $dateTo = isset($filterValues['to']) ? strtotime($filterValues['to']) : null;
+
+            $dateConditions = [];
+
+            if ($dateFrom) {
+              $dateConditions[] = "(COALESCE((lower(elem::text)::jsonb)->>'from', '0')::bigint >= {$dateFrom})";
+            }
+            if ($dateTo) {
+              $dateConditions[] = "(COALESCE((lower(elem::text)::jsonb)->>'to', '0')::bigint <= {$dateTo})";
+            }
+
+            if (!empty($dateConditions)) {
+              $tagHavingFilterParts[] = "
+                EXISTS (
+                  SELECT 1
+                  FROM jsonb_array_elements(custom_field_data.value_json) AS elem
+                  WHERE " . implode(' AND ', $dateConditions) . "
+              )";
+            }
+
+            // Combine conditions if any found
+            if (!empty($tagHavingFilterParts)) {
+              $tagHavingFilterPartsTogether = implode(' AND ', $tagHavingFilterParts);
+              $havingFilters[] = "bool_and( CASE {$tagHavingFilterStart} {$tagHavingFilterPartsTogether} END)";
+            }
           }
-          $tagHavingFilterPartsTogether = implode(' AND ', $tagHavingFilterParts);
-          $havingFilters[] = "bool_and( CASE {$tagHavingFilterStart} {$tagHavingFilterPartsTogether} END)";
           break;
       }
     }

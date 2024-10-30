@@ -97,3 +97,7 @@ form {
 .dropdown-item {
   font-size: 100%;
 }
+
+.mx-datepicker-popup {
+  z-index: 10003;
+}
