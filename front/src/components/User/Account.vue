@@ -99,17 +99,18 @@
           return
         }
 
-        const response = await this.$store.dispatch('user/changePassword', this.passwordData)
-        const data = await response
+        try {
+          const response = await this.$store.dispatch('user/changePassword', this.passwordData)
 
-        if (response.ok) {
           this.passwordData = {
             password: '',
             password_confirm: '',
           }
-          this.awn.success(data.message)
-        } else {
-          this.awn.warning(data.message.join('<br>'))
+
+          this.awn.success(response.message)
+        } catch (error) {
+          this.awn.warning(error)
+          return
         }
       },
       async updateProfileStatus() {

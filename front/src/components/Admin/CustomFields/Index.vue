@@ -281,16 +281,17 @@
         this.fieldModalVisible = true
       },
       async submitEditFieldForm() {
-        const response = await this.$store.dispatch('admin/saveCustomField', this.fieldModalCurrent)
+        try {
+          await this.$store.dispatch('admin/saveCustomField', this.fieldModalCurrent)
 
-        if (response.ok) {
           this.awn.success('Custom field has been updated.')
           this.loadCustomFields()
-        } else {
-          this.awn.warning('Something went wrong, try again.')
-        }
 
-        this.fieldModalVisible = false
+          this.fieldModalVisible = false
+        } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
+          return
+        }
       }
     },
   }

@@ -214,12 +214,10 @@
           return
         }
 
-        const response = await this.$store.dispatch('buzz/postMessage', this.$store.state.buzz.editorItem)
-
-        if (response.ok === false) {
-          const body = await response
-          this.awn.warning(body.messages.error)
-
+        try {
+          await this.$store.dispatch('buzz/postMessage', this.$store.state.buzz.editorItem)
+        } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
           return
         }
 
@@ -264,12 +262,10 @@
         this.deleteMessageModalStatus = true
       },
       async deleteMessage() {
-        const response = await this.$store.dispatch('buzz/deleteMessage', this.deleteMessageModalCurrentId)
-
-        if (response.ok === false) {
-          const body = await response
-          this.awn.warning(body.messages.error)
-
+        try {
+          await this.$store.dispatch('buzz/deleteMessage', this.deleteMessageModalCurrentId)
+        } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
           return
         }
 

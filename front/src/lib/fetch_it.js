@@ -23,7 +23,6 @@ const fetchIt = async (url, options = {}) => {
 
     // Check for non-200 responses
     if (!response.ok) {
-      globals.awn.warning('Something went wrong, try again.')
       return Promise.reject('Fetch failed with status ' + response.status)
     }
 
@@ -34,7 +33,6 @@ const fetchIt = async (url, options = {}) => {
     try {
       data = JSON.parse(text)
     } catch (err) {
-      globals.awn.warning('Invalid JSON response.')
       return Promise.reject('Invalid JSON response')
     }
 
@@ -46,7 +44,6 @@ const fetchIt = async (url, options = {}) => {
     }
 
     // Handle other errors
-    globals.awn.warning('Something went wrong, try again.')
     return Promise.reject(error)
   }
 }

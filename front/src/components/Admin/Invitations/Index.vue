@@ -133,19 +133,18 @@
         this.createInvitationModalStatus = true
       },
       async createInvitation() {
-        const response = await this.$store.dispatch('admin/saveInvitation', {
-          type: this.createInvitationCurrent.type,
-          expire: this.createInvitationCurrentExpire,
-        })
-
-        if (response.ok) {
+        try {
+          await this.$store.dispatch('admin/saveInvitation', {
+            type: this.createInvitationCurrent.type,
+            expire: this.createInvitationCurrentExpire,
+          })
           this.awn.success('Invitation has been created.')
           this.loadInvitations()
-        } else {
+          this.createInvitationModalStatus = false
+        } catch (error) {
           this.awn.warning('Something went wrong, try again.')
+          return
         }
-
-        this.createInvitationModalStatus = false
       },
       toggleAll() {
         const newStatus = this.$refs.toggleAllCheckbox.checked
@@ -166,17 +165,15 @@
         this.deleteInvitationCurrent = invitation
       },
       async deleteInvitation() {
-        const response = await this.$store.dispatch('admin/deleteInvitations', [this.deleteInvitationCurrent.id])
-        const data = await response
-
-        if (response.ok) {
-          this.awn.success(data.message)
+        try {
+          await this.$store.dispatch('admin/deleteInvitations', [this.deleteInvitationCurrent.id])
           this.loadInvitations()
-        } else {
-          this.awn.warning(data.message)
+          this.awn.success('Invitations have been deleted.')
+          this.deleteInvitationModalStatus = false
+        } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
+          return
         }
-
-        this.deleteInvitationModalStatus = false
       },
       isValid(invitation) {
         if (invitation.expire && invitation.expire < Date.now()) {

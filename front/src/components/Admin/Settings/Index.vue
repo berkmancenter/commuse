@@ -80,12 +80,13 @@
         this.loading = false
       },
       async saveSettings() {
-        const response = await this.$store.dispatch('systemSettings/saveSystemSettings', this.$store.state.systemSettings.systemSettings)
+        try {
+          await this.$store.dispatch('systemSettings/saveSystemSettings', this.$store.state.systemSettings.systemSettings)
 
-        if (response.ok) {
           this.awn.success('System settings have been saved.')
-        } else {
+        } catch (error) {
           this.awn.warning('Something went wrong, try again.')
+          return
         }
       },
     },

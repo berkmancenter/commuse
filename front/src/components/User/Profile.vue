@@ -255,20 +255,21 @@
             profileId = 'current'
           }
 
-          const response = await this.$store.dispatch('user/uploadProfileImage', { 
-            file: this.$refs.userProfileImageInput.files[0],
-            id: profileId,
-          })
+          try {
+            const response = await this.$store.dispatch('user/uploadProfileImage', { 
+              file: this.$refs.userProfileImageInput.files[0],
+              id: profileId,
+            })
 
-          if (response.ok) {
             const profile = this.$store.state.user.userProfile
             const data = await response
             profile.image_url = data.image
             this.$store.dispatch('user/setUserProfile', profile)
             this.$store.dispatch('people/setPeopleMarkReload', true)
             this.awn.success('Profile image has been saved.')
-          } else {
+          } catch (error) {
             this.awn.warning('Something went wrong, try again.')
+            return
           }
         }
       },

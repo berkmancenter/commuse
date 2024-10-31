@@ -103,6 +103,7 @@
         try {
           fieldsData = await this.$store.dispatch('dataEditor/fetchDataEditorData')
         } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
           return
         }
 
@@ -129,18 +130,16 @@
         this.fieldDataFormModalVisible = true
       },
       async submitEditDataForm() {
-        const response = await this.$store.dispatch('dataEditor/saveDataEditorItem', this.fieldDataFormModalCurrent)
-
-        this.reloadView()
-
-        if (response.ok) {
+        try {
+          await this.$store.dispatch('dataEditor/saveDataEditorItem', this.fieldDataFormModalCurrent)
+          this.reloadView()
           this.awn.success('Data item has been saved.')
-        } else {
+          this.fieldDataFormModalVisible = false
+          this.fieldDataFormModalCurrent = null
+        } catch (error) {
           this.awn.warning('Something went wrong, try again.')
+          return
         }
-
-        this.fieldDataFormModalVisible = false
-        this.fieldDataFormModalCurrent = null
       },
     },
     watch: {

@@ -415,21 +415,20 @@
         this.deleteUserModalCurrent = users
         this.deleteUserModalStatus = true
       },
-      async deleteUsers(users) {
-        const usersIds = this.deleteUserModalCurrent.map(user => user.id)
-        const response = await this.$store.dispatch('admin/deleteUsers', usersIds)
-        const data = await response
-
-        if (response.ok) {
-          this.awn.success(data.message)
-          this.loadUsers()
-        } else {
-          this.awn.warning(data.message)
+      async deleteUsers() {
+        let response = null
+        try {
+          const usersIds = this.deleteUserModalCurrent.map(user => user.id)
+          response = await this.$store.dispatch('admin/deleteUsers', usersIds)
+        } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
+          return
         }
 
+        this.awn.success(response.message)
+        this.loadUsers()
         this.$refs.toggleAllCheckbox.checked = false
         this.users.map(user => (user.selected = false, user))
-
         this.deleteUserModalStatus = false
         this.$store.dispatch('people/setPeopleMarkReload', true)
       },
@@ -438,18 +437,17 @@
         this.setUserRoleModalCurrent = user
       },
       async setUserRole() {
-        const response = await this.$store.dispatch('admin/changeUserRole', {
-          users: [this.setUserRoleModalCurrent.id],
-          role: this.setUserRoleCurrentRole,
-        })
-
-        if (response.ok) {
-          this.awn.success('User role have been updated.')
-          this.loadUsers()
-        } else {
+        try {
+          await this.$store.dispatch('admin/changeUserRole', {
+            users: [this.setUserRoleModalCurrent.id],
+            role: this.setUserRoleCurrentRole,
+          })
+        } catch (error) {
           this.awn.warning('Something went wrong, try again.')
+          return
         }
 
+        this.loadUsers()
         this.setUserRoleModalStatus = false
       },
       importUsersFromCsvModalOpen() {
@@ -457,23 +455,22 @@
       },
       async importUsersFromCsv() {
         const file = this.$refs.importUsersCsvModalFileInput.files[0]
+        let response = null
 
         if (file) {
-          const response = await this.$store.dispatch('admin/importUsersFromCsv', file)
-
-          if (response.ok) {
-            this.loadUsers()
-            const data = await response
-            this.awn.success(data.message)
-          } else {
+          try {
+            response = await this.$store.dispatch('admin/importUsersFromCsv', file)
+          } catch (error) {
             this.awn.warning('Something went wrong, try again.')
+            return
           }
-
-          this.importUsersCsvModalStatus = false
         } else {
           this.awn.warning('No file selected.')
         }
 
+        this.loadUsers()
+        this.awn.success(response.message)
+        this.importUsersCsvModalStatus = false
         this.$store.dispatch('people/setPeopleMarkReload', true)
       },
       setReintakeStatusModalOpen(users) {
@@ -487,18 +484,18 @@
         this.setReintakeStatusModalStatus = true
       },
       async setReintakeStatus() {
-        const response = await this.$store.dispatch('admin/setReintakeStatus', {
-          users: this.setReintakeStatusCurrent.map(user => user.id),
-          status: this.setReintakeStatusSelected,
-        })
-
-        if (response.ok) {
-          this.awn.success('ReIntake status has been changed for selected users.')
-          this.loadUsers()
-        } else {
+        try {
+          await this.$store.dispatch('admin/setReintakeStatus', {
+            users: this.setReintakeStatusCurrent.map(user => user.id),
+            status: this.setReintakeStatusSelected,
+          })
+        } catch (error) {
           this.awn.warning('Something went wrong, try again.')
+          return
         }
 
+        this.awn.success('ReIntake status has been changed for selected users.')
+        this.loadUsers()
         this.setReintakeStatusModalStatus = false
       },
       setActiveAffiliationModalOpen(users) {
@@ -530,18 +527,18 @@
           affiliation = 'unset'
         }
 
-        const response = await this.$store.dispatch('admin/setActiveAffiliation', {
-          users: this.setActiveAffiliationCurrent.map(user => user.id),
-          affiliation: affiliation,
-        })
-
-        if (response.ok) {
-          this.awn.success('Active affiliation has been updated.')
-          this.loadUsers()
-        } else {
+        try {
+          await this.$store.dispatch('admin/setActiveAffiliation', {
+            users: this.setActiveAffiliationCurrent.map(user => user.id),
+            affiliation: affiliation,
+          })
+        } catch (error) {
           this.awn.warning('Something went wrong, try again.')
+          return
         }
 
+        this.awn.success('Active affiliation has been updated.')
+        this.loadUsers()
         this.setActiveAffiliationModalStatus = false
       },
       setActiveStatusModalOpen(users) {
@@ -556,18 +553,18 @@
         this.setActiveStatusModalStatus = true
       },
       async setActiveStatus() {
-        const response = await this.$store.dispatch('admin/setActiveStatus', {
-          users: this.setActiveStatusModalCurrent.map(user => user.id),
-          status: this.setActiveStatusModalStatusValue,
-        })
-
-        if (response.ok) {
-          this.awn.success('Active status has been updated.')
-          this.loadUsers()
-        } else {
+        try {
+          await this.$store.dispatch('admin/setActiveStatus', {
+            users: this.setActiveStatusModalCurrent.map(user => user.id),
+            status: this.setActiveStatusModalStatusValue,
+          })
+        } catch (error) {
           this.awn.warning('Something went wrong, try again.')
+          return
         }
 
+        this.awn.success('Active status has been updated.')
+        this.loadUsers()
         this.setActiveStatusModalStatus = false
       },
       createNewUserModalOpen() {
@@ -578,16 +575,15 @@
           return
         }
 
-        const response = await this.$store.dispatch('admin/createNewUser', this.createNewUserModalCurrent)
-
-        if (response.ok) {
-          this.awn.success('New user has been created.')
-          this.loadUsers()
-        } else {
-          const data = await response
-          this.awn.warning(data.message)
+        try {
+          await this.$store.dispatch('admin/createNewUser', this.createNewUserModalCurrent)
+        } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
+          return
         }
 
+        this.awn.success('New user has been created.')
+        this.loadUsers()
         this.createNewUserModalStatus = false
         this.createNewUserModalCurrent = {
           first_name: '',

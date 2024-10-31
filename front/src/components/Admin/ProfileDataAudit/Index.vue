@@ -309,6 +309,7 @@
           })
           response = await response
         } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
           return
         }
 
