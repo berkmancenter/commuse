@@ -10,7 +10,7 @@
         <form class="commuse-blocks mb-4" @submit.prevent="changePassword">
           <div class="panel mb-4" v-for="(systemField, key) in $store.state.systemSettings.systemSettings">
             <p class="panel-heading">
-              {{ camelCaseToTitleCase(key) }}
+              {{ systemField.title }}
             </p>
             <div class="panel-block">
               <div class="field">
@@ -78,11 +78,6 @@
         this.$store.dispatch('systemSettings/setSystemSettings', settings)
 
         this.loading = false
-      },
-      camelCaseToTitleCase(str) {
-        let result = str.replace(/([A-Z])/g, ' $1').trim()
-
-        return result.charAt(0).toUpperCase() + result.slice(1)
       },
       async saveSettings() {
         const response = await this.$store.dispatch('systemSettings/saveSystemSettings', this.$store.state.systemSettings.systemSettings)
