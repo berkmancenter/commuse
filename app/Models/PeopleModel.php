@@ -116,6 +116,7 @@ class PeopleModel extends Model
         people.public_profile,
         people.created_at,
         people.updated_at,
+        users.status as active,
         json_agg(
           json_build_object(
             \'input_type\',
@@ -157,7 +158,7 @@ class PeopleModel extends Model
       }
     }
 
-    $builder->groupBy('people.id');
+    $builder->groupBy('people.id, users.status');
     $this->applyFilters($builder, $filters);
 
     $people = $builder->get()->getResultArray();
@@ -303,6 +304,8 @@ class PeopleModel extends Model
 
       unset($personData['custom_fields']);
       $personData['image_url'] = $personData['image_url'] ? "profile_images/{$personData['image_url']}" : '';
+
+      $personData['active'] = $personData['active'] !== 'banned';
 
       // Filter out future active affiliation for non-admin users
       if (php_sapi_name() !== 'cli' && auth()->user()->can('admin.access') === false && isset($personData['activeAffiliation']) && count($personData['activeAffiliation']) > 0) {

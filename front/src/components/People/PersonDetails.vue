@@ -104,6 +104,7 @@
                 <h4 class="is-size-5 mt-2">Admin</h4>
 
                 <ActionButton class="mt-2" buttonText="Edit profile" @click="$router.push({ name: 'user-profile-admin.index', params: { id: person.user_id } })" :icon="editIcon"></ActionButton>
+                <ActionButton class="mt-2" :buttonText="activeteButtonText" @click="changeUserStatus(person.user_id)" :icon="activeteUserIcon"></ActionButton>
               </div>
             </div>
           </div>
@@ -227,6 +228,7 @@
   import affiliateIcon from '@/assets/images/affiliate.svg'
   import currentAddressIcon from '@/assets/images/marker_map.svg'
   import editIcon from '@/assets/images/edit.svg'
+  import activeteUserIcon from '@/assets/images/active.svg'
   import PersonDetailsGroup from '@/components/People/PersonDetailsGroup.vue'
   import ShowMore from '@/components/Shared/ShowMore.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
@@ -249,6 +251,7 @@
         profileFallbackImage,
         affiliateIcon,
         currentAddressIcon,
+        activeteUserIcon,
         profileStructure: [],
         getMultiFieldValue,
         calendarDateFormat,
@@ -292,6 +295,9 @@
         return this.profileStructure
           ?.filter((group) => { return !['my_information', 'contact_information', 'affiliation', 'location_current', 'location_information', 'multi_fields_group'].includes(group['machine_name']) })
       },
+      activeteButtonText() {
+        return this.person.active ? 'Deactivate' : 'Activate'
+      }
     },
     methods: {
       async initialDataLoad() {
@@ -374,6 +380,21 @@
             this.lazyLoadInstance.update()
           }
         })
+      },
+      async changeUserStatus(userId) {
+        const status = this.person.active ? 'not_active' : 'active'
+
+        try {
+          await this.$store.dispatch('admin/setActiveStatus', {
+            users: [userId],
+            status: status,
+          })
+        } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
+          return
+        }
+
+        this.initialDataLoad()
       },
     },
   }
@@ -546,6 +567,9 @@
   }
 
   .people-section-details-admin-actions {
+    display: flex;
+    flex-direction: column;
+
     hr {
       background-color: #4a4a4a;
     }
