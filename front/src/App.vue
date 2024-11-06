@@ -128,11 +128,12 @@
             title: 'News & events',
             icon: newsMenuIcon,
           },
-          {
+/*          {
             href: '/buzz',
             title: 'Buzz',
             icon: buzzMenuIcon,
           },
+*/
           {
             href: '/people',
             title: 'People',
