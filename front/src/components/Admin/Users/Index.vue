@@ -90,7 +90,7 @@
   <Modal
     v-model="importUsersCsvModalStatus"
     title="Import users from CSV"
-    :focusOnConfirm="true"
+    :focusOnConfirm="false"
     class="admin-users-import-csv"
     @confirm="importUsersFromCsv()"
     @cancel="importUsersCsvModalStatus = false"
@@ -113,7 +113,6 @@
   <Modal
     v-model="setUserRoleModalStatus"
     title="Set user role"
-    :focusOnConfirm="true"
     @confirm="setUserRole()"
     @cancel="setUserRoleModalStatus = false"
   >
@@ -146,7 +145,6 @@
   <Modal
     v-model="setReintakeStatusModalStatus"
     title="Set Reintake status"
-    :focusOnConfirm="true"
     class="admin-users-set-reintake-status"
     @confirm="setReintakeStatus()"
     @cancel="setReintakeStatusModalStatus = false"
@@ -171,7 +169,7 @@
   <Modal
     v-model="setActiveAffiliationModalStatus"
     title="Set active affiliation"
-    :focusOnConfirm="true"
+    :focusOnConfirm="false"
     class="admin-users-set-active-affiliation"
     @confirm="setActiveAffiliation()"
     @cancel="setActiveAffiliationModalStatus = false"
@@ -237,6 +235,7 @@
     title="Create new user"
     @confirm="createNewUser()"
     @cancel="createNewUserModalStatus = false"
+    :focusOnConfirm="false"
   >
     <form @submit.prevent="createNewUser()" ref="createNewUserForm">
       <div class="field mt-2">

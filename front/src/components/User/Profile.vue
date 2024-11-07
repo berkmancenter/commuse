@@ -3,7 +3,7 @@
     <form class="commuse-blocks" @submit.prevent="saveProfile">
       <div class="user-profile-header is-flex is-align-items-center">
         <h3 class="is-size-3 has-text-weight-bold">Edit profile</h3>
-        <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true" :disabled="loading"></ActionButton>
+        <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true" :disabled="loading" :working="savingProfile"></ActionButton>
         <router-link :to="{ name: 'people.details', params: { id: $store.state.user.userProfile.id } }" v-if="$store.state.user.userProfile.id">
           <ActionButton class="ml-2" buttonText="Show profile" :icon="userIcon" :button="true" :disabled="loading"></ActionButton>
         </router-link>
@@ -206,6 +206,7 @@
         userIcon,
         fields: {},
         loading: true,
+        savingProfile: false,
       }
     },
     components: {
@@ -233,12 +234,14 @@
           return
         }
 
+        this.savingProfile = true
         this.$store.state.user.userProfile['update_search_index'] = true
         const response = await this.$store.dispatch('user/saveProfile', this.$store.state.user.userProfile)
 
         this.$store.dispatch('people/setPeopleMarkReload', true)
 
         this.awn.success(response.message)
+        this.savingProfile = false
       },
       async initialDataLoad() {
         this.loadProfile()
