@@ -192,4 +192,77 @@ class PeopleController extends BaseController
 
     return $csv->toString();
   }
+
+  public function exportAllData()
+  {
+    $this->checkAdminAccess();
+
+    $requestedFormat = $this->request->getGet('format');
+    $listOfIds = $this->request->getGet('ids');
+    $idsArray = explode(',', $listOfIds);
+
+    if (empty($idsArray)) {
+      return $this->respond('Users list is empty.');
+    }
+
+    switch ($requestedFormat) {
+      case 'csv':
+        $result = $this->getExportedCsvAllData($idsArray);
+        $formatted_datetime = date('Y-m-d_H-m-s');
+        $filename = "exported_people_{$formatted_datetime}.csv";
+
+        return $this->response->download($filename, $result);
+    }
+
+    return $this->respond(['message' => 'Format not found.']);
+  }
+
+  private function getExportedCsvAllData(array $idsArray = [])
+  {
+    $peopleModel = new PeopleModel();
+    $people = $peopleModel->getPeopleWithCustomFields(['people.id' => $idsArray]);
+  
+    if (empty($people)) {
+      return '';
+    }
+
+    foreach ($people as &$person) {
+      foreach ($person as $key => $value) {
+        if (is_array($value)) {
+          $person[$key] = $this->flattenArrayToString($value);
+        }
+      }
+    }
+
+    // Dynamically derive CSV headers from the first person's keys
+    $csvHeaders = array_keys($people[0]);
+
+    $csv = Writer::createFromFileObject(new \SplTempFileObject());
+    $csv->insertOne($csvHeaders);
+
+    foreach ($people as $person) {
+      // Reorder the fields in each person’s data to match the header order
+      $orderedPerson = [];
+      foreach ($csvHeaders as $header) {
+        // Ensure the ordered array has all keys even if some are missing in person
+        $orderedPerson[] = isset($person[$header]) ? $person[$header] : '';
+      }
+      $csv->insertOne($orderedPerson);
+    }
+
+    return $csv->toString();
+  }
+
+  private function flattenArrayToString($array, $separator = ', ') {
+    $result = [];
+    foreach ($array as $element) {
+      if (is_array($element)) {
+          $result[] = $this->flattenArrayToString($element, $separator);
+      } else {
+          $result[] = $element;
+      }
+    }
+
+    return implode($separator, $result);
+  }
 }

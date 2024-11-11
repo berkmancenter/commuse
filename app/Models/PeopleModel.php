@@ -142,7 +142,14 @@ class PeopleModel extends Model
       ->where('users.id IS NOT NULL');
 
     if (!empty($extraConditions)) {
-      $builder->where($extraConditions);
+      foreach ($extraConditions as $key => $value) {
+        if (is_array($value)) {
+          $builder->whereIn($key, $value);
+          continue;
+        } else {
+          $builder->where($key, $value);
+        }
+      }
     }
 
     if (!empty($likeConditions)) {
