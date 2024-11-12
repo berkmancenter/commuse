@@ -310,7 +310,7 @@ class PeopleModel extends Model
       }
 
       unset($personData['custom_fields']);
-      $personData['image_url'] = $personData['image_url'] ? "profile_images/{$personData['image_url']}" : '';
+      $personData['image_url'] = $personData['image_url'] ? "{$_ENV['app.baseURL']}/api/files/get/profile_images/{$personData['image_url']}" : '';
 
       $personData['active'] = $personData['active'] !== 'banned';
 

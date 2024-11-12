@@ -12,7 +12,8 @@
             </div>
 
             <div class="people-section-details-side-image">
-              <img class="lazy" :src="`${apiUrl}/api/files/get/${this.person.image_url}`">
+              <img class="lazy" v-if="person.image_url" :data-src="person.image_url">
+              <img :src="profileFallbackImage" v-if="!person.image_url">
             </div>
           </div>
 
@@ -375,11 +376,10 @@
           unobserve_entered: true,
           unobserve_completed: true,
         })
-        this.$nextTick(() => {
-          if (this.lazyLoadInstance) {
-            this.lazyLoadInstance.update()
-          }
-        })
+
+        setTimeout(() => {
+          this.lazyLoadInstance.update()
+        }, 1)
       },
       async changeUserStatus(userId) {
         const status = this.person.active ? 'not_active' : 'active'

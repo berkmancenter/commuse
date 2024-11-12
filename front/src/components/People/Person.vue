@@ -10,7 +10,7 @@
       </div>
 
       <div class="people-section-avatar">
-        <img class="lazy" :data-src="`${apiUrl}/api/files/get/${person.image_url}`" v-if="person.image_url">
+        <img class="lazy" :data-src="person.image_url" v-if="person.image_url">
         <img :src="profileFallbackImage" v-if="!person.image_url">
       </div>
     </router-link>
