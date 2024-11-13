@@ -302,8 +302,10 @@
     },
     methods: {
       async initialDataLoad() {
-        this.loadProfileStructure()
-        await this.loadPerson()
+        await Promise.all([
+          this.loadProfileStructure(),
+          this.loadPerson()
+        ])
         this.initImgLazyLoad()
         this.loading = false
       },
