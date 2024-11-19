@@ -164,14 +164,32 @@ class DataAuditModel extends Model
       $userData['bio'] = $this->newlineToParagraphs($userData['bio']);
     }
 
+    // Add the image file if it exists
+    $dirPath = ROOTPATH . 'writable/uploads/profile_images/';
+    if (isset($userData['image_url']) && $userData['image_url'] && file_exists("{$dirPath}{$userData['image_url']}")) {
+      $filePath = "{$dirPath}{$userData['image_url']}";
+      $fileContents = file_get_contents($filePath);
+      $userData['image_file'] = base64_encode($fileContents);
+      $userData['image_file_name'] = basename($filePath);
+    }
+
+    $errorMsgBase = 'An error occurred while syncing user data to remote server: ';
+
     try {
-      $client->post($url, [
+      $response = $client->post($url, [
         'headers' => $headers,
         'json' => $userData,
+        'http_errors' => false,
       ]);
+
+      if ($response->getStatusCode() !== 200) {
+        log_message('error', $errorMsgBase . $response->getBody());
+        return false;
+      }
 
       return true;
     } catch (\Exception $e) {
+      log_message('error', $errorMsgBase . print_r($e, true));
       return false;
     }
   }

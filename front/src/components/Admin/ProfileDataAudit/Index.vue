@@ -116,13 +116,8 @@
 
     <div class="mb-2 has-text-weight-bold">3. Select an action.</div>
 
-    <button class="button is-success" @click="processAuditRecord('process_send_email')">
-      Accept/deny & send email
-    </button>
-
-    <button class="button ml-2 is-success" @click="processAuditRecord('process_quietly')">
-      Accept/deny quietly
-    </button>
+    <ActionButton buttonText="Accept/deny & send email" :classesExtra="['is-success']" @click="processAuditRecord('process_send_email')" :button="true" :working="processAuditRecordModalSendWorking"></ActionButton>
+    <ActionButton buttonText="Accept/deny quietly" :classesExtra="['ml-2', 'is-success']" @click="processAuditRecord('process_quietly')" :button="true" :working="processAuditRecordModalQuietWorking"></ActionButton>
   </Modal>
 
   <Modal
@@ -189,6 +184,8 @@
         processAuditRecordModalEmailSubject: '',
         processAuditRecordModalEmailBody: '',
         processAuditRecordModalEmailValues: {},
+        processAuditRecordModalSendWorking: false,
+        processAuditRecordModalQuietWorking: false,
         paginateTotalItems: 0,
         changesFields: [],
         activeFilterChanges: [],
@@ -299,6 +296,12 @@
         }
       },
       async processAuditRecord(action) {
+        if (action === 'process_send_email') {
+          this.processAuditRecordModalSendWorking = true
+        } else {
+          this.processAuditRecordModalQuietWorking = true
+        }
+
         let response = ''
         try {
           response = await this.$store.dispatch('admin/processProfileAuditRecord', {
@@ -311,6 +314,9 @@
         } catch (error) {
           this.awn.warning('Something went wrong, try again.')
           return
+        } finally {
+          this.processAuditRecordModalSendWorking = false
+          this.processAuditRecordModalQuietWorking = false
         }
 
         this.awn.success(response.message)

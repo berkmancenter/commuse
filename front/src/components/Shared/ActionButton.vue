@@ -1,10 +1,25 @@
 <template>
-  <component :is="tagName" class="commuse-action-button button ld-ext-right" :class="{ 'commuse-action-button-active': active, 'running': working }" @click="handleClick" v-bind:disabled="disabled ? true : null">
+  <component 
+    :is="tagName"
+    :class="[
+      {
+        'commuse-action-button-active': active,
+        'running': working,
+        'commuse-action-button': true,
+        'button': true,
+        'ld-ext-right': true,
+      },
+      ...classesExtra,
+    ]"
+    @click="handleClick"
+    v-bind:disabled="disabled ? true : null"
+  >
     <Icon :src="icon" :interactive="false" v-if="icon" />
     <div>{{ buttonText }}</div>
     <div class="ld ld-ring ld-spin"></div>
   </component>
 </template>
+
 
 <script>
   import Icon from '@/components/Shared/Icon.vue'
@@ -36,6 +51,11 @@
         type: Boolean,
         required: false,
         default: false,
+      },
+      classesExtra: {
+        type: Array,
+        required: false,
+        default: [],
       },
     },
     computed: {

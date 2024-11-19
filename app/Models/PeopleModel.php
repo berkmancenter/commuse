@@ -55,8 +55,9 @@ class PeopleModel extends Model
   ];
 
   const REVIEW_TRIGGER_FIELDS = [
-    'bio', 'email', 'website_link', 'twitter_link', 'mastodon_link',
+    'bio', 'website_link', 'twitter_link', 'mastodon_link',
     'linkedin_link', 'instagram_link', 'facebook_link', 'snapchat_link',
+    'image_url',
   ];
 
   const REINTAKE_STATUS_NOT_REQUIRED = 'not_required';
@@ -916,7 +917,7 @@ class PeopleModel extends Model
    * @param bool $noSync Whether to skip synchronization with the remote service.
    * @return void
    */
-  private function addAuditRecord($oldProfileData, $newProfileData, $userId, bool $sync = false, bool $noSync = false) : void {
+  public function addAuditRecord($oldProfileData, $newProfileData, $userId, bool $sync = false, bool $noSync = false) : void {
     $keysToSkip = array_merge(self::AUDIT_SKIP_FIELDS, $this->getChildCustomFields());
     $newValues = ArrayDiffMultidimensional::compare($newProfileData, $oldProfileData, false);
     $newValues = array_diff_key($newValues, array_flip($keysToSkip));
