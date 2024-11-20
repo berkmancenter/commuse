@@ -39,6 +39,7 @@ class PeopleController extends BaseController
 
     $extraConditions = [
       'people.public_profile' => true,
+      'users.status' => NULL,
     ];
 
     $whereInConditions = [];

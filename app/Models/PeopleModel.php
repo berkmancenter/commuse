@@ -144,12 +144,17 @@ class PeopleModel extends Model
 
     if (!empty($extraConditions)) {
       foreach ($extraConditions as $key => $value) {
+        if ($value === null) {
+          $builder->where("{$key} IS NULL");
+          continue;
+        }
+
         if (is_array($value)) {
           $builder->whereIn($key, $value);
           continue;
-        } else {
-          $builder->where($key, $value);
         }
+
+        $builder->where($key, $value);
       }
     }
 
