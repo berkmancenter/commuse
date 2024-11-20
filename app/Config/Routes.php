@@ -48,6 +48,7 @@ $routes->post('api/users/saveProfile', 'UsersController::saveProfile');
 $routes->post('api/users/savePublicProfileStatus', 'UsersController::savePublicProfileStatus');
 $routes->post('api/users/uploadProfileImage/(:any)', 'UsersController::uploadProfileImage/$1');
 $routes->post('api/admin/users/setActiveStatus', 'UsersController::setActiveStatus');
+$routes->post('api/admin/users/sync', 'UsersController::sync');
 $routes->post('api/admin/users/createNewUser', 'UsersController::createNewUser');
 $routes->post('api/admin/users/setActiveAffiliation', 'UsersController::setActiveAffiliation');
 $routes->get('api/admin/users', 'UsersController::adminIndex');

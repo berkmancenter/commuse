@@ -158,6 +158,14 @@ const actions = {
 
     return response
   },
+  async syncUsers(context, data) {
+    const response = await fetchIt(`${apiUrl}/api/admin/users/sync`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+
+    return response
+  }
 }
 
 const getters = {}

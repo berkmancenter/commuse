@@ -105,7 +105,8 @@
                 <h4 class="is-size-5 mt-2">Admin</h4>
 
                 <ActionButton class="mt-2" buttonText="Edit profile" @click="$router.push({ name: 'user-profile-admin.index', params: { id: person.user_id } })" :icon="editIcon"></ActionButton>
-                <ActionButton class="mt-2" :buttonText="activeteButtonText" @click="changeUserStatus(person.user_id)" :icon="activeteUserIcon"></ActionButton>
+                <ActionButton class="mt-2" :buttonText="activeteButtonText" @click="changeUserStatus(person.user_id)" :icon="activeteUserIcon" :working="statusChangeWorking"></ActionButton>
+                <ActionButton class="mt-2" buttonText="Sync" @click="syncUser(person.user_id)" :icon="syncIcon" :working="syncingUserWorking"></ActionButton>
               </div>
             </div>
           </div>
@@ -230,6 +231,7 @@
   import currentAddressIcon from '@/assets/images/marker_map.svg'
   import editIcon from '@/assets/images/edit.svg'
   import activeteUserIcon from '@/assets/images/active.svg'
+  import syncIcon from '@/assets/images/sync.svg'
   import PersonDetailsGroup from '@/components/People/PersonDetailsGroup.vue'
   import ShowMore from '@/components/Shared/ShowMore.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
@@ -253,11 +255,14 @@
         affiliateIcon,
         currentAddressIcon,
         activeteUserIcon,
+        syncIcon,
         profileStructure: [],
         getMultiFieldValue,
         calendarDateFormat,
         lazyLoadInstance: null,
         loading: true,
+        statusChangeWorking: false,
+        syncingUserWorking: false,
       }
     },
     components: {
@@ -384,6 +389,7 @@
         }, 1)
       },
       async changeUserStatus(userId) {
+        this.statusChangeWorking = true
         const status = this.person.active ? 'not_active' : 'active'
 
         try {
@@ -394,9 +400,33 @@
         } catch (error) {
           this.awn.warning('Something went wrong, try again.')
           return
+        } finally {
+          this.statusChangeWorking = false
+        }
+
+        if (status === 'active') {
+          this.awn.success('User has been activated.')
+        } else {
+          this.awn.success('User has been deactivated.')
         }
 
         this.initialDataLoad()
+      },
+      async syncUser(userId) {
+        this.syncingUserWorking = true
+
+        try {
+          await this.$store.dispatch('admin/syncUsers', {
+            users: [userId],
+          })
+        } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
+          return
+        } finally {
+          this.syncingUserWorking = false
+        }
+
+        this.awn.success('User has been synced.')
       },
     },
   }

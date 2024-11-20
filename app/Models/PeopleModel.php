@@ -996,14 +996,9 @@ class PeopleModel extends Model
       }
     }
 
-    // Synchronize user data with the remote service when saved by an admin
     if (
       $noSync === false &&
-      (
-        $sync === true ||
-        ($countedNewValues > 0 &&
-        auth()->user()->can('admin.access') === true)
-      )
+      $sync === true
     ) {
       $dataAuditModel = new DataAuditModel();
       $dataAuditModel->syncUserData($newProfileData);

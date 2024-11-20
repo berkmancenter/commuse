@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\DataAuditModel;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\PeopleModel;
 use App\Models\UserModel;
@@ -814,7 +815,7 @@ class UsersController extends BaseController
       $userIds = $requestData['users'] ?? [];
       $status = $requestData['status'] ?? 'active';
       $peopleModel = new PeopleModel();
-  
+
       if (!empty($userIds)) {
         foreach ($userIds as $userId) {
           $userData = $peopleModel->getProfileData($userId);
@@ -827,5 +828,32 @@ class UsersController extends BaseController
     }
 
     return $this->respond(['message' => 'Active status has been set successfully.'], 200);
+  }
+
+  public function sync()
+  {
+    $this->checkAdminAccess();
+
+    try {
+      $requestData = $this->request->getJSON(true);
+      $userIds = $requestData['users'] ?? [];
+      $dataAuditModel = new DataAuditModel();
+      $peopleModel = new PeopleModel();
+
+      if (!empty($userIds)) {
+        foreach ($userIds as $userId) {
+          $userData = $peopleModel->getProfileData($userId);
+          $dataAuditModel->syncUserData($userData);
+        }
+      }
+    } catch (\Throwable $th) {
+      return $this->respond(['message' => 'Error syncing.'], 500);
+    }
+
+    if (count($userIds) === 1) {
+      return $this->respond(['message' => 'User has been synced successfully.'], 200);
+    } else {
+      return $this->respond(['message' => 'Users have been synced successfully.'], 200);
+    }
   }
 }

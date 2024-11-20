@@ -78,9 +78,11 @@ class ElasticsearchClient
 
       try {
         $this->client->update($params);
+
         return true;
       } catch (ElasticsearchException $e) {
         $this->logger->error("Elasticsearch update error for document ID {$id}: " . $e->getMessage());
+
         return false;
       }
     } else {
@@ -89,6 +91,7 @@ class ElasticsearchClient
         return true;
       } catch (ElasticsearchException $e) {
         $this->logger->error("Elasticsearch index error for document ID {$id}: " . $e->getMessage());
+
         return false;
       }
     }
@@ -111,13 +114,16 @@ class ElasticsearchClient
 
     try {
       $this->client->delete($params);
+
       return true;
     } catch (ElasticsearchException $e) {
       if ($e instanceof \Elasticsearch\Common\Exceptions\Missing404Exception) {
         $this->logger->error("Document not found for deletion in Elasticsearch: $id");
+
         return false;
       } else {
         $this->logger->error("Elasticsearch delete error for document ID {$id}: " . $e->getMessage());
+
         return false;
       }
     }
@@ -140,10 +146,11 @@ class ElasticsearchClient
 
     try {
       $result = $this->client->search($params);
-      $this->logger->info("Search performed on index: {$index}");
+
       return $result;
     } catch (ElasticsearchException $e) {
       $this->logger->error('Elasticsearch search error: ' . $e->getMessage());
+
       return false;
     }
   }
