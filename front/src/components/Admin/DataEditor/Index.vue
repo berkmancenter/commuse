@@ -100,12 +100,7 @@
         const searchTermEntering = this.$store.state.dataEditor.dataEditorSearchQuery
 
         let fieldsData = null
-        try {
-          fieldsData = await this.$store.dispatch('dataEditor/fetchDataEditorData')
-        } catch (error) {
-          this.awn.warning('Something went wrong, try again.')
-          return
-        }
+        fieldsData = await this.$store.dispatch('dataEditor/fetchDataEditorData')
 
         if (this.$store.state.dataEditor.dataEditorSearchQuery !== searchTermEntering) {
           return
@@ -118,11 +113,6 @@
           this.loadData()
         } else {
           this.fieldsData = []
-        }
-      },
-      abortFetchDataEditorRequest() {
-        if (this.$store.state.dataEditor.dataEditorFetchController) {
-          this.$store.state.dataEditor.dataEditorFetchController.abort()
         }
       },
       openEditModal(dataItem) {
@@ -144,7 +134,6 @@
     },
     watch: {
       '$store.state.dataEditor.dataEditorSearchQuery': function() {
-        this.abortFetchDataEditorRequest()
         this.reloadView()
       },
     },
