@@ -496,7 +496,7 @@
 
     &-content {
       display: grid;
-      grid-gap: 2rem;
+      grid-gap: 1rem;
 
       @mixin grid-columns($columns) {
         grid-template-columns: repeat($columns, 1fr);
