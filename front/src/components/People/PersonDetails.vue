@@ -226,7 +226,7 @@
   import emailIcon from '@/assets/images/email.svg'
   import phoneIcon from '@/assets/images/phone.svg'
   import homeIcon from '@/assets/images/home.svg'
-  import profileFallbackImage from '@/assets/images/profile_fallback.png'
+  import profileFallbackImage from '@/assets/images/profile_fallback.svg'
   import affiliateIcon from '@/assets/images/affiliate.svg'
   import currentAddressIcon from '@/assets/images/marker_map.svg'
   import editIcon from '@/assets/images/edit.svg'
@@ -460,6 +460,7 @@
       .people-section-details-side-image {
         img {
           border-radius: 10px;
+          min-width: 200px;
         }
       }
 

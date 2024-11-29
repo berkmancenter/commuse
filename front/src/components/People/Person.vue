@@ -16,16 +16,16 @@
     </router-link>
 
     <VTooltip distance="10" placement="left" class="people-section-person-location">
-      <div class="mt-2">
-        <div class="is-size-6" v-if="personAddress.city">
+      <div class="is-size-6">
+        <div v-if="personAddress.city">
           {{ personAddress.city }}
         </div>
 
-        <div class="is-size-6" v-if="personAddress.state">
+        <div v-if="personAddress.state">
           {{ personAddress.state }}
         </div>
 
-        <div class="is-size-6" v-if="personAddress.country">
+        <div v-if="personAddress.country">
           {{ personAddress.country }}
         </div>
       </div>
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-  import profileFallbackImage from '@/assets/images/profile_fallback.png'
+  import profileFallbackImage from '@/assets/images/profile_fallback.svg'
 
   export default {
     name: 'Person',
@@ -181,9 +181,12 @@
     }
 
     &-location {
-      display: inline-block;
+      height: 6rem;
+      display: flex;
       padding-top: 1rem;
+      margin: 0 auto;
       text-align: center;
+      align-items: center;
     }
   }
 </style>

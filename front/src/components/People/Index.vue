@@ -201,7 +201,7 @@
 <script>
   import LazyLoad from 'vanilla-lazyload'
   import Person from '@/components/People/Person.vue'
-  import profileFallbackImage from '@/assets/images/profile_fallback.png'
+  import profileFallbackImage from '@/assets/images/profile_fallback.svg'
   import VueMultiselect from 'vue-multiselect'
   import filterIcon from '@/assets/images/filter.svg'
   import closeIcon from '@/assets/images/close.svg'
