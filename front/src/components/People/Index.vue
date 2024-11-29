@@ -504,10 +504,12 @@
 
       @media screen and (max-width: 599px) { @include grid-columns(1); }
       @media screen and (min-width: 600px) { @include grid-columns(2); }
+      @media screen and (min-width: 800px) { @include grid-columns(3); }
       @media screen and (min-width: 960px) { @include grid-columns(4); }
-      @media screen and (min-width: 1100px) { @include grid-columns(5); }
-      @media screen and (min-width: 1440px) { @include grid-columns(6); }
+      @media screen and (min-width: 1100px) { @include grid-columns(6); }
+      @media screen and (min-width: 1500px) { @include grid-columns(7); }
       @media screen and (min-width: 1700px) { @include grid-columns(8); }
+      @media screen and (min-width: 2100px) { @include grid-columns(10); }
     }
 
     &-filters {
