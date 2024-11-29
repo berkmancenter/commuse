@@ -237,6 +237,61 @@ class UsersController extends BaseController
   }
 
   /**
+   * Remove user profile image
+   *
+   * @param int|null $id User ID (optional)
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function removeProfileImage($id = null)
+  {
+    $peopleModel = new PeopleModel();
+    $userId = auth()->id();
+
+    if (auth()->user()->can('admin.access') === true && $id && $id !== 'current') {
+      $userId = $id;
+    }
+
+    $existingPerson = $peopleModel->where('user_id', $userId)->first();
+
+    if (!$existingPerson) {
+      return $this->respond(['message' => 'User not found.'], 404);
+    }
+
+    $imageUrl = $existingPerson['image_url'];
+    if ($imageUrl) {
+      $filePath = ROOTPATH . "writable/uploads/profile_images/{$imageUrl}";
+
+      if (file_exists($filePath)) {
+        unlink($filePath);
+      }
+
+      $existingPerson['image_url'] = '';
+      $result = $peopleModel->update($existingPerson['id'], $existingPerson);
+
+      // Add audit record
+      $commonData = [
+        'first_name' => $existingPerson['first_name'],
+        'last_name' => $existingPerson['last_name'],
+        'email' => $existingPerson['email'],
+      ];
+
+      $peopleModel->addAuditRecord(
+        array_merge($commonData, ['image_url' => $imageUrl]),
+        array_merge($commonData, ['image_url' => '']),
+        $userId,
+      );
+
+      if ($result) {
+        return $this->respond(['message' => 'Profile image removed successfully.'], 200);
+      } else {
+        return $this->respond(['message' => 'Error updating data.'], 500);
+      }
+    } else {
+      return $this->respond(['message' => 'No profile image to remove.'], 400);
+    }
+  }
+
+  /**
    * Get the list of users for the admin panel
    *
    * @return \CodeIgniter\HTTP\Response
