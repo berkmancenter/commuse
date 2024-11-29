@@ -4,7 +4,7 @@
       <SkeletonPatternLoader :loading="loading">
         <template v-slot:content>
           <div class="people-section-details-side-name-image">
-            <div class="is-size-4 mb-4 people-section-person-full-name">
+            <div class="is-size-4 mb-4 people-section-details-full-name">
               <div>
                 {{ person.prefix }} {{ person.first_name }} {{ person.middle_name }} {{ person.last_name }}
               </div>
