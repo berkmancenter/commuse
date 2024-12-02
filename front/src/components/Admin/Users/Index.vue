@@ -27,11 +27,11 @@
             <th>Email</th>
             <th>ReIntake</th>
             <th>Invitation code</th>
-            <th>Created</th>
-            <th>Last login</th>
-            <th>Active</th>
-            <th>Admin</th>
-            <th data-sort-method="none" class="no-sort">Actions</th>
+            <th class="admin-users-table-row-cell-narrow">Created</th>
+            <th class="admin-users-table-row-cell-narrow">Last login</th>
+            <th class="admin-users-table-row-cell-narrow">Active</th>
+            <th class="admin-users-table-row-cell-narrow">Admin</th>
+            <th data-sort-method="none" class="admin-users-table-row-cell-narrow no-sort"></th>
           </tr>
         </thead>
         <tbody>
@@ -44,7 +44,7 @@
             <td>{{ user.email }}</td>
             <td>{{ setReintakeStatuses[user.reintake] }}</td>
             <td>
-              <VTooltip distance="10" placement="left" v-if="user.invitation_code">
+              <VTooltip distance="10" placement="left" v-if="user.invitation_code" class="admin-users-table-invitation">
                 <a class="button" @click="searchTerm = user.invitation_code">{{ user.invitation_code }}</a>
 
                 <template #popper>
@@ -52,31 +52,43 @@
                 </template>
               </VTooltip>
             </td>
-            <td>{{ user.created_at }}</td>
-            <td>{{ user.last_login }}</td>
-            <td class="admin-users-table-is-active">
+            <td class="admin-users-table-row-cell-narrow">{{ user.created_at }}</td>
+            <td class="admin-users-table-row-cell-narrow">{{ user.last_login }}</td>
+            <td class="admin-users-table-is-active admin-users-table-row-cell-narrow">
               <div class="is-hidden">{{ user.active }}</div>
               <Booler :value="user.active" />
             </td>
-            <td class="admin-users-table-is-admin">
+            <td class="admin-users-table-is-admin admin-users-table-row-cell-narrow">
               <div class="is-hidden">{{ user.groups.includes('admin') }}</div>
               <Booler :value="user.groups.includes('admin')" />
             </td>
-            <td>
-              <div class="admin-table-actions">
-                <router-link :to="{ name: 'user-profile-admin.index', params: { id: user.id } }" title="Edit user profile">
-                  <Icon :src="editIcon" />
-                </router-link>
-                <router-link :to="{ name: 'people.details', params: { id: user.people_id } }" target="_blank" title="Show user profile">
-                  <Icon :src="userIcon" />
-                </router-link>
-                <a title="Change role" @click.prevent="setUserRoleModalOpen(user)">
-                  <Icon :src="toggleAdminIcon" />
-                </a>
-                <a title="Delete user" @click.prevent="deleteUsersConfirm([user])">
-                  <Icon :src="minusIcon" />
-                </a>
-              </div>
+            <td class="admin-users-table-row-cell-narrow">
+              <VDropdown>
+                <div>
+                  <a class="button">
+                    <Icon :src="dropdownIcon" />
+                  </a>
+                </div>
+
+                <template #popper>
+                  <router-link class="dropdown-item" :to="{ name: 'user-profile-admin.index', params: { id: user.id } }">
+                    <Icon :src="editIcon" :interactive="false" />
+                    Edit user profile
+                  </router-link>
+                  <router-link class="dropdown-item" :to="{ name: 'people.details', params: { id: user.people_id } }" target="_blank">
+                    <Icon :src="userIcon" :interactive="false" />
+                    Show user profile
+                  </router-link>
+                  <a class="dropdown-item" @click.prevent="setUserRoleModalOpen(user)">
+                    <Icon :src="toggleAdminIcon" :interactive="false" />
+                    Change role
+                  </a>
+                  <a class="dropdown-item" @click.prevent="deleteUsersConfirm([user])">
+                    <Icon :src="minusIcon" :interactive="false" />
+                    Delete user
+                  </a>
+                </template>
+              </VDropdown>
             </td>
           </tr>
           <tr v-if="users.length === 0">
@@ -287,6 +299,7 @@
   import activeIcon from '@/assets/images/active.svg'
   import newUserIcon from '@/assets/images/new_user.svg'
   import removeUserIcon from '@/assets/images/remove_user.svg'
+  import dropdownIcon from '@/assets/images/dropdown.svg'
 
   export default {
     name: 'AdminUsers',
@@ -314,6 +327,7 @@
         activeIcon,
         newUserIcon,
         removeUserIcon,
+        dropdownIcon,
         profileStructure: [],
         users: [],
         roles: [
@@ -595,9 +609,30 @@
 </script>
 
 <style lang="scss">
-  .admin-users-import-csv {
-    input {
-      display: none;
+  $cl: '.admin-users';
+
+  #{$cl} {
+    &-import-csv {
+      input {
+        display: none;
+      }
+    }
+
+    &-table {
+      &-invitation {
+        a {
+          width: 100px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: block;
+        }
+      }
+
+      &-row-cell-narrow {
+        max-width: 120px;
+        white-space: normal;
+        word-break: normal !important;
+      }
     }
   }
 </style>

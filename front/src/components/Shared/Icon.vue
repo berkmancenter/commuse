@@ -37,7 +37,6 @@
   a.button, button {
     img.commuse-icon {
       padding: 0;
-      margin-right: 0.4rem;
       align-self: normal;
     }
   }

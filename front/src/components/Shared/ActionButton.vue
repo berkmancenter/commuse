@@ -88,5 +88,9 @@
     &.commuse-action-button-active {
       background-color: var(--super-light-color);
     }
+
+    img {
+      margin-right: 0.25rem;
+    }
   }
 </style>

@@ -42,20 +42,20 @@
   }
 </script>
 
-<style >
-  .commuse-search-input {
+<style lang="scss">
+  $cl: '.commuse-search-input';
+
+  #{$cl} {
     position: relative;
     max-width: 300px;
 
     span {
-      display: block;
-      width: 1.5rem;
-      height: 1.5rem;
+      display: flex;
       position: absolute;
       top: 0;
       right: 0.5rem;
+      width: 1.5rem;
       height: 100%;
-      display: flex;
       pointer-events: none;
       user-select: none;
     }
@@ -63,10 +63,11 @@
     input {
       border-bottom: 2px solid var(--main-color);
       border-radius: 0;
-    }
+      padding-right: 2rem;
 
-    input::placeholder {
-      color: rgba(54, 54, 54, 0.8);
+      &::placeholder {
+        color: rgba(54, 54, 54, 0.8);
+      }
     }
   }
 </style>
