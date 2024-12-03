@@ -20,7 +20,6 @@
   </component>
 </template>
 
-
 <script>
   import Icon from '@/components/Shared/Icon.vue'
 
@@ -77,20 +76,22 @@
   }
 </script>
 
-<style>
-  .commuse-action-button {
-    padding: 0.5rem 0.5rem;
+<style lang="scss">
+  $cl: '.commuse-action-button';
+
+  #{$cl} {
+    padding: 0.5rem;
 
     > * {
       height: 100%;
     }
 
-    &.commuse-action-button-active {
+    &-active {
       background-color: var(--super-light-color);
     }
 
     img {
-      margin-right: 0.25rem;
+      margin-right: 0.4rem;
     }
   }
 </style>

@@ -13,9 +13,9 @@
             <th>Code</th>
             <th>Valid</th>
             <th>Type</th>
-            <th>Expire</th>
-            <th>Created</th>
-            <th data-sort-method="none" class="no-sort">Actions</th>
+            <th class="admin-table-row-cell-narrow">Expire</th>
+            <th class="admin-table-row-cell-narrow">Created</th>
+            <th data-sort-method="none" class="no-sort admin-table-row-cell-narrow">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -23,12 +23,23 @@
             <td class="admin-invitations-table-code"><a class="button is-light" title="Click to copy invitation url" @click="copyCodeUrlToClipboard(invitation.code)">{{ invitation.code }} <Icon :src="clipboardIcon" /></a></td>
             <td class="admin-invitations-table-used"><Booler :value="isValid(invitation)" /></td>
             <td class="no-break admin-invitations-table-type">{{ invitation.type }}</td>
-            <td>{{ formattedTimestamp(invitation.expire) }}</td>
-            <td>{{ formattedTimestamp(invitation.created_at) }}</td>
-            <td class="admin-table-actions">
-              <a title="Delete invitation" @click.prevent="deleteInvitationConfirm(invitation)">
-                <Icon :src="minusIcon" />
-              </a>
+            <td class="admin-table-row-cell-narrow">{{ formattedTimestamp(invitation.expire) }}</td>
+            <td class="admin-table-row-cell-narrow">{{ formattedTimestamp(invitation.created_at) }}</td>
+            <td>
+              <VDropdown>
+                <div>
+                  <a class="button">
+                    <Icon :src="dropdownIcon" />
+                  </a>
+                </div>
+
+                <template #popper>
+                  <a class="dropdown-item" @click.prevent="deleteInvitationConfirm(invitation)">
+                    <Icon :src="minusIcon" />
+                    Delete invitation
+                  </a>
+                </template>
+              </VDropdown>
             </td>
           </tr>
           <tr v-if="invitations.length === 0">
@@ -84,6 +95,7 @@
   import minusIcon from '@/assets/images/minus.svg'
   import clipboardIcon from '@/assets/images/clipboard.svg'
   import addIcon from '@/assets/images/add.svg'
+  import dropdownIcon from '@/assets/images/dropdown.svg'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import { formattedTimestamp } from '@/lib/time_stuff'
   import ActionButton from '@/components/Shared/ActionButton.vue'
@@ -103,6 +115,7 @@
         minusIcon,
         addIcon,
         clipboardIcon,
+        dropdownIcon,
         invitations: [],
         apiUrl: import.meta.env.VITE_API_URL,
         formattedTimestamp: formattedTimestamp,
@@ -191,20 +204,24 @@
 </script>
 
 <style lang="scss">
-  .admin-invitations-table-code {
-    width: 24rem;
+  $cl: '.admin-invitations-table';
 
-    img {
-      padding: 0;
-      margin-left: 0.3rem;
+  #{$cl} {
+    &-code {
+      width: 24rem;
+
+      img {
+        padding: 0;
+        margin-left: 0.3rem;
+      }
     }
-  }
 
-  .admin-invitations-table-type {
-    width: 5rem;
-  }
+    &-type {
+      width: 5rem;
+    }
 
-  .admin-invitations-table-used {
-    width: 2rem;
+    &-used {
+      width: 2rem;
+    }
   }
 </style>

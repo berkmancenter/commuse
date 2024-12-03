@@ -27,11 +27,11 @@
             <th>Email</th>
             <th>ReIntake</th>
             <th>Invitation code</th>
-            <th class="admin-users-table-row-cell-narrow">Created</th>
-            <th class="admin-users-table-row-cell-narrow">Last login</th>
-            <th class="admin-users-table-row-cell-narrow">Active</th>
-            <th class="admin-users-table-row-cell-narrow">Admin</th>
-            <th data-sort-method="none" class="admin-users-table-row-cell-narrow no-sort"></th>
+            <th class="admin-table-row-cell-narrow">Created</th>
+            <th class="admin-table-row-cell-narrow">Last login</th>
+            <th class="admin-table-row-cell-narrow">Active</th>
+            <th class="admin-table-row-cell-narrow">Admin</th>
+            <th data-sort-method="none" class="admin-table-row-cell-narrow no-sort">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -52,17 +52,17 @@
                 </template>
               </VTooltip>
             </td>
-            <td class="admin-users-table-row-cell-narrow">{{ user.created_at }}</td>
-            <td class="admin-users-table-row-cell-narrow">{{ user.last_login }}</td>
-            <td class="admin-users-table-is-active admin-users-table-row-cell-narrow">
+            <td class="admin-table-row-cell-narrow">{{ user.created_at }}</td>
+            <td class="admin-table-row-cell-narrow">{{ user.last_login }}</td>
+            <td class="admin-users-table-is-active admin-table-row-cell-narrow">
               <div class="is-hidden">{{ user.active }}</div>
               <Booler :value="user.active" />
             </td>
-            <td class="admin-users-table-is-admin admin-users-table-row-cell-narrow">
+            <td class="admin-users-table-is-admin admin-table-row-cell-narrow">
               <div class="is-hidden">{{ user.groups.includes('admin') }}</div>
               <Booler :value="user.groups.includes('admin')" />
             </td>
-            <td class="admin-users-table-row-cell-narrow">
+            <td class="admin-table-row-cell-narrow">
               <VDropdown>
                 <div>
                   <a class="button">
@@ -113,10 +113,7 @@
       <div class="control">
         <input type="file" accept=".csv" ref="importUsersCsvModalFileInput">
         <div class="my-2">
-          <button class="button" type="button" @click="$refs.importUsersCsvModalFileInput.click()">
-            <Icon :src="fileIcon" :interactive="false" />
-            Choose file
-          </button>
+          <ActionButton buttonText="Choose file" @click="$refs.importUsersCsvModalFileInput.click()" :icon="fileIcon"></ActionButton>
         </div>
       </div>
     </div>
@@ -626,12 +623,6 @@
           text-overflow: ellipsis;
           display: block;
         }
-      }
-
-      &-row-cell-narrow {
-        max-width: 120px;
-        white-space: normal;
-        word-break: normal !important;
       }
     }
   }

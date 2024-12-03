@@ -2,8 +2,7 @@
   overflow-x: auto;
 }
 
-table.table.admin-table {
-  width: 100%;
+.admin-table {
 
   td {
     word-break: break-word;
@@ -25,6 +24,12 @@ table.table.admin-table {
         }
       }
     }
+  }
+
+  &-row-cell-narrow {
+    max-width: 120px;
+    white-space: normal;
+    word-break: normal !important;
   }
 }
 
