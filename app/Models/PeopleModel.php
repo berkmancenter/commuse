@@ -264,7 +264,7 @@ class PeopleModel extends Model
           $havingFilters[] = "MAX(CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' AND (custom_field_data.value ILIKE ANY(ARRAY[{$joinedInValues}])) THEN 1 ELSE 0 END) = 1";
           break;
         case 'tags':
-          $havingFilters[] = "bool_and( CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN lower(custom_field_data.value_json::text)::jsonb @> lower('{$jsonValues}')::jsonb END)";
+          $havingFilters[] = "bool_or(CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN lower(custom_field_data.value_json::text)::jsonb @> lower('{$jsonValues}')::jsonb END)";
           break;
         case 'tags_range':
           if (
@@ -312,7 +312,7 @@ class PeopleModel extends Model
             // Combine conditions if any found
             if (!empty($tagHavingFilterParts)) {
               $tagHavingFilterPartsTogether = implode(' AND ', $tagHavingFilterParts);
-              $havingFilters[] = "bool_and( CASE {$tagHavingFilterStart} {$tagHavingFilterPartsTogether} END)";
+              $havingFilters[] = "bool_and(CASE {$tagHavingFilterStart} {$tagHavingFilterPartsTogether} END)";
             }
           }
           break;
