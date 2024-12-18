@@ -87,6 +87,40 @@ class PeopleModel extends Model
   }
 
   /**
+   * Get people with basic fields.
+   * 
+   * @param array $extraConditions Additional conditions to apply
+   * @param array $likeConditions Conditions to apply to LIKE
+   * @param array $whereInConditions Conditions to apply to WHERE IN
+   * @param array $filters Filters to apply
+   * @return array List of processed people
+   */
+  public function getPeopleWithBasicFields(
+    array $extraConditions = [],
+    array $likeConditions = [],
+    array $whereInConditions = [],
+    array $filters = []
+  ): array {
+    $people = $this->getPeople($extraConditions, $likeConditions, $whereInConditions, $filters);
+    $this->processData($people);
+
+    $listOfFields = [
+      'id', 'first_name', 'middle_name', 'last_name',
+      'mobile_phone_number', 'image_url', 'preferred_pronouns',
+      'home_city', 'home_country', 'current_city', 'current_country',
+      'home_state', 'current_state',
+    ];
+
+    $people = array_map(function ($person) use ($listOfFields) {
+      return array_filter($person, function ($key) use ($listOfFields) {
+        return in_array($key, $listOfFields);
+      }, ARRAY_FILTER_USE_KEY);
+    }, $people);
+
+    return $people;
+  }
+
+  /**
    * Get people with custom fields.
    *
    * @param array $extraConditions Additional conditions to apply
