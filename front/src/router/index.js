@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { waitUntil } from '@/lib/wait_until.js'
+import store from '@/store/index.js'
 
 const basePath = import.meta.env.VITE_BASE_URL
 const appTitle = import.meta.env.VITE_APP_TITLE
@@ -31,6 +33,17 @@ const router = createRouter({
       path: '/people_map',
       component: () => import('@/components/People/Map.vue'),
       name: 'people.map',
+      beforeEnter: async (to, from, next) => {
+        await waitUntil(() => {
+          return store?.state?.systemSettings?.publicSystemSettings?.SystemEnabledModules
+        })
+
+        if (!store.state.systemSettings.publicSystemSettings.SystemEnabledModules.value.some(module => module.id === 'people_map')) {
+          next('/404')
+        } else {
+          next()
+        }
+      },
     },
     {
       path: '/profile',
@@ -62,6 +75,17 @@ const router = createRouter({
       name: 'buzz.index',
       meta: {
         title: 'Buzz',
+      },
+      beforeEnter: async (to, from, next) => {
+        await waitUntil(() => {
+          return store?.state?.systemSettings?.publicSystemSettings?.SystemEnabledModules
+        })
+
+        if (!store.state.systemSettings.publicSystemSettings.SystemEnabledModules.value.some(module => module.id === 'buzz')) {
+          next('/404')
+        } else {
+          next()
+        }
       },
     },
     {

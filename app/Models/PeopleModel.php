@@ -254,16 +254,26 @@ class PeopleModel extends Model
         continue;
       }
 
-      $jsonValues = json_encode($filterValues);
+      $filterKey = $this->db->escapeString($filterKey);
 
       switch ($fieldDb['input_type']) {
         case 'short_text':
-          $joinedInValues = implode(', ', array_map(function($filterValue) {
-            return "'" . addslashes($filterValue) . "'";
+          $filterValues = array_map(function ($filterValue) {
+            return $this->db->escapeString($filterValue);
+          }, $filterValues);
+
+          $joinedInValues = implode(', ', array_map(function($filterValue) use ($builder) {
+            return "'" . $filterValue . "'";
           }, $filterValues));
           $havingFilters[] = "MAX(CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' AND (custom_field_data.value ILIKE ANY(ARRAY[{$joinedInValues}])) THEN 1 ELSE 0 END) = 1";
+
           break;
         case 'tags':
+          $filterValues = array_map(function ($filterValue) {
+            return $this->db->escapeString($filterValue);
+          }, $filterValues);
+          $jsonValues = json_encode($filterValues);
+
           $havingFilters[] = "bool_or(CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN lower(custom_field_data.value_json::text)::jsonb @> lower('{$jsonValues}')::jsonb END)";
           break;
         case 'tags_range':
@@ -274,6 +284,16 @@ class PeopleModel extends Model
           ) {
             $tagHavingFilterStart = "WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN";
             $tagHavingFilterParts = [];
+
+            $filterValues['tags'] = array_map(function ($filterValue) {
+              return $this->db->escapeString($filterValue);
+            }, $filterValues['tags']);
+            if (isset($filterValues['from'])) {
+              $filterValues['from'] = $this->db->escapeString($filterValues['from']);
+            }
+            if (isset($filterValues['to'])) {
+              $filterValues['to'] = $this->db->escapeString($filterValues['to']);
+            }
 
             // Handle tags filtering
             if (isset($filterValues['tags']) && count($filterValues['tags'])) {

@@ -5,7 +5,7 @@
       content-selector=".commuse-content"
       :close-on-click="false"
     >
-      <ul>
+      <ul v-if="menuActive">
         <li v-for="(link) in menu">
           <a :href="link.href" class="hvr-fade" @click="hideMenuMobile" v-if="link.external === true">
             <img class="side-menu-icon" :src="link.icon">
@@ -18,7 +18,7 @@
         </li>
       </ul>
 
-      <div class="side-menu-admin" v-if="$store.state.user.currentUser.admin">
+      <div class="side-menu-admin" v-if="$store.state.user.currentUser.admin && adminMenuActive">
         <div class="is-size-5 px-2 py-1">Admin</div>
 
         <ul>
@@ -105,6 +105,7 @@
   import logo from '@/assets/images/logo.png'
   import { isMobile } from '@/lib/mobile_utils.js'
   import Spinner from '@/components/Shared/Spinner.vue'
+  import { waitUntil } from '@/lib/wait_until.js'
 
   const apiUrl = import.meta.env.VITE_API_URL
 
@@ -117,6 +118,7 @@
     created() {
       this.loadCurrentUser()
       this.loadSystemSettings()
+      this.checkEnabledModules()
     },
     data() {
       return {
@@ -128,12 +130,11 @@
             title: 'News & events',
             icon: newsMenuIcon,
           },
-/*          {
+          {
             href: '/buzz',
             title: 'Buzz',
             icon: buzzMenuIcon,
           },
-*/
           {
             href: '/people',
             title: 'People',
@@ -188,6 +189,8 @@
           },
         ],
         logo,
+        menuActive: false,
+        adminMenuActive: false,
       }
     },
     methods: {
@@ -211,6 +214,22 @@
       },
       logout() {
         window.location.href = `${this.apiUrl}/logout`
+      },
+      async checkEnabledModules() {
+        await waitUntil(() => {
+          return this.$store.state.systemSettings.publicSystemSettings?.SystemEnabledModules
+        })
+
+        if (!this.$store.state.systemSettings.publicSystemSettings?.SystemEnabledModules?.value.some(module => module.id === 'buzz')) {
+          this.menu = this.menu.filter((item) => item.href !== '/buzz');
+        }
+
+        if (!this.$store.state.systemSettings.publicSystemSettings?.SystemEnabledModules?.value.some(module => module.id === 'people_map')) {
+          this.menu = this.menu.filter((item) => item.href !== '/people_map');
+        }
+
+        this.menuActive = true
+        this.adminMenuActive = true
       },
     },
   }

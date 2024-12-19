@@ -2,6 +2,8 @@
 
 namespace Config;
 
+use App\Libraries\SystemSettingsWrapper;
+
 // Create a new instance of our RouteCollection class.
 $routes = Services::routes();
 
@@ -96,11 +98,13 @@ $routes->post('api/admin/systemSettings', 'SystemSettingsController::saveSetting
 $routes->get('api/admin/publicSystemSettings', 'SystemSettingsController::getPublicSettings');
 
 // Buzz controller routes
-// $routes->get('api/buzz', 'BuzzController::index');
-// $routes->get('api/buzz/(:num)', 'BuzzController::show/$1');
-// $routes->post('api/buzz/upsert', 'BuzzController::upsert');
-// $routes->post('api/buzz/like/(:num)', 'BuzzController::like/$1');
-// $routes->post('api/buzz/delete/(:num)', 'BuzzController::delete/$1');
+if (php_sapi_name() == 'cli' || SystemSettingsWrapper::getInstance()->isValueInArray('buzz', 'SystemEnabledModules')) {
+  $routes->get('api/buzz', 'BuzzController::index');
+  $routes->get('api/buzz/(:num)', 'BuzzController::show/$1');
+  $routes->post('api/buzz/upsert', 'BuzzController::upsert');
+  $routes->post('api/buzz/like/(:num)', 'BuzzController::like/$1');
+  $routes->post('api/buzz/delete/(:num)', 'BuzzController::delete/$1');
+}
 
 // Front-end application routes
 $frontRoutes = [

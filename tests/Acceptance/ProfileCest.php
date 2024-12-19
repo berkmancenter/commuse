@@ -32,6 +32,7 @@ class ProfileCest
       $I->loginUser($I, 'saveProfileWithDataAndSeeProfile@example.com', 'password123');
 
       $I->openMenu($I);
+      $I->seeElement('//a[contains(., "Edit profile")]');
       $I->click('Edit profile');
       $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
       $I->fillField('//label[contains(text(), "First name")]/following-sibling::div//input', 'Tommy');
@@ -60,6 +61,7 @@ class ProfileCest
       $I->loginUser($I, 'saveProfileWithDataAndHideProfile@example.com', 'password123');
 
       $I->openMenu($I);
+      $I->seeElement('//a[contains(., "Edit profile")]');
       $I->click('Edit profile');
       $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
       $I->fillField('//label[contains(text(), "First name")]/following-sibling::div//input', 'Tommy');
@@ -100,6 +102,7 @@ class ProfileCest
       $I->loginUser($I, 'profileRedirectsOnClickableValues@example.com', 'password123');
 
       $I->openMenu($I);
+      $I->seeElement('//a[contains(., "Edit profile")]');
       $I->click('Edit profile');
       $I->waitForElementVisible('//label[contains(text(), "First name")]/following-sibling::div//input');
       $I->fillField('//label[contains(text(), "First name")]/following-sibling::div//input', 'Tommy');

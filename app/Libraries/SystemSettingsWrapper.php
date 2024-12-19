@@ -21,6 +21,7 @@ class SystemSettingsWrapper
     'DataAuditUserEmailAcceptedBody',
     'DataAuditUserEmailDeclinedSubject',
     'DataAuditUserEmailDeclinedBody',
+    'SystemEnabledModules',
   ];
 
   private function __construct(CacheInterface $cache, $settingsService)
@@ -86,5 +87,26 @@ class SystemSettingsWrapper
 
     $this->settingsService->set('SystemSettings.settings', $settingsJson);
     $this->cache->save($this->cacheKey, $settingsJson, $this->cacheExpiration);
+  }
+
+  /**
+   * Check if a specific value is in the array of a setting.
+   * 
+   * @param string $key The key of the setting.
+   * @param string $lookedKey The key to look for in the array.
+   * @return bool True if the value is in the array, false otherwise.
+   */
+  public function isValueInArray(string $lookedKey, string $key)
+  {
+    $settings = $this->getSettingByKey($key);
+    if (isset($settings['value']) && is_array($settings['value'])) {
+      foreach ($settings['value'] as $setting) {
+        if ($setting['id'] == $lookedKey) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }

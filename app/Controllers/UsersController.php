@@ -184,7 +184,11 @@ class UsersController extends BaseController
       $userId = $id;
     }
 
-    $existingPerson = $peopleModel->where('user_id', $userId)->first();
+    $person = $peopleModel->where('user_id', $userId)->first();
+
+    if (!$person) {
+      return $this->respond(['message' => 'User not found. Cannot update profile image.'], 404);
+    }
 
     $file = $this->request->getFile('image');
 
@@ -194,9 +198,11 @@ class UsersController extends BaseController
 
     $fileName = $file->getRandomName();
     $dirPath = ROOTPATH . 'writable/uploads/profile_images/';
+
     if (!is_dir($dirPath)) {
       mkdir($dirPath);
     }
+
     $file->move($dirPath, $fileName);
 
     $image = new ImageResize("{$dirPath}/{$fileName}");
@@ -204,22 +210,19 @@ class UsersController extends BaseController
     $image->save("{$dirPath}/{$fileName}");
 
     $data = [
-      'image_url'  => $fileName,
-      'user_id'  => $userId,
+      'image_url' => $fileName,
+      'user_id' => $userId,
     ];
 
-    $result = $existingPerson ? $peopleModel->update($existingPerson['id'], $data) : $peopleModel->insert($data);
-
-    $message = $existingPerson ? 'Profile image updated successfully' : 'Profile image created successfully';
+    $result = $peopleModel->update($person['id'], $data);
 
     // Add audit record
     $commonData = [
-      'first_name' => $existingPerson['first_name'],
-      'last_name' => $existingPerson['last_name'],
-      'email' => $existingPerson['email'],
+      'first_name' => $person['first_name'],
+      'last_name' => $person['last_name'],
+      'email' => $person['email'],
     ];
 
-    $peopleModel = new PeopleModel();
     $peopleModel->addAuditRecord(
       array_merge($commonData, ['image_url' => '']),
       array_merge($commonData, ['image_url' => 'new profile image']),
@@ -227,6 +230,8 @@ class UsersController extends BaseController
     );
 
     if ($result) {
+      $message = 'Profile image updated successfully';
+
       return $this->respond([
         'message' => $message,
         'image' => "profile_images/{$fileName}",
@@ -251,13 +256,13 @@ class UsersController extends BaseController
       $userId = $id;
     }
 
-    $existingPerson = $peopleModel->where('user_id', $userId)->first();
+    $person = $peopleModel->where('user_id', $userId)->first();
 
-    if (!$existingPerson) {
+    if (!$person) {
       return $this->respond(['message' => 'User not found.'], 404);
     }
 
-    $imageUrl = $existingPerson['image_url'];
+    $imageUrl = $person['image_url'];
     if ($imageUrl) {
       $filePath = ROOTPATH . "writable/uploads/profile_images/{$imageUrl}";
 
@@ -265,14 +270,14 @@ class UsersController extends BaseController
         unlink($filePath);
       }
 
-      $existingPerson['image_url'] = '';
-      $result = $peopleModel->update($existingPerson['id'], $existingPerson);
+      $person['image_url'] = '';
+      $result = $peopleModel->update($person['id'], $person);
 
       // Add audit record
       $commonData = [
-        'first_name' => $existingPerson['first_name'],
-        'last_name' => $existingPerson['last_name'],
-        'email' => $existingPerson['email'],
+        'first_name' => $person['first_name'],
+        'last_name' => $person['last_name'],
+        'email' => $person['email'],
       ];
 
       $peopleModel->addAuditRecord(
@@ -343,7 +348,6 @@ class UsersController extends BaseController
   {
     $this->checkAdminAccess();
 
-    $userModel = new UserModel();
     $result = false;
     $usersProvider = auth()->getProvider();
     $peopleModel = model('PeopleModel');
@@ -410,10 +414,10 @@ class UsersController extends BaseController
     $this->checkAdminAccess();
 
     $result = false;
-    $requestData = $this->request->getJSON(true);
-    $userIds = $requestData['users'] ?? [];
-    $role = $requestData['role'] ?? [];
     $db = \Config\Database::connect();
+    $requestData = $this->request->getJSON(true);
+    $role = $requestData['role'] ?? [];
+    $userIds = $requestData['users'] ?? [];
 
     if (!empty($userIds) && !empty($role)) {
       $db->transStart();
