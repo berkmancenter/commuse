@@ -108,7 +108,7 @@ class PeopleModel extends Model
       'id', 'first_name', 'middle_name', 'last_name',
       'mobile_phone_number', 'image_url', 'preferred_pronouns',
       'home_city', 'home_country', 'current_city', 'current_country',
-      'home_state', 'current_state',
+      'home_state', 'current_state', 'current_location_lat', 'current_location_lon',
     ];
 
     $people = array_map(function ($person) use ($listOfFields) {
