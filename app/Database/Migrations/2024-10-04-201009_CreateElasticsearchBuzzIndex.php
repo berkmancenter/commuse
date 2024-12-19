@@ -11,6 +11,7 @@ class CreateElasticsearchBuzzIndex extends Migration
   {
     $elasticClient = service('elasticsearchClient');
     $buzzModel = new BuzzModel();
+    $indexName = $buzzModel->getSearchIndexName();
 
     $params = [
       'index' => $buzzModel->getSearchIndexName(),
@@ -78,7 +79,9 @@ class CreateElasticsearchBuzzIndex extends Migration
     ];
 
     // Create the index with specified settings and mappings
-    $elasticClient->getClient()->indices()->create($params);
+    if ($elasticClient->getClient()->indices()->exists(['index' => $indexName]) === false) {
+      $elasticClient->getClient()->indices()->create($params);
+    }
   }
 
   public function down()

@@ -88,6 +88,7 @@ class AcceptanceTester extends \Codeception\Actor
 
       if (!$isFound) {
         $I->click('.side-menu-toggler');
+        $I->seeElement('//a[contains(., "Account settings")]');
       }
     }
 

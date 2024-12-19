@@ -19,8 +19,21 @@
                     <div v-if="systemField.type === 'string'">
                       <textarea class="textarea" type="text" v-model="systemField.value"></textarea>
                     </div>
+
                     <div v-if="systemField.type === 'long_text_rich'">
                       <ckeditor :editor="editor" v-model="systemField.value" :config="editorConfig"></ckeditor>
+                    </div>
+
+                    <div v-if="systemField.type === 'multi_select'">
+                      <VueMultiselect
+                        v-model="systemField.value"
+                        :multiple="true"
+                        :taggable="false"
+                        :options="systemField.options"
+                        track-by="id"
+                        label="title"
+                      >
+                      </VueMultiselect>
                     </div>
                   </div>
                 </div>
@@ -48,6 +61,7 @@
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import SkeletonPatternLoader from '@/components/Shared/SkeletonPatternLoader.vue'
   import saveIcon from '@/assets/images/save.svg'
+  import VueMultiselect from 'vue-multiselect'
 
   export default {
     name: 'SystemSettings',
@@ -70,6 +84,7 @@
       StickyElement,
       ActionButton,
       SkeletonPatternLoader,
+      VueMultiselect,
     },
     methods: {
       async loadSettings() {

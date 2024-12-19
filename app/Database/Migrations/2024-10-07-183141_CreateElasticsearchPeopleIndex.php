@@ -11,6 +11,7 @@ class CreateElasticsearchPeopleIndex extends Migration
   {
     $elasticClient = service('elasticsearchClient');
     $peopleModel = new PeopleModel();
+    $indexName = $peopleModel->getSearchIndexName();
 
     $params = [
       'index' => $peopleModel->getSearchIndexName(),
@@ -53,7 +54,9 @@ class CreateElasticsearchPeopleIndex extends Migration
     ];
 
     // Create the index with specified settings and mappings
-    $elasticClient->getClient()->indices()->create($params);
+    if ($elasticClient->getClient()->indices()->exists(['index' => $indexName]) === false) {
+      $elasticClient->getClient()->indices()->create($params);
+    }
   }
 
   public function down()
