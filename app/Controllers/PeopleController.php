@@ -39,6 +39,7 @@ class PeopleController extends BaseController
 
     $extraConditions = [
       'people.public_profile' => true,
+      'users.status' => NULL,
     ];
 
     $whereInConditions = [];
@@ -64,7 +65,7 @@ class PeopleController extends BaseController
 
       // Execute the search query
       $results = $elasticClient->search($peopleModel->getSearchIndexName(), $searchQuery);
-  
+
       // Check for errors in the Elasticsearch response
       if (isset($results['error'])) {
         return $this->fail($results['error']);
@@ -81,7 +82,7 @@ class PeopleController extends BaseController
       }
     }
 
-    $people = $peopleModel->getPeopleWithCustomFields(
+    $people = $peopleModel->getPeopleWithBasicFields(
       $extraConditions,
       [],
       $whereInConditions,

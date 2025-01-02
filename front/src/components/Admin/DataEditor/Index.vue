@@ -26,11 +26,20 @@
             <td class="admin-data-editor-table-model-id">{{ fieldsDataItem.model_id }}</td>
             <td>{{ fieldsDataItem.model_name }}</td>
             <td>
-              <div class="admin-table-actions">
-                <a title="Edit custom field" @click.prevent="openEditModal(fieldsDataItem)">
-                  <Icon :src="editIcon" />
-                </a>
-              </div>
+              <VDropdown>
+                <div>
+                  <a class="button">
+                    <Icon :src="dropdownIcon" />
+                  </a>
+                </div>
+
+                <template #popper>
+                  <a class="dropdown-item" @click.prevent="openEditModal(fieldsDataItem)">
+                    <Icon :src="editIcon" />
+                    Edit
+                  </a>
+                </template>
+              </VDropdown>
             </td>
           </tr>
           <tr v-if="fieldsData.length === 0">
@@ -68,6 +77,7 @@
   import Booler from '@/components/Shared/Booler.vue'
   import editIcon from '@/assets/images/edit.svg'
   import searchIcon from '@/assets/images/search.svg'
+  import dropdownIcon from '@/assets/images/dropdown.svg'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import VueMultiselect from 'vue-multiselect'
   import Modal from '@/components/Shared/Modal.vue'
@@ -87,6 +97,7 @@
       return {
         searchIcon,
         editIcon,
+        dropdownIcon,
         fieldsData: [],
         fieldDataFormModalVisible: false,
         fieldDataFormModalCurrent: null,
@@ -100,12 +111,7 @@
         const searchTermEntering = this.$store.state.dataEditor.dataEditorSearchQuery
 
         let fieldsData = null
-        try {
-          fieldsData = await this.$store.dispatch('dataEditor/fetchDataEditorData')
-        } catch (error) {
-          this.awn.warning('Something went wrong, try again.')
-          return
-        }
+        fieldsData = await this.$store.dispatch('dataEditor/fetchDataEditorData')
 
         if (this.$store.state.dataEditor.dataEditorSearchQuery !== searchTermEntering) {
           return
@@ -118,11 +124,6 @@
           this.loadData()
         } else {
           this.fieldsData = []
-        }
-      },
-      abortFetchDataEditorRequest() {
-        if (this.$store.state.dataEditor.dataEditorFetchController) {
-          this.$store.state.dataEditor.dataEditorFetchController.abort()
         }
       },
       openEditModal(dataItem) {
@@ -144,7 +145,6 @@
     },
     watch: {
       '$store.state.dataEditor.dataEditorSearchQuery': function() {
-        this.abortFetchDataEditorRequest()
         this.reloadView()
       },
     },

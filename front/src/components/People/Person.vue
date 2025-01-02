@@ -9,23 +9,23 @@
         <div class="is-size-6" v-if="person.preferred_pronouns">({{ person.preferred_pronouns }})</div>
       </div>
 
-      <div class="people-section-avatar">
-        <img class="lazy" :data-src="`${apiUrl}/api/files/get/${person.image_url}`" v-if="person.image_url">
+      <div class="people-section-person-avatar">
+        <img class="lazy" :data-src="person.image_url" v-if="person.image_url">
         <img :src="profileFallbackImage" v-if="!person.image_url">
       </div>
     </router-link>
 
     <VTooltip distance="10" placement="left" class="people-section-person-location">
-      <div class="mt-2">
-        <div class="is-size-6" v-if="personAddress.city">
+      <div class="is-size-6">
+        <div v-if="personAddress.city">
           {{ personAddress.city }}
         </div>
 
-        <div class="is-size-6" v-if="personAddress.state">
+        <div v-if="personAddress.state">
           {{ personAddress.state }}
         </div>
 
-        <div class="is-size-6" v-if="personAddress.country">
+        <div v-if="personAddress.country">
           {{ personAddress.country }}
         </div>
       </div>
@@ -35,7 +35,7 @@
       </template>
     </VTooltip>
 
-    <div class="mt-2 person-section-social is-flex">
+    <div class="mt-2 people-section-person-social is-flex">
       <div v-if="person.twitter_link" class="mr-2">
         <a :href="person.twitter_link" target="_blank">
           <img src="@/assets/images/twitter.svg">
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-  import profileFallbackImage from '@/assets/images/profile_fallback.png'
+  import profileFallbackImage from '@/assets/images/profile_fallback.svg'
 
   export default {
     name: 'Person',
@@ -100,9 +100,13 @@
 </script>
 
 <style lang="scss">
-  .people-section-person {
+  $person: '.people-section-person';
+
+  #{$person} {
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
-    background-color:   #FAFAFA;
+    background-color: #FAFAFA;
     border: 1px solid var(--greyish-color);
     padding: 1rem;
     border-radius: 5%;
@@ -113,15 +117,23 @@
       transform: translateY(-10px);
     }
 
-    .person-section-social {
+    &-social {
+      min-height: 2rem;
+      display: flex;
+      justify-content: center;
+
       img {
         display: block;
         width: 2rem;
         height: 2rem;
+
+        &:hover {
+          transform: scale(1.1);
+        }
       }
     }
 
-    .people-section-person-full-name {
+    &-full-name {
       min-height: 115px;
       display: flex;
       flex-direction: column;
@@ -136,20 +148,26 @@
       }
     }
 
-    .people-section-avatar {
+    &-avatar {
+      display: flex;
+      justify-content: center;
+
       img {
-        max-height: 200px;
+        width: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        aspect-ratio: 1 / 1;
       }
     }
 
-    .people-section-bio {
+    &-bio {
       overflow-wrap: break-word;
       word-wrap: break-word;
       word-break: break-word;
       hyphens: auto;
     }
 
-    .people-section-interests {
+    &-interests {
       display: flex;
       flex-wrap: wrap;
 
@@ -162,8 +180,13 @@
       }
     }
 
-    .people-section-person-location {
-      display: inline-block;
+    &-location {
+      height: 6rem;
+      display: flex;
+      padding-top: 1rem;
+      margin: 0 auto;
+      text-align: center;
+      align-items: center;
     }
   }
 </style>

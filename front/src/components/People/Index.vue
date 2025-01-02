@@ -10,27 +10,27 @@
         <ActionButton :button="true" :disabled="loading" class="ml-2" buttonText="Clear all" :icon="clearFiltersIcon" @click="clearAllFilters()"></ActionButton>
       </div>
 
-      <div v-if="anyActiveFilters">
+      <div class="people-section-active-filters" v-if="anyActiveFilters">
         <div class="people-section-active-filters-header">Active filters</div>
 
-        <div class="people-section-active-filters mt-2 ml-4">
+        <div class="mt-2 ml-4">
           <template v-for="(activeFilterValues, fieldMachineName) in $store.state.people.peopleActiveFilters">
-            <div class="people-section-active-filter" v-if="isNotEmpty(activeFilterValues)">
-              <div class="people-section-active-filter-title mt-1">
+            <div class="people-section-active-filters-active-filter" v-if="isNotEmpty(activeFilterValues)">
+              <div class="people-section-active-filters-active-filter-title mt-1">
                 <span>></span>
                 {{ fieldTitle(fieldMachineName) }}
               </div>
-              <div class="people-section-active-filter-values">
-                <div class="people-section-active-filter-value" v-if="Array.isArray(activeFilterValues)" v-for="(activeFilterValue) in activeFilterValues">
+              <div class="people-section-active-filters-active-filter-values">
+                <div class="people-section-active-filters-active-filter-value" v-if="Array.isArray(activeFilterValues)" v-for="(activeFilterValue) in activeFilterValues">
                   <span>{{ activeFilterValue }}</span>
                   <img :src="closeIcon" @click="removeFilter(fieldMachineName, activeFilterValue)">
                 </div>
-                <div class="people-section-active-filter-value" v-if="activeFilterValues.tags" v-for="(tag) in activeFilterValues.tags">
+                <div class="people-section-active-filters-active-filter-value" v-if="activeFilterValues.tags" v-for="(tag) in activeFilterValues.tags">
                   <span>{{ tag }}</span>
                   <img :src="closeIcon" @click="removeFilterTag(fieldMachineName, tag)">
                 </div>
                 <template v-if="activeFilterValues.from || activeFilterValues.to">
-                  <div class="people-section-active-filter-value">
+                  <div class="people-section-active-filters-active-filter-value">
                     <span>{{ calendarDateFormat(activeFilterValues.from) }} - {{ calendarDateFormat(activeFilterValues.to) }}</span>
                     <img :src="closeIcon" @click="removeDateRange(fieldMachineName)">
                   </div>
@@ -51,34 +51,36 @@
     <hr>
 
     <div class="mt-2 people-section-sort-count mb-4">
-      <div class="mt-2 people-section-counted-users">{{ countedUsers }}</div>
+      <div class="mt-2 people-section-sort-count-counted-users">{{ countedUsers }}</div>
 
-      <VueMultiselect
-        v-model="sortingActive"
-        :multiple="false"
-        label="label"
-        track-by="key"
-        :options="sortingOptions"
-        deselectLabel=""
-        selectLabel=""
-        selectedLabel=""
-        :preselectFirst="true"
-        :allowEmpty="false"
-        :searchable="false"
-      >
-        <template v-slot:singleLabel="{ option }">
-          <span class="people-section-sort-option-container">
-            <span class="people-section-sort-option-label">{{ option.label }}</span>
-            <span class="people-section-sort-option-arrow"><img :src="option.arrow"></span>
-          </span>
-        </template>
-        <template v-slot:option="{ option }">
-          <span class="people-section-sort-option-container">
-            <span class="people-section-sort-option-label">{{ option.label }}</span>
-            <span class="people-section-sort-option-arrow"><img :src="option.arrow"></span>
-          </span>
-        </template>
-      </VueMultiselect>
+      <div class="people-section-sort-count-sort">
+        <VueMultiselect
+          v-model="sortingActive"
+          :multiple="false"
+          label="label"
+          track-by="key"
+          :options="sortingOptions"
+          deselectLabel=""
+          selectLabel=""
+          selectedLabel=""
+          :preselectFirst="true"
+          :allowEmpty="false"
+          :searchable="false"
+        >
+          <template v-slot:singleLabel="{ option }">
+            <span class="people-section-sort-count-sort-option-container">
+              <span class="people-section-sort-count-sort-option-container-label">{{ option.label }}</span>
+              <span class="people-section-sort-count-sort-option-container-arrow"><img :src="option.arrow"></span>
+            </span>
+          </template>
+          <template v-slot:option="{ option }">
+            <span class="people-section-sort-count-sort-option-container">
+              <span class="people-section-sort-count-sort-option-container-label">{{ option.label }}</span>
+              <span class="people-section-sort-count-sort-option-container-arrow"><img :src="option.arrow"></span>
+            </span>
+          </template>
+        </VueMultiselect>
+      </div>
     </div>
 
     <div class="is-clearfix"></div>
@@ -199,7 +201,7 @@
 <script>
   import LazyLoad from 'vanilla-lazyload'
   import Person from '@/components/People/Person.vue'
-  import profileFallbackImage from '@/assets/images/profile_fallback.png'
+  import profileFallbackImage from '@/assets/images/profile_fallback.svg'
   import VueMultiselect from 'vue-multiselect'
   import filterIcon from '@/assets/images/filter.svg'
   import closeIcon from '@/assets/images/close.svg'
@@ -486,130 +488,127 @@
 </script>
 
 <style lang="scss">
-  .people-section {
-    .people-section-content {
+  $cl: 'people-section';
+
+  .#{$cl} {
+    $main-color: var(--main-color);
+    $secondary-color: var(--secondary-color);
+
+    &-content {
       display: grid;
-      grid-gap: 2rem;
+      grid-gap: 1rem;
 
-      @media screen and (max-width: 599px) {
-        grid-template-columns: repeat(1, 1fr);
+      @mixin grid-columns($columns) {
+        grid-template-columns: repeat($columns, 1fr);
       }
 
-      @media screen and (min-width: 600px) {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      @media screen and (min-width: 960px) {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      @media screen and (min-width: 1100px) {
-        grid-template-columns: repeat(5, 1fr);
-      }
-
-      @media screen and (min-width: 1440px) {
-        grid-template-columns: repeat(6, 1fr);
-      }
-
-      @media screen and (min-width: 1700px) {
-        grid-template-columns: repeat(8, 1fr);
-      }
+      @media screen and (max-width: 599px) { @include grid-columns(1); }
+      @media screen and (min-width: 600px) { @include grid-columns(2); }
+      @media screen and (min-width: 800px) { @include grid-columns(3); }
+      @media screen and (min-width: 960px) { @include grid-columns(4); }
+      @media screen and (min-width: 1100px) { @include grid-columns(6); }
+      @media screen and (min-width: 1500px) { @include grid-columns(7); }
+      @media screen and (min-width: 1700px) { @include grid-columns(8); }
+      @media screen and (min-width: 2100px) { @include grid-columns(10); }
     }
 
-    .people-section-filters {
+    &-filters {
       > div {
         margin-right: 1rem;
       }
     }
 
-    .people-section-active-filters-header,
-    .people-section-counted-users {
-      border-bottom: 2px solid var(--main-color);
-      display: inline-block;
-    }
+    &-active-filters {
+      &-header {
+        border-bottom: 2px solid $main-color;
+        display: inline-block;
+      }
 
-    .people-section-active-filters {
-      .people-section-active-filter {
-        .people-section-active-filter-values {
+      &-active-filter {
+        &-values {
           display: flex;
+        }
 
-          .people-section-active-filter-value {
-            background-color: var(--secondary-color);
-            padding: 0.2rem 0.6rem;
-            border-radius: 1rem;
-            color: #ffffff;
-            margin-right: 1rem;
-            margin-top: 0.5rem;
-            display: flex;
-            align-items: center;
+        &-value {
+          background-color: $secondary-color;
+          padding: 0.2rem 0.6rem;
+          border-radius: 1rem;
+          color: #ffffff;
+          margin: 0.5rem 1rem 0 0;
+          display: flex;
+          align-items: center;
 
-            img {
-              width: 1.5rem;
-              height: 1.5rem;
-              display: block;
-              margin-left: 0.5rem;
-              cursor: pointer;
-            }
+          img {
+            width: 1.5rem;
+            height: 1.5rem;
+            display: block;
+            margin-left: 0.5rem;
+            cursor: pointer;
           }
         }
 
-        .people-section-active-filter-title {
+        &-title {
           display: flex;
           align-items: center;
 
           span {
-            color: var(--main-color);
+            color: $main-color;
             margin-right: 0.5rem;
           }
         }
       }
     }
 
-    .people-section-sort-count {
+    &-sort-count {
       display: flex;
 
-      > div {
-        max-width: 200px;
+      &-counted-users {
+        border-bottom: 2px solid $main-color;
+        display: inline-block;
       }
 
-      .multiselect {
+      &-sort {
         margin-left: auto;
-        cursor: pointer;
-      }
+        width: 200px;
 
-      .multiselect__select {
-        display: none;
-      }
+        .multiselect {
+          cursor: pointer;
 
-      .multiselect__tags {
-        padding-right: 8px;
-      }
+          &__select {
+            display: none;
+          }
 
-      .people-section-sort-option-container {
-        display: flex;
-        align-items: center;
-
-        img {
-          height: 1.5rem;
-          width: 1.5rem;
+          &__tags {
+            padding-right: 8px;
+          }
         }
 
-        .people-section-sort-option-arrow {
-          margin-left: auto;
+        &-option-container {
+          display: flex;
+          align-items: center;
+
+          img {
+            height: 1.5rem;
+            width: 1.5rem;
+          }
+
+          &-arrow {
+            margin-left: auto;
+          }
         }
       }
     }
   }
 
-  .people-section-filters-filter-time-range {
+  .#{$cl}-filters-filter-time-range {
     display: flex;
 
     > div {
       width: 50%;
-    }
 
-    > div:first-child {
-      margin-right: 1rem;
+      &:first-child {
+        margin-right: 1rem;
+      }
     }
   }
 </style>

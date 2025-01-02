@@ -100,7 +100,7 @@
   import { ClassicEditor, Bold, Essentials, Italic, Paragraph, Undo, Link } from 'ckeditor5'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Icon from '@/components/Shared/Icon.vue'
-  import profileFallbackImage from '@/assets/images/profile_fallback.png'
+  import profileFallbackImage from '@/assets/images/profile_fallback.svg'
   import moment from 'moment'
   import Modal from '@/components/Shared/Modal.vue'
   import SearchInput from '@/components/Shared/SearchInput.vue'

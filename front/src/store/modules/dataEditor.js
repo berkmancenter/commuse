@@ -8,9 +8,6 @@ const state = {
 }
 
 const mutations = {
-  setDataEditorFetchController(state, controller) {
-    state.dataEditorFetchController = controller
-  },
   setDataEditorSearchQuery(state, query) {
     state.dataEditorSearchQuery = query
   },
@@ -18,7 +15,11 @@ const mutations = {
 
 const actions = {
   async fetchDataEditorData(context) {
-    context.commit('setDataEditorFetchController', new AbortController())
+    if (context.state.dataEditorFetchController) {
+      context.state.dataEditorFetchController.abort()
+    }
+
+    context.state.dataEditorFetchController = new AbortController()
 
     const response = await fetchIt(`${apiUrl}/api/admin/dataEditor`, {
       method: 'POST',
@@ -39,9 +40,6 @@ const actions = {
     })
 
     return response
-  },
-  setDataEditorFetchController(context, controller) {
-    context.commit('setDataEditorFetchController', controller)
   },
 }
 

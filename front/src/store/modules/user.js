@@ -120,6 +120,13 @@ const actions = {
 
     return response
   },
+  async removeProfileImage(context, data) {
+    const response = await fetchIt(`${apiUrl}/api/users/removeProfileImage/${data.id}`, {
+      method: 'POST',
+    })
+
+    return response
+  },
   async changePassword(context, data) {
     const formData = new FormData();
     formData.append('password', data.password);

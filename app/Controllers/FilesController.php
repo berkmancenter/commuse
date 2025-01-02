@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
+use CodeIgniter\HTTP\ResponseInterface;
 
 /**
  * This controller handles file-related operations.
@@ -25,7 +26,12 @@ class FilesController extends BaseController
       $mime = mime_content_type($filepath);
       return $this->response->setHeader('Content-Type', $mime)->setBody($file);
     } else {
-      return redirect()->back()->with('error', 'File not found.');
+      return $this->response
+        ->setStatusCode(ResponseInterface::HTTP_NOT_FOUND)
+        ->setJSON([
+            'status' => 404,
+            'error' => 'File not found.'
+        ]);
     }
   }
 }

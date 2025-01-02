@@ -21,19 +21,22 @@ const fetchIt = async (url, options = {}) => {
       return Promise.reject('Redirecting to login')
     }
 
-    // Check for non-200 responses
-    if (!response.ok) {
-      return Promise.reject('Fetch failed with status ' + response.status)
-    }
-
     // Use .text() and then manually parse JSON to handle incomplete/broken responses better
     const text = await response.text()
-    
+
     let data
     try {
       data = JSON.parse(text)
     } catch (err) {
       return Promise.reject('Invalid JSON response')
+    }
+
+    if (!response.ok) {
+      // Handle non-200 responses with JSON-formatted error details
+      if (Array.isArray(data.message)) {
+        data.message = data.message.join('<br>')
+      }
+      return Promise.reject(data);
     }
 
     return Promise.resolve(data)

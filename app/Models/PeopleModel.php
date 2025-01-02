@@ -55,8 +55,9 @@ class PeopleModel extends Model
   ];
 
   const REVIEW_TRIGGER_FIELDS = [
-    'bio', 'email', 'website_link', 'twitter_link', 'mastodon_link',
+    'bio', 'website_link', 'twitter_link', 'mastodon_link',
     'linkedin_link', 'instagram_link', 'facebook_link', 'snapchat_link',
+    'image_url',
   ];
 
   const REINTAKE_STATUS_NOT_REQUIRED = 'not_required';
@@ -81,6 +82,40 @@ class PeopleModel extends Model
   ): array {
     $people = $this->getPeople($extraConditions, $likeConditions, $whereInConditions, $filters);
     $this->processData($people);
+
+    return $people;
+  }
+
+  /**
+   * Get people with basic fields.
+   * 
+   * @param array $extraConditions Additional conditions to apply
+   * @param array $likeConditions Conditions to apply to LIKE
+   * @param array $whereInConditions Conditions to apply to WHERE IN
+   * @param array $filters Filters to apply
+   * @return array List of processed people
+   */
+  public function getPeopleWithBasicFields(
+    array $extraConditions = [],
+    array $likeConditions = [],
+    array $whereInConditions = [],
+    array $filters = []
+  ): array {
+    $people = $this->getPeople($extraConditions, $likeConditions, $whereInConditions, $filters);
+    $this->processData($people);
+
+    $listOfFields = [
+      'id', 'first_name', 'middle_name', 'last_name',
+      'mobile_phone_number', 'image_url', 'preferred_pronouns',
+      'home_city', 'home_country', 'current_city', 'current_country',
+      'home_state', 'current_state', 'current_location_lat', 'current_location_lon',
+    ];
+
+    $people = array_map(function ($person) use ($listOfFields) {
+      return array_filter($person, function ($key) use ($listOfFields) {
+        return in_array($key, $listOfFields);
+      }, ARRAY_FILTER_USE_KEY);
+    }, $people);
 
     return $people;
   }
@@ -143,12 +178,17 @@ class PeopleModel extends Model
 
     if (!empty($extraConditions)) {
       foreach ($extraConditions as $key => $value) {
+        if ($value === null) {
+          $builder->where("{$key} IS NULL");
+          continue;
+        }
+
         if (is_array($value)) {
           $builder->whereIn($key, $value);
           continue;
-        } else {
-          $builder->where($key, $value);
         }
+
+        $builder->where($key, $value);
       }
     }
 
@@ -214,17 +254,27 @@ class PeopleModel extends Model
         continue;
       }
 
-      $jsonValues = json_encode($filterValues);
+      $filterKey = $this->db->escapeString($filterKey);
 
       switch ($fieldDb['input_type']) {
         case 'short_text':
-          $joinedInValues = implode(', ', array_map(function($filterValue) {
-            return "'" . addslashes($filterValue) . "'";
+          $filterValues = array_map(function ($filterValue) {
+            return $this->db->escapeString($filterValue);
+          }, $filterValues);
+
+          $joinedInValues = implode(', ', array_map(function($filterValue) use ($builder) {
+            return "'" . $filterValue . "'";
           }, $filterValues));
           $havingFilters[] = "MAX(CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' AND (custom_field_data.value ILIKE ANY(ARRAY[{$joinedInValues}])) THEN 1 ELSE 0 END) = 1";
+
           break;
         case 'tags':
-          $havingFilters[] = "bool_and( CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN lower(custom_field_data.value_json::text)::jsonb @> lower('{$jsonValues}')::jsonb END)";
+          $filterValues = array_map(function ($filterValue) {
+            return $this->db->escapeString($filterValue);
+          }, $filterValues);
+          $jsonValues = json_encode($filterValues);
+
+          $havingFilters[] = "bool_or(CASE WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN lower(custom_field_data.value_json::text)::jsonb @> lower('{$jsonValues}')::jsonb END)";
           break;
         case 'tags_range':
           if (
@@ -234,6 +284,16 @@ class PeopleModel extends Model
           ) {
             $tagHavingFilterStart = "WHEN \"custom_fields\".\"machine_name\" = '{$filterKey}' THEN";
             $tagHavingFilterParts = [];
+
+            $filterValues['tags'] = array_map(function ($filterValue) {
+              return $this->db->escapeString($filterValue);
+            }, $filterValues['tags']);
+            if (isset($filterValues['from'])) {
+              $filterValues['from'] = $this->db->escapeString($filterValues['from']);
+            }
+            if (isset($filterValues['to'])) {
+              $filterValues['to'] = $this->db->escapeString($filterValues['to']);
+            }
 
             // Handle tags filtering
             if (isset($filterValues['tags']) && count($filterValues['tags'])) {
@@ -272,7 +332,7 @@ class PeopleModel extends Model
             // Combine conditions if any found
             if (!empty($tagHavingFilterParts)) {
               $tagHavingFilterPartsTogether = implode(' AND ', $tagHavingFilterParts);
-              $havingFilters[] = "bool_and( CASE {$tagHavingFilterStart} {$tagHavingFilterPartsTogether} END)";
+              $havingFilters[] = "bool_and(CASE {$tagHavingFilterStart} {$tagHavingFilterPartsTogether} END)";
             }
           }
           break;
@@ -310,7 +370,7 @@ class PeopleModel extends Model
       }
 
       unset($personData['custom_fields']);
-      $personData['image_url'] = $personData['image_url'] ? "profile_images/{$personData['image_url']}" : '';
+      $personData['image_url'] = $personData['image_url'] ? "{$_ENV['app.baseURL']}/api/files/get/profile_images/{$personData['image_url']}" : '';
 
       $personData['active'] = $personData['active'] !== 'banned';
 
@@ -916,7 +976,7 @@ class PeopleModel extends Model
    * @param bool $noSync Whether to skip synchronization with the remote service.
    * @return void
    */
-  private function addAuditRecord($oldProfileData, $newProfileData, $userId, bool $sync = false, bool $noSync = false) : void {
+  public function addAuditRecord($oldProfileData, $newProfileData, $userId, bool $sync = false, bool $noSync = false) : void {
     $keysToSkip = array_merge(self::AUDIT_SKIP_FIELDS, $this->getChildCustomFields());
     $newValues = ArrayDiffMultidimensional::compare($newProfileData, $oldProfileData, false);
     $newValues = array_diff_key($newValues, array_flip($keysToSkip));
@@ -990,14 +1050,9 @@ class PeopleModel extends Model
       }
     }
 
-    // Synchronize user data with the remote service when saved by an admin
     if (
       $noSync === false &&
-      (
-        $sync === true ||
-        ($countedNewValues > 0 &&
-        auth()->user()->can('admin.access') === true)
-      )
+      $sync === true
     ) {
       $dataAuditModel = new DataAuditModel();
       $dataAuditModel->syncUserData($newProfileData);

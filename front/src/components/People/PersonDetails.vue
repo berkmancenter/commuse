@@ -4,7 +4,7 @@
       <SkeletonPatternLoader :loading="loading">
         <template v-slot:content>
           <div class="people-section-details-side-name-image">
-            <div class="is-size-4 mb-4 people-section-person-full-name">
+            <div class="is-size-4 mb-4 people-section-details-full-name">
               <div>
                 {{ person.prefix }} {{ person.first_name }} {{ person.middle_name }} {{ person.last_name }}
               </div>
@@ -12,7 +12,8 @@
             </div>
 
             <div class="people-section-details-side-image">
-              <img class="lazy" :src="`${apiUrl}/api/files/get/${this.person.image_url}`">
+              <img class="lazy" v-if="person.image_url" :data-src="person.image_url">
+              <img :src="profileFallbackImage" v-if="!person.image_url">
             </div>
           </div>
 
@@ -104,7 +105,8 @@
                 <h4 class="is-size-5 mt-2">Admin</h4>
 
                 <ActionButton class="mt-2" buttonText="Edit profile" @click="$router.push({ name: 'user-profile-admin.index', params: { id: person.user_id } })" :icon="editIcon"></ActionButton>
-                <ActionButton class="mt-2" :buttonText="activeteButtonText" @click="changeUserStatus(person.user_id)" :icon="activeteUserIcon"></ActionButton>
+                <ActionButton class="mt-2" :buttonText="activeteButtonText" @click="changeUserStatus(person.user_id)" :icon="activeteUserIcon" :working="statusChangeWorking"></ActionButton>
+                <ActionButton class="mt-2" buttonText="Sync" @click="syncUser(person.user_id)" :icon="syncIcon" :working="syncingUserWorking"></ActionButton>
               </div>
             </div>
           </div>
@@ -224,11 +226,12 @@
   import emailIcon from '@/assets/images/email.svg'
   import phoneIcon from '@/assets/images/phone.svg'
   import homeIcon from '@/assets/images/home.svg'
-  import profileFallbackImage from '@/assets/images/profile_fallback.png'
+  import profileFallbackImage from '@/assets/images/profile_fallback.svg'
   import affiliateIcon from '@/assets/images/affiliate.svg'
   import currentAddressIcon from '@/assets/images/marker_map.svg'
   import editIcon from '@/assets/images/edit.svg'
   import activeteUserIcon from '@/assets/images/active.svg'
+  import syncIcon from '@/assets/images/sync.svg'
   import PersonDetailsGroup from '@/components/People/PersonDetailsGroup.vue'
   import ShowMore from '@/components/Shared/ShowMore.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
@@ -252,11 +255,14 @@
         affiliateIcon,
         currentAddressIcon,
         activeteUserIcon,
+        syncIcon,
         profileStructure: [],
         getMultiFieldValue,
         calendarDateFormat,
         lazyLoadInstance: null,
         loading: true,
+        statusChangeWorking: false,
+        syncingUserWorking: false,
       }
     },
     components: {
@@ -301,8 +307,10 @@
     },
     methods: {
       async initialDataLoad() {
-        this.loadProfileStructure()
-        await this.loadPerson()
+        await Promise.all([
+          this.loadProfileStructure(),
+          this.loadPerson()
+        ])
         this.initImgLazyLoad()
         this.loading = false
       },
@@ -375,13 +383,13 @@
           unobserve_entered: true,
           unobserve_completed: true,
         })
-        this.$nextTick(() => {
-          if (this.lazyLoadInstance) {
-            this.lazyLoadInstance.update()
-          }
-        })
+
+        setTimeout(() => {
+          this.lazyLoadInstance.update()
+        }, 1)
       },
       async changeUserStatus(userId) {
+        this.statusChangeWorking = true
         const status = this.person.active ? 'not_active' : 'active'
 
         try {
@@ -392,9 +400,33 @@
         } catch (error) {
           this.awn.warning('Something went wrong, try again.')
           return
+        } finally {
+          this.statusChangeWorking = false
+        }
+
+        if (status === 'active') {
+          this.awn.success('User has been activated.')
+        } else {
+          this.awn.success('User has been deactivated.')
         }
 
         this.initialDataLoad()
+      },
+      async syncUser(userId) {
+        this.syncingUserWorking = true
+
+        try {
+          await this.$store.dispatch('admin/syncUsers', {
+            users: [userId],
+          })
+        } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
+          return
+        } finally {
+          this.syncingUserWorking = false
+        }
+
+        this.awn.success('User has been synced.')
       },
     },
   }
@@ -428,6 +460,7 @@
       .people-section-details-side-image {
         img {
           border-radius: 10px;
+          min-width: 200px;
         }
       }
 

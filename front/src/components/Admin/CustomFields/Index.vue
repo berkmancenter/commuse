@@ -20,11 +20,20 @@
             <td>{{ customField.input_type }}</td>
             <td>{{ formattedTimestamp(customField.created_at) }}</td>
             <td>
-              <div class="admin-table-actions">
-                <a title="Edit custom field" @click.prevent="openEditFieldModal(customField)">
-                  <Icon :src="editIcon" />
-                </a>
-              </div>
+              <VDropdown>
+                <div>
+                  <a class="button">
+                    <Icon :src="dropdownIcon" />
+                  </a>
+                </div>
+
+                <template #popper>
+                  <a class="dropdown-item" @click.prevent="openEditFieldModal(customField)">
+                    <Icon :src="editIcon" />
+                    Edit custom field
+                  </a>
+                </template>
+              </VDropdown>
             </td>
           </tr>
           <tr v-if="customFields.length === 0">
@@ -226,6 +235,7 @@
   import clipboardIcon from '@/assets/images/clipboard.svg'
   import addIcon from '@/assets/images/add.svg'
   import editIcon from '@/assets/images/edit.svg'
+  import dropdownIcon from '@/assets/images/dropdown.svg'
   import AdminTable from '@/components/Admin/AdminTable.vue'
   import { formattedTimestamp } from '@/lib/time_stuff'
   import VueMultiselect from 'vue-multiselect'
@@ -246,6 +256,7 @@
         addIcon,
         clipboardIcon,
         editIcon,
+        dropdownIcon,
         customFields: [],
         formattedTimestamp: formattedTimestamp,
         fieldModalVisible: false,

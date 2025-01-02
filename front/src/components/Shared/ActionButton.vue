@@ -1,13 +1,27 @@
 <template>
-  <component :is="tagName" class="commuse-action-button button" :class="{ 'commuse-action-button-active': active }" @click="handleClick" v-bind:disabled="disabled ? true : null">
-    <Icon :src="icon" :interactive="false" />
+  <component 
+    :is="tagName"
+    :class="[
+      {
+        'commuse-action-button-active': active,
+        'running': working,
+        'commuse-action-button': true,
+        'button': true,
+        'ld-ext-right': true,
+      },
+      ...classesExtra,
+    ]"
+    @click="handleClick"
+    v-bind:disabled="disabled ? true : null"
+  >
+    <Icon :src="icon" :interactive="false" v-if="icon" />
     <div>{{ buttonText }}</div>
+    <div class="ld ld-ring ld-spin"></div>
   </component>
 </template>
 
 <script>
   import Icon from '@/components/Shared/Icon.vue'
-
 
   export default {
     components: {
@@ -32,6 +46,16 @@
         required: false,
         default: false,
       },
+      working: {
+        type: Boolean,
+        required: false,
+        default: false,
+      },
+      classesExtra: {
+        type: Array,
+        required: false,
+        default: [],
+      },
     },
     computed: {
       tagName() {
@@ -52,16 +76,22 @@
   }
 </script>
 
-<style>
-  .commuse-action-button {
-    padding: 0.5rem 0.5rem;
+<style lang="scss">
+  $cl: '.commuse-action-button';
+
+  #{$cl} {
+    padding: 0.5rem;
 
     > * {
       height: 100%;
     }
 
-    &.commuse-action-button-active {
+    &-active {
       background-color: var(--super-light-color);
+    }
+
+    img {
+      margin-right: 0.4rem;
     }
   }
 </style>

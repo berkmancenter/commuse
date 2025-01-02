@@ -4,10 +4,10 @@
 
     <SkeletonPatternLoader :loading="loading">
       <template v-slot:content>
-        <form class="commuse-blocks mb-4" @submit.prevent="changePassword">
+        <form class="commuse-blocks mb-4" @submit.prevent="updateProfileStatus">
           <div class="panel">
             <p class="panel-heading">
-              People Portal Profile Status
+              Profile status
             </p>
             <div class="panel-block">
               <div class="notification is-warning" v-if="!$store.state.user.userProfile.public_profile">
@@ -18,8 +18,14 @@
                 <label class="label" for="account-section-public-profile">{{ $store.state.systemSettings.publicSystemSettings?.PublicProfileCheckboxLabel?.value }}</label>
                 <div class="control">
                   <div class="control">
-                    <input type="checkbox" id="account-section-public-profile" v-model="$store.state.user.userProfile.public_profile" @change="updateProfileStatus()">
+                    <input type="checkbox" id="account-section-public-profile" v-model="$store.state.user.userProfile.public_profile">
                   </div>
+                </div>
+              </div>
+
+              <div class="field is-grouped">
+                <div class="control">
+                  <ActionButton buttonText="Update profile status" :button="true" :working="savingProfileStatus"></ActionButton>
                 </div>
               </div>
             </div>
@@ -29,7 +35,7 @@
         <form class="commuse-blocks" @submit.prevent="changePassword">
           <div class="panel">
             <p class="panel-heading">
-              Change Password
+              Change password
             </p>
             <div class="panel-block">
               <div class="field">
@@ -52,7 +58,7 @@
 
               <div class="field is-grouped">
                 <div class="control">
-                  <button class="button">Update password</button>
+                  <ActionButton buttonText="Update password" :button="true" :working="savingPassword"></ActionButton>
                 </div>
               </div>
             </div>
@@ -74,11 +80,13 @@
 
 <script>
   import SkeletonPatternLoader from '@/components/Shared/SkeletonPatternLoader.vue'
+  import ActionButton from '@/components/Shared/ActionButton.vue'
 
   export default {
     name: 'Account',
     components: {
       SkeletonPatternLoader,
+      ActionButton,
     },
     data() {
       return {
@@ -87,6 +95,8 @@
           password_confirm: '',
         },
         loading: true,
+        savingPassword: false,
+        savingProfileStatus: false,
       }
     },
     created() {
@@ -99,6 +109,8 @@
           return
         }
 
+        this.savingPassword = true
+
         try {
           const response = await this.$store.dispatch('user/changePassword', this.passwordData)
 
@@ -109,11 +121,15 @@
 
           this.awn.success(response.message)
         } catch (error) {
-          this.awn.warning(error)
+          this.awn.warning(error.message)
           return
+        } finally {
+          this.savingPassword = false
         }
       },
       async updateProfileStatus() {
+        this.savingProfileStatus = true
+
         const response = await this.$store.dispatch('user/savePublicProfileStatus', {
           public_profile: this.$store.state.user.userProfile.public_profile,
         })
@@ -121,6 +137,8 @@
         this.$store.dispatch('people/setPeopleMarkReload', true)
 
         this.awn.success(response.message)
+
+        this.savingProfileStatus = false
       },
       async loadProfileStatus() {
         let profileStatus = await this.$store.dispatch('user/fetchProfileStatus')

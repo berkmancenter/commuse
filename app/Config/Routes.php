@@ -2,6 +2,8 @@
 
 namespace Config;
 
+use App\Libraries\SystemSettingsWrapper;
+
 // Create a new instance of our RouteCollection class.
 $routes = Services::routes();
 
@@ -36,7 +38,7 @@ $routes->get('api/people/interests', 'PeopleController::interests');
 $routes->get('api/people/(:num)', 'PeopleController::person/$1');
 $routes->get('api/people/filters', 'PeopleController::filters');
 $routes->get('api/people/export', 'PeopleController::export');
-$routes->get('api/people/exportAllData', 'People::exportAllData');
+$routes->get('api/people/exportAllData', 'PeopleController::exportAllData');
 $routes->get('api/people/indexRemote', 'PeopleController::indexRemote');
 
 // Users controller routes
@@ -47,7 +49,9 @@ $routes->get('api/users/profileStructure', 'UsersController::profileStructure');
 $routes->post('api/users/saveProfile', 'UsersController::saveProfile');
 $routes->post('api/users/savePublicProfileStatus', 'UsersController::savePublicProfileStatus');
 $routes->post('api/users/uploadProfileImage/(:any)', 'UsersController::uploadProfileImage/$1');
+$routes->post('api/users/removeProfileImage/(:any)', 'UsersController::removeProfileImage/$1');
 $routes->post('api/admin/users/setActiveStatus', 'UsersController::setActiveStatus');
+$routes->post('api/admin/users/sync', 'UsersController::sync');
 $routes->post('api/admin/users/createNewUser', 'UsersController::createNewUser');
 $routes->post('api/admin/users/setActiveAffiliation', 'UsersController::setActiveAffiliation');
 $routes->get('api/admin/users', 'UsersController::adminIndex');
@@ -94,11 +98,13 @@ $routes->post('api/admin/systemSettings', 'SystemSettingsController::saveSetting
 $routes->get('api/admin/publicSystemSettings', 'SystemSettingsController::getPublicSettings');
 
 // Buzz controller routes
-$routes->get('api/buzz', 'BuzzController::index');
-$routes->get('api/buzz/(:num)', 'BuzzController::show/$1');
-$routes->post('api/buzz/upsert', 'BuzzController::upsert');
-$routes->post('api/buzz/like/(:num)', 'BuzzController::like/$1');
-$routes->post('api/buzz/delete/(:num)', 'BuzzController::delete/$1');
+if (php_sapi_name() == 'cli' || SystemSettingsWrapper::getInstance()->isValueInArray('buzz', 'SystemEnabledModules')) {
+  $routes->get('api/buzz', 'BuzzController::index');
+  $routes->get('api/buzz/(:num)', 'BuzzController::show/$1');
+  $routes->post('api/buzz/upsert', 'BuzzController::upsert');
+  $routes->post('api/buzz/like/(:num)', 'BuzzController::like/$1');
+  $routes->post('api/buzz/delete/(:num)', 'BuzzController::delete/$1');
+}
 
 // Front-end application routes
 $frontRoutes = [

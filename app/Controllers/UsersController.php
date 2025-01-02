@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\DataAuditModel;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\PeopleModel;
 use App\Models\UserModel;
@@ -183,7 +184,11 @@ class UsersController extends BaseController
       $userId = $id;
     }
 
-    $existingPerson = $peopleModel->where('user_id', $userId)->first();
+    $person = $peopleModel->where('user_id', $userId)->first();
+
+    if (!$person) {
+      return $this->respond(['message' => 'User not found. Cannot update profile image.'], 404);
+    }
 
     $file = $this->request->getFile('image');
 
@@ -193,9 +198,11 @@ class UsersController extends BaseController
 
     $fileName = $file->getRandomName();
     $dirPath = ROOTPATH . 'writable/uploads/profile_images/';
+
     if (!is_dir($dirPath)) {
       mkdir($dirPath);
     }
+
     $file->move($dirPath, $fileName);
 
     $image = new ImageResize("{$dirPath}/{$fileName}");
@@ -203,38 +210,89 @@ class UsersController extends BaseController
     $image->save("{$dirPath}/{$fileName}");
 
     $data = [
-      'image_url'  => $fileName,
-      'user_id'  => $userId,
+      'image_url' => $fileName,
+      'user_id' => $userId,
     ];
 
-    $result = $existingPerson ? $peopleModel->update($existingPerson['id'], $data) : $peopleModel->insert($data);
-
-    $message = $existingPerson ? 'Profile image updated successfully' : 'Profile image created successfully';
+    $result = $peopleModel->update($person['id'], $data);
 
     // Add audit record
-    $db = \Config\Database::connect();
-    $builder = $db->table('audit');
-    $builder->insert([
-      'audited_id' => $userId,
-      'model_name' => 'People',
-      'changed_user_id' => auth()->id(),
-      'changes' => json_encode([
-        'new' => [
-          'profile_image' => 'new profile image',
-        ],
-        'old' => [
-          'profile_image' => '',
-        ],
-      ]),
-    ]);
+    $commonData = [
+      'first_name' => $person['first_name'],
+      'last_name' => $person['last_name'],
+      'email' => $person['email'],
+    ];
+
+    $peopleModel->addAuditRecord(
+      array_merge($commonData, ['image_url' => '']),
+      array_merge($commonData, ['image_url' => 'new profile image']),
+      $userId,
+    );
 
     if ($result) {
+      $message = 'Profile image updated successfully';
+
       return $this->respond([
         'message' => $message,
         'image' => "profile_images/{$fileName}",
       ], 200);
     } else {
       return $this->respond(['message' => 'Error saving data'], 500);
+    }
+  }
+
+  /**
+   * Remove user profile image
+   *
+   * @param int|null $id User ID (optional)
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function removeProfileImage($id = null)
+  {
+    $peopleModel = new PeopleModel();
+    $userId = auth()->id();
+
+    if (auth()->user()->can('admin.access') === true && $id && $id !== 'current') {
+      $userId = $id;
+    }
+
+    $person = $peopleModel->where('user_id', $userId)->first();
+
+    if (!$person) {
+      return $this->respond(['message' => 'User not found.'], 404);
+    }
+
+    $imageUrl = $person['image_url'];
+    if ($imageUrl) {
+      $filePath = ROOTPATH . "writable/uploads/profile_images/{$imageUrl}";
+
+      if (file_exists($filePath)) {
+        unlink($filePath);
+      }
+
+      $person['image_url'] = '';
+      $result = $peopleModel->update($person['id'], $person);
+
+      // Add audit record
+      $commonData = [
+        'first_name' => $person['first_name'],
+        'last_name' => $person['last_name'],
+        'email' => $person['email'],
+      ];
+
+      $peopleModel->addAuditRecord(
+        array_merge($commonData, ['image_url' => $imageUrl]),
+        array_merge($commonData, ['image_url' => '']),
+        $userId,
+      );
+
+      if ($result) {
+        return $this->respond(['message' => 'Profile image removed successfully.'], 200);
+      } else {
+        return $this->respond(['message' => 'Error updating data.'], 500);
+      }
+    } else {
+      return $this->respond(['message' => 'No profile image to remove.'], 400);
     }
   }
 
@@ -290,7 +348,6 @@ class UsersController extends BaseController
   {
     $this->checkAdminAccess();
 
-    $userModel = new UserModel();
     $result = false;
     $usersProvider = auth()->getProvider();
     $peopleModel = model('PeopleModel');
@@ -357,10 +414,10 @@ class UsersController extends BaseController
     $this->checkAdminAccess();
 
     $result = false;
-    $requestData = $this->request->getJSON(true);
-    $userIds = $requestData['users'] ?? [];
-    $role = $requestData['role'] ?? [];
     $db = \Config\Database::connect();
+    $requestData = $this->request->getJSON(true);
+    $role = $requestData['role'] ?? [];
+    $userIds = $requestData['users'] ?? [];
 
     if (!empty($userIds) && !empty($role)) {
       $db->transStart();
@@ -817,7 +874,7 @@ class UsersController extends BaseController
       $userIds = $requestData['users'] ?? [];
       $status = $requestData['status'] ?? 'active';
       $peopleModel = new PeopleModel();
-  
+
       if (!empty($userIds)) {
         foreach ($userIds as $userId) {
           $userData = $peopleModel->getProfileData($userId);
@@ -830,5 +887,32 @@ class UsersController extends BaseController
     }
 
     return $this->respond(['message' => 'Active status has been set successfully.'], 200);
+  }
+
+  public function sync()
+  {
+    $this->checkAdminAccess();
+
+    try {
+      $requestData = $this->request->getJSON(true);
+      $userIds = $requestData['users'] ?? [];
+      $dataAuditModel = new DataAuditModel();
+      $peopleModel = new PeopleModel();
+
+      if (!empty($userIds)) {
+        foreach ($userIds as $userId) {
+          $userData = $peopleModel->getProfileData($userId);
+          $dataAuditModel->syncUserData($userData);
+        }
+      }
+    } catch (\Throwable $th) {
+      return $this->respond(['message' => 'Error syncing.'], 500);
+    }
+
+    if (count($userIds) === 1) {
+      return $this->respond(['message' => 'User has been synced successfully.'], 200);
+    } else {
+      return $this->respond(['message' => 'Users have been synced successfully.'], 200);
+    }
   }
 }

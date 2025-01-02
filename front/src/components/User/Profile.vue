@@ -3,7 +3,7 @@
     <form class="commuse-blocks" @submit.prevent="saveProfile">
       <div class="user-profile-header is-flex is-align-items-center">
         <h3 class="is-size-3 has-text-weight-bold">Edit profile</h3>
-        <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true" :disabled="loading"></ActionButton>
+        <ActionButton class="ml-2" buttonText="Save" :icon="saveIcon" :button="true" :disabled="loading" :working="savingProfile"></ActionButton>
         <router-link :to="{ name: 'people.details', params: { id: $store.state.user.userProfile.id } }" v-if="$store.state.user.userProfile.id">
           <ActionButton class="ml-2" buttonText="Show profile" :icon="userIcon" :button="true" :disabled="loading"></ActionButton>
         </router-link>
@@ -28,10 +28,12 @@
                     <img :src="`${apiUrl}/api/files/get/${$store.state.user.userProfile.image_url}`" v-if="$store.state.user.userProfile.image_url">
                     <input ref="userProfileImageInput" type="file" accept=".jpg, .png, .jpeg, .gif" @change="uploadProfileImage()">
                     <div class="my-2">
-                      <button class="button" type="button" @click="openUploadProfileImage()">
-                        <img src="@/assets/images/profile_image.svg">
-                        Upload new profile image
-                      </button>
+                      <div>
+                        <ActionButton buttonText="Upload new profile image" :icon="uploadProfileImageIcon" @click="openUploadProfileImage()"></ActionButton>
+                      </div>
+                      <div>
+                        <ActionButton class="mt-2" buttonText="Remove current image" :icon="removeImage" @click="removeProfileImage()"></ActionButton>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -193,6 +195,8 @@
   import SkeletonPatternLoader from '@/components/Shared/SkeletonPatternLoader.vue'
   import saveIcon from '@/assets/images/save.svg'
   import userIcon from '@/assets/images/user.svg'
+  import uploadProfileImageIcon from '@/assets/images/profile_image.svg'
+  import removeImage from '@/assets/images/remove_image.svg'
 
   export default {
     name: 'UserProfile',
@@ -204,8 +208,11 @@
         profileStructure: [],
         saveIcon,
         userIcon,
+        uploadProfileImageIcon,
+        removeImage,
         fields: {},
         loading: true,
+        savingProfile: false,
       }
     },
     components: {
@@ -233,12 +240,14 @@
           return
         }
 
+        this.savingProfile = true
         this.$store.state.user.userProfile['update_search_index'] = true
         const response = await this.$store.dispatch('user/saveProfile', this.$store.state.user.userProfile)
 
         this.$store.dispatch('people/setPeopleMarkReload', true)
 
         this.awn.success(response.message)
+        this.savingProfile = false
       },
       async initialDataLoad() {
         this.loadProfile()
@@ -271,6 +280,30 @@
             this.awn.warning('Something went wrong, try again.')
             return
           }
+        }
+      },
+      async removeProfileImage() {
+        let profileId = this.$route.params.id
+
+        if (!profileId) {
+          profileId = 'current'
+        }
+
+        try {
+          const response = await this.$store.dispatch('user/removeProfileImage', { 
+            file: this.$refs.userProfileImageInput.files[0],
+            id: profileId,
+          })
+
+          const profile = this.$store.state.user.userProfile
+          await response
+          profile.image_url = ''
+          this.$store.dispatch('user/setUserProfile', profile)
+          this.$store.dispatch('people/setPeopleMarkReload', true)
+          this.awn.success('Profile image has been removed.')
+        } catch (error) {
+          this.awn.warning('Something went wrong, try again.')
+          return
         }
       },
       async loadProfile() {
@@ -350,14 +383,6 @@
     .user-profile-image {
       img {
         max-width: 200px;
-      }
-
-      button {
-        img {
-          height: 1rem;
-          width: 1rem;
-          margin-right: 0.5rem;
-        }
       }
 
       input {
