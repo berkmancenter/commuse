@@ -1,21 +1,22 @@
+// Top Navigation
 .top-nav {
-  height: 4.5rem;
-  border-bottom: 2px solid var(--greyish-color);
+  height: 4rem;
+  border-bottom: 5px solid var(--main-color);
   display: flex;
-  padding: 0.5rem 1rem;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 2;
+  z-index: 10001;
   background-color: #ffffff;
+  box-sizing: content-box;
 
-  .top-nav-brand {
+  &-brand {
     display: flex;
     align-items: center;
     flex-grow: 1;
 
-    .top-nav-name-link {
+    &-name-link {
       display: flex;
       color: var(--main-color);
       margin: 0 auto;
@@ -23,20 +24,23 @@
       align-items: center;
 
       > h3 {
+        color: var(--main-color);
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        display: flex;
+        align-items: center;
 
-        @media screen and (max-width: 599px) {
-          max-width: 200px;
-        }
-
-        @media screen and (min-width: 600px) and (max-width: 959px) {
-          max-width: 400px;
+        img {
+          width: 2rem;
+          height: 2rem;
+          margin: 0.4rem;
         }
       }
 
-      .top-nav-name-link-logo {
+      &-logo {
+        height: 100%;
+
         img {
           display: block;
           max-height: 3.5rem;
@@ -46,41 +50,47 @@
     }
   }
 
-  .top-nav-user-menu {
-    display: flex;
-
-    .top-nav-user-menu-toggler {
+  &-user-menu {
+    &-toggler {
       display: flex;
-      cursor: pointer;
-      align-items: center;
-    }
-
-    svg {
-      height: 3rem;
-      width: 3rem;
-
-      path {
-        fill: var(--main-color);
-      }
     }
   }
 
-  .top-nav-end {
+  &-end {
     margin-left: auto;
     display: flex;
     align-items: center;
+    margin-right: 1rem;
+  }
+
+  &-button {
+    height: 4rem;
+    width: 4rem;
+    display: block;
+    cursor: pointer;
+
+    img {
+      height: 3rem;
+      width: 3rem;
+      padding: 0.5rem;
+    }
+
+    &:hover,
+    img:hover {
+      background-color: var(--greyish-color);
+    }
+  }
+
+  @media all and (max-width: 700px) {
+    &-help {
+      display: none;
+    }
   }
 }
 
 .commuse-content {
   margin-top: 6rem;
   padding-bottom: 2rem;
-}
-
-.side-menu-toggler {
-  padding: .5rem;
-  height: 3rem;
-  width: 3rem;
 }
 
 .switmenu-menu {

@@ -6,7 +6,7 @@ Commuse is a simple community catalog application.
 
 ## Documentation
 
-TBD
+https://berkman-klein-center.gitbook.io/commuse
 
 ## License
 
