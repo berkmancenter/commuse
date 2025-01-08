@@ -390,7 +390,12 @@
         this.filtersModalStatus = false
       },
       fieldTitle(fieldMachineName) {
-        return this.$store.state.people.peopleFilters.filter(filter => filter.field_machine_name === fieldMachineName)[0].field_title
+        const filteredItems = this.$store.state.people.peopleFilters.filter(filter => filter.field_machine_name === fieldMachineName)
+        if (filteredItems.length > 0) {
+          return filteredItems[0].field_title;
+        } else {
+          return null;
+        }
       },
       removeFilter(fieldMachineName, activeFilterValue) {
         this.$store.state.people.peopleActiveFilters[fieldMachineName] = this.$store.state.people.peopleActiveFilters[fieldMachineName].filter(filterValue => filterValue != activeFilterValue)
