@@ -1,143 +1,64 @@
-#--------------------------------------------------------------------
-# Example Environment Configuration file
-#
-# This file can be used as a starting point for your own
-# custom .env files, and contains most of the possible settings
-# available in a default install.
-#
-# By default, all of the settings are commented out. If you want
-# to override the setting, you must un-comment it by removing the '#'
-# at the beginning of the line.
-#--------------------------------------------------------------------
+# Application Environment
+CI_ENVIRONMENT=development
 
-#--------------------------------------------------------------------
-# ENVIRONMENT
-#--------------------------------------------------------------------
+# Application Configuration
+app.baseURL=http://localhost:8000
+app.indexPage=index.php
+app.appTitle=MyApp
 
-# CI_ENVIRONMENT = production
+# Session Configuration
+session.driver=CodeIgniter\Session\Handlers\RedisHandler
+session.cookieName=myapp_session
+session.expiration=3600
+session.matchIP=true
+session.timeToUpdate=600
+session.regenerateDestroy=true
 
-#--------------------------------------------------------------------
-# APP
-#--------------------------------------------------------------------
+# Database Configuration
+database.default.hostname=db_host
+database.default.database=mydatabase
+database.default.username=admin
+database.default.password=password
+database.default.DBDriver=MySQL
+database.default.port=3306
 
-# app.baseURL = ''
-# If you have trouble with `.`, you could also use `_`.
-# app_baseURL = ''
-# app.forceGlobalSecureRequests = false
-# app.CSPEnabled = false
+# CORS Settings
+cors.allowedHeaders=Content-Type, Authorization
+cors.allowedOrigins=https://example.com
+cors.allowedMethods=GET, POST, PUT
+cors.credentials=false
 
-#--------------------------------------------------------------------
-# DATABASE
-#--------------------------------------------------------------------
+# Email Configuration
+email.fromEmail=noreply@example.com
+email.fromName=MyApp Support
+email.protocol=mail
+email.SMTPHost=smtp.example.com
+email.SMTPUser=user@example.com
+email.SMTPPass=securepassword
+email.SMTPPort=587
+email.SMTPCrypto=tls
+email.mailType=text
 
-# database.default.hostname = localhost
-# database.default.database = ci4
-# database.default.username = root
-# database.default.password = root
-# database.default.DBDriver = MySQLi
-# database.default.DBPrefix =
-# database.default.port = 3306
+# Authentication Settings
+auth.autoLogin=false
+auth.useMagicLinkFormTitle=Enter your email to receive a magic link.
+auth.systemBotPassword=securebotpassword
 
-# database.tests.hostname = localhost
-# database.tests.database = ci4_test
-# database.tests.username = root
-# database.tests.password = root
-# database.tests.DBDriver = MySQLi
-# database.tests.DBPrefix =
-# database.tests.port = 3306
+# API Keys and Tokens
+geocode_mapbox_api.key=pk.abcdefg123456
 
-#--------------------------------------------------------------------
-# CONTENT SECURITY POLICY
-#--------------------------------------------------------------------
+# Logging Settings
+logger.threshold=1
 
-# contentsecuritypolicy.reportOnly = false
-# contentsecuritypolicy.defaultSrc = 'none'
-# contentsecuritypolicy.scriptSrc = 'self'
-# contentsecuritypolicy.styleSrc = 'self'
-# contentsecuritypolicy.imageSrc = 'self'
-# contentsecuritypolicy.baseURI = null
-# contentsecuritypolicy.childSrc = null
-# contentsecuritypolicy.connectSrc = 'self'
-# contentsecuritypolicy.fontSrc = null
-# contentsecuritypolicy.formAction = null
-# contentsecuritypolicy.frameAncestors = null
-# contentsecuritypolicy.frameSrc = null
-# contentsecuritypolicy.mediaSrc = null
-# contentsecuritypolicy.objectSrc = null
-# contentsecuritypolicy.pluginTypes = null
-# contentsecuritypolicy.reportURI = null
-# contentsecuritypolicy.sandbox = false
-# contentsecuritypolicy.upgradeInsecureRequests = false
-# contentsecuritypolicy.styleNonceTag = '{csp-style-nonce}'
-# contentsecuritypolicy.scriptNonceTag = '{csp-script-nonce}'
-# contentsecuritypolicy.autoNonce = true
+# People Sync Configuration
+people.remoteSyncUrl=https://api.example.com/sync
+people.remoteSyncAccessToken=abcdef123456
 
-#--------------------------------------------------------------------
-# COOKIE
-#--------------------------------------------------------------------
+# Data Providers
+data_providers.news.url=https://news.example.com/api
 
-# cookie.prefix = ''
-# cookie.expires = 0
-# cookie.path = '/'
-# cookie.domain = ''
-# cookie.secure = false
-# cookie.httponly = false
-# cookie.samesite = 'Lax'
-# cookie.raw = false
+# Elasticsearch Configuration
+elasticSearch.host=search.example.com
 
-#--------------------------------------------------------------------
-# ENCRYPTION
-#--------------------------------------------------------------------
-
-# encryption.key =
-# encryption.driver = OpenSSL
-# encryption.blockSize = 16
-# encryption.digest = SHA512
-
-#--------------------------------------------------------------------
-# HONEYPOT
-#--------------------------------------------------------------------
-
-# honeypot.hidden = 'true'
-# honeypot.label = 'Fill This Field'
-# honeypot.name = 'honeypot'
-# honeypot.template = '<label>{label}</label><input type="text" name="{name}" value=""/>'
-# honeypot.container = '<div style="display:none">{template}</div>'
-
-#--------------------------------------------------------------------
-# SECURITY
-#--------------------------------------------------------------------
-
-# security.csrfProtection = 'cookie'
-# security.tokenRandomize = false
-# security.tokenName = 'csrf_token_name'
-# security.headerName = 'X-CSRF-TOKEN'
-# security.cookieName = 'csrf_cookie_name'
-# security.expires = 7200
-# security.regenerate = true
-# security.redirect = false
-# security.samesite = 'Lax'
-
-#--------------------------------------------------------------------
-# SESSION
-#--------------------------------------------------------------------
-
-# session.driver = 'CodeIgniter\Session\Handlers\FileHandler'
-# session.cookieName = 'ci_session'
-# session.expiration = 7200
-# session.savePath = null
-# session.matchIP = false
-# session.timeToUpdate = 300
-# session.regenerateDestroy = false
-
-#--------------------------------------------------------------------
-# LOGGER
-#--------------------------------------------------------------------
-
-# logger.threshold = 4
-
-#--------------------------------------------------------------------
-# CURLRequest
-#--------------------------------------------------------------------
-
-# curlrequest.shareOptions = true
+# Cache Configuration
+cache.disabled=false
