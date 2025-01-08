@@ -113,20 +113,18 @@
         </template>
 
         <template v-slot:skeleton>
-          <div class="content people-section-content">
-            <div class="ssc-wrapper">
-              <div class="ssc-head-line w-60 mb-4"></div>
-              <div class="ssc-square people-section-details-side-ssc-avatar mb-4"></div>
-              <div class="align-center flex justify-between mb-4" v-for="n in 4" :key="n">
-                <div class="ssc-line w-20"></div>
-                <div class="ssc-line w-70"></div>
-              </div>
-              <div class="ssc-head-line w-40 mb-4"></div>
-              <div class="ssc-head-line w-60 mb-4"></div>
-              <div class="ssc-head-line w-50 mb-4"></div>
-              <div class="ssc-head-line w-70 mb-4"></div>
-              <div class="ssc-line w-100"></div>
+          <div class="ssc-wrapper">
+            <div class="ssc-head-line w-60 mb-4"></div>
+            <div class="ssc-square people-section-details-side-ssc-avatar mb-4"></div>
+            <div class="align-center flex justify-between mb-4" v-for="n in 4" :key="n">
+              <div class="ssc-line w-20"></div>
+              <div class="ssc-line w-70"></div>
             </div>
+            <div class="ssc-head-line w-40 mb-4"></div>
+            <div class="ssc-head-line w-60 mb-4"></div>
+            <div class="ssc-head-line w-50 mb-4"></div>
+            <div class="ssc-head-line w-70 mb-4"></div>
+            <div class="ssc-line w-100"></div>
           </div>
         </template>
       </SkeletonPatternLoader>
