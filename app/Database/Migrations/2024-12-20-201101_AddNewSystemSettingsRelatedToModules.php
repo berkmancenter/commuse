@@ -36,13 +36,13 @@ class AddNewSystemSettingsRelatedToModules extends Migration
       'title' => 'System enabled modules',
     ];
 
-    SystemSettingsWrapper::getInstance()->saveSettings($settings);
+    service('settings')->set('SystemSettings.settings', json_encode($settings));
   }
 
   public function down()
   {
-      $settings = SystemSettingsWrapper::getInstance()->getSettings();
-      unset($settings['SystemEnabledModules']);
-      SystemSettingsWrapper::getInstance()->saveSettings($settings);
+    $settings = SystemSettingsWrapper::getInstance()->getSettings();
+    unset($settings['SystemEnabledModules']);
+    service('settings')->set('SystemSettings.settings', json_encode($settings));
   }
 }

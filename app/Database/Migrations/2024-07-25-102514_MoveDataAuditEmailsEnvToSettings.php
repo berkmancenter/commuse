@@ -9,18 +9,18 @@ class MoveDataAuditEmailsEnvToSettings extends Migration
 {
     public function up()
     {
-        $settings = SystemSettingsWrapper::getInstance()->getSettings();
-        $settings['DataAuditReviewAdminEmails'] = [
-          'type' => 'string',
-          'value' => 'admin@example.com',
-        ];
-        SystemSettingsWrapper::getInstance()->saveSettings($settings);
+      $settings = SystemSettingsWrapper::getInstance()->getSettings();
+      $settings['DataAuditReviewAdminEmails'] = [
+        'type' => 'string',
+        'value' => 'admin@example.com',
+      ];
+      service('settings')->set('SystemSettings.settings', json_encode($settings));
     }
 
     public function down()
     {
       $settings = SystemSettingsWrapper::getInstance()->getSettings();
       unset($settings['DataAuditReviewAdminEmails']);
-      SystemSettingsWrapper::getInstance()->saveSettings($settings);
+      service('settings')->set('SystemSettings.settings', json_encode($settings));
     }
 }

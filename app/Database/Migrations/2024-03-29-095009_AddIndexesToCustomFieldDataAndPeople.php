@@ -18,8 +18,8 @@ class AddIndexesToCustomFieldDataAndPeople extends Migration
     public function down()
     {
       $indexes = <<<EOD
-        DROP INDEX people_full_text_search;
-        DROP INDEX custom_field_data_value;
+        DROP INDEX IF EXISTS people_full_text_search;
+        DROP INDEX IF EXISTS custom_field_data_value;
       EOD;
 
       $this->db->query($indexes);

@@ -16,7 +16,7 @@ class UpdateReintakeAdminEmailsTitle extends Migration
       $settings['ReintakeAdminEmails']['title'] = 'Account admin emails (reintake, expiration and account emails)';
     }
 
-    $settingsWrapper->saveSettings($settings);
+    service('settings')->set('SystemSettings.settings', json_encode($settings));
   }
 
   public function down()
@@ -28,6 +28,6 @@ class UpdateReintakeAdminEmailsTitle extends Migration
       $settings['ReintakeAdminEmails']['title'] = 'Reintake admin emails';
     }
 
-    $settingsWrapper->saveSettings($settings);
+    service('settings')->set('SystemSettings.settings', json_encode($settings));
   }
 }

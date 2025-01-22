@@ -34,17 +34,27 @@ class SystemSettingsController extends BaseController
    */
   public function saveSettings()
   {
-    $cache = \Config\Services::cache();
-
     $this->checkAdminAccess();
+
+    $cache = \Config\Services::cache();
 
     $requestData = $this->request->getJSON(true);
 
-    SystemSettingsWrapper::getInstance()->saveSettings($requestData);
+    $settingsWrapper = SystemSettingsWrapper::getInstance();
+    $saveResult = $settingsWrapper->saveSettings($requestData);
 
-    $cache->delete('publis_system_settings');
-
-    return $this->respond(['message' => 'System settings have been saved.'], 200);
+    if ($saveResult === true) {
+      $cache->delete('publis_system_settings');
+      return $this->respond([
+        'success' => true,
+        'message' => 'System settings have been saved successfully.'
+      ], 200);
+    } else {
+      return $this->respond([
+        'success' => false,
+        'message' => 'Failed to save system settings due to validation errors.',
+      ], 400);
+    }
   }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Libraries;
 
 use CodeIgniter\Cache\CacheInterface;
 use App\Libraries\Cache;
+use JsonSchema\Validator;
 
 class SystemSettingsWrapper
 {
@@ -80,13 +81,31 @@ class SystemSettingsWrapper
    * Save the settings.
    *
    * @param array $settings The settings data to save.
+   * @return bool True if the settings were saved successfully, false otherwise.
    */
   public function saveSettings(array $settings)
   {
-    $settingsJson = json_encode($settings);
+    $settingsObject = json_decode(json_encode($settings));
 
-    $this->settingsService->set('SystemSettings.settings', $settingsJson);
-    $this->cache->save($this->cacheKey, $settingsJson, $this->cacheExpiration);
+    // Perform JSON Schema validation
+    $validator = new Validator;
+    $validator->validate($settingsObject, (object)[
+      '$ref' => 'file://' . APPPATH . 'Schemas/system_settings_schema.json'
+    ]);
+
+    if ($validator->isValid()) {
+      $settingsJson = json_encode($settings);
+
+      $this->settingsService->set('SystemSettings.settings', $settingsJson);
+      $this->cache->save($this->cacheKey, $settingsJson, $this->cacheExpiration);
+
+      return true;
+    } else {
+      $errors = $validator->getErrors();
+      log_message('error', 'System settings validation failed: ' . json_encode($errors));
+
+      return false;
+    }
   }
 
   /**

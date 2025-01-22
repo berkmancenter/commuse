@@ -20,7 +20,7 @@ class UpdateSettingsWithTitle extends Migration
     }
 
     // Save the updated settings
-    $settingsWrapper->saveSettings($settings);
+    service('settings')->set('SystemSettings.settings', json_encode($settings));
   }
 
   public function down()
@@ -34,7 +34,7 @@ class UpdateSettingsWithTitle extends Migration
     }
 
     // Save the settings without the 'title' attributes
-    $settingsWrapper->saveSettings($settings);
+    service('settings')->set('SystemSettings.settings', json_encode($settings));
   }
 
   /**
