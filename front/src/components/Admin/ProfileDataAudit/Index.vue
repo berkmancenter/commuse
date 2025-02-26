@@ -12,7 +12,7 @@
       <SearchInput v-model="searchQuery" />
     </div>
 
-    <admin-table :tableClasses="['admin-data-audit-table']">
+    <cu-table :tableClasses="['admin-data-audit-table']">
       <thead>
         <tr class="no-select">
           <th data-sort-method="none" class="no-sort">Changed user</th>
@@ -50,7 +50,7 @@
           <td colspan="4">No data to show.</td>
         </tr>
       </tbody>
-    </admin-table>
+    </cu-table>
   </div>
 
   <vue-awesome-paginate
@@ -144,7 +144,7 @@
   import reviewIcon from '@/assets/images/review.svg'
   import processIcon from '@/assets/images/process.svg'
   import filterIcon from '@/assets/images/filter.svg'
-  import AdminTable from '@/components/Admin/AdminTable.vue'
+  import CuTable from '@/components/Shared/Table.vue'
   import VueMultiselect from 'vue-multiselect'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
@@ -157,7 +157,7 @@
     name: 'AdminDataAudit',
     components: {
       Icon,
-      AdminTable,
+      CuTable: CuTable,
       VueMultiselect,
       ActionButton,
       Modal,

@@ -3,7 +3,7 @@
     <h3 class="is-size-3 has-text-weight-bold mb-4">Custom fields</h3>
 
     <form class="form">
-      <admin-table :tableClasses="['admin-custom-fields-table']">
+      <cu-table :tableClasses="['admin-custom-fields-table']">
         <thead>
           <tr class="no-select">
             <th data-sort-default aria-sort="descending">Title</th>
@@ -40,7 +40,7 @@
             <td colspan="4">No custom fields found.</td>
           </tr>
         </tbody>
-      </admin-table>
+      </cu-table>
     </form>
   </div>
 
@@ -236,7 +236,7 @@
   import addIcon from '@/assets/images/add.svg'
   import editIcon from '@/assets/images/edit.svg'
   import dropdownIcon from '@/assets/images/dropdown.svg'
-  import AdminTable from '@/components/Admin/AdminTable.vue'
+  import CuTable from '@/components/Shared/Table.vue'
   import { formattedTimestamp } from '@/lib/time_stuff'
   import VueMultiselect from 'vue-multiselect'
   import Modal from '@/components/Shared/Modal.vue'
@@ -245,7 +245,7 @@
     name: 'AdminCustomFields',
     components: {
       Icon,
-      AdminTable,
+      CuTable: CuTable,
       Booler,
       VueMultiselect,
       Modal,

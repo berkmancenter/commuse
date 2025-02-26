@@ -108,6 +108,7 @@
   import magnifierMenuIcon from '@/assets/images/magnifier_menu.svg'
   import settingsMenuIcon from '@/assets/images/settings_menu.svg'
   import buzzMenuIcon from '@/assets/images/buzz_menu.svg'
+  import zoomMenuIcon from '@/assets/images/zoom_menu.svg'
   import helpIcon from '@/assets/images/help.svg'
   import menuIcon from '@/assets/images/menu.svg'
   import userIcon from '@/assets/images/user_top.svg'
@@ -157,6 +158,11 @@
             href: '/people_map',
             title: 'People map',
             icon: worldMenuIcon,
+          },
+          {
+            href: '/zoom_scheduler',
+            title: 'Zoom scheduler',
+            icon: zoomMenuIcon,
           },
           {
             href: '/profile',
@@ -242,6 +248,10 @@
 
         if (!this.$store.state.systemSettings.publicSystemSettings?.SystemEnabledModules?.value.some(module => module.id === 'people_map')) {
           this.menu = this.menu.filter((item) => item.href !== '/people_map');
+        }
+
+        if (!this.$store.state.systemSettings.publicSystemSettings?.SystemEnabledModules?.value.some(module => module.id === 'zoom_scheduler')) {
+          this.menu = this.menu.filter((item) => item.href !== '/zoom_scheduler');
         }
 
         this.menuActive = true

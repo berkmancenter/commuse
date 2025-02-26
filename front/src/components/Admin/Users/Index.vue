@@ -16,7 +16,7 @@
     </div>
 
     <form class="form">
-      <admin-table :tableClasses="['admin-users-table']">
+      <cu-table :tableClasses="['admin-users-table']">
         <thead>
           <tr class="no-select no-break">
             <th data-sort-method="none" class="no-sort">
@@ -27,11 +27,11 @@
             <th>Email</th>
             <th>ReIntake</th>
             <th>Invitation code</th>
-            <th class="admin-table-row-cell-narrow">Created</th>
-            <th class="admin-table-row-cell-narrow">Last login</th>
-            <th class="admin-table-row-cell-narrow">Active</th>
-            <th class="admin-table-row-cell-narrow">Admin</th>
-            <th data-sort-method="none" class="admin-table-row-cell-narrow no-sort">Actions</th>
+            <th class="commuse-table-row-cell-narrow">Created</th>
+            <th class="commuse-table-row-cell-narrow">Last login</th>
+            <th class="commuse-table-row-cell-narrow">Active</th>
+            <th class="commuse-table-row-cell-narrow">Admin</th>
+            <th data-sort-method="none" class="commuse-table-row-cell-narrow no-sort">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -52,17 +52,17 @@
                 </template>
               </VTooltip>
             </td>
-            <td class="admin-table-row-cell-narrow">{{ user.created_at }}</td>
-            <td class="admin-table-row-cell-narrow">{{ user.last_login }}</td>
-            <td class="admin-users-table-is-active admin-table-row-cell-narrow">
+            <td class="commuse-table-row-cell-narrow">{{ user.created_at }}</td>
+            <td class="commuse-table-row-cell-narrow">{{ user.last_login }}</td>
+            <td class="admin-users-table-is-active commuse-table-row-cell-narrow">
               <div class="is-hidden">{{ user.active }}</div>
               <Booler :value="user.active" />
             </td>
-            <td class="admin-users-table-is-admin admin-table-row-cell-narrow">
+            <td class="admin-users-table-is-admin commuse-table-row-cell-narrow">
               <div class="is-hidden">{{ user.groups.includes('admin') }}</div>
               <Booler :value="user.groups.includes('admin')" />
             </td>
-            <td class="admin-table-row-cell-narrow">
+            <td class="commuse-table-row-cell-narrow">
               <VDropdown>
                 <div>
                   <a class="button">
@@ -95,7 +95,7 @@
             <td colspan="4">No users found.</td>
           </tr>
         </tbody>
-      </admin-table>
+      </cu-table>
     </form>
   </div>
 
@@ -277,7 +277,7 @@
 <script>
   import Icon from '@/components/Shared/Icon.vue'
   import Booler from '@/components/Shared/Booler.vue'
-  import AdminTable from '@/components/Admin/AdminTable.vue'
+  import CuTable from '@/components/Shared/Table.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
   import CustomField from '@/components/CustomFields/CustomField.vue'
@@ -302,7 +302,7 @@
     name: 'AdminUsers',
     components: {
       Icon,
-      AdminTable,
+      CuTable: CuTable,
       Booler,
       ActionButton,
       Modal,

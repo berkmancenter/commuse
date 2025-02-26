@@ -106,6 +106,12 @@ if (php_sapi_name() == 'cli' || SystemSettingsWrapper::getInstance()->isValueInA
   $routes->post('api/buzz/delete/(:num)', 'BuzzController::delete/$1');
 }
 
+// Zoom scheduler controller routes
+if (php_sapi_name() == 'cli' || SystemSettingsWrapper::getInstance()->isValueInArray('zoom_scheduler', 'SystemEnabledModules')) {
+  $routes->get('api/zoom_scheduler', 'ZoomSchedulerController::index');
+  $routes->post('api/zoom_scheduler', 'ZoomSchedulerController::createMeeting');
+}
+
 // Front-end application routes
 $frontRoutes = [
   '/',
@@ -116,6 +122,7 @@ $frontRoutes = [
   'people/(:num)',
   'people_map',
   'buzz',
+  'zoom_scheduler',
   'admin/users',
   'admin/invitations',
   'admin/custom_fields',

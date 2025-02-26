@@ -6,6 +6,7 @@ import dataEditor from './modules/dataEditor'
 import people from './modules/people'
 import admin from './modules/admin'
 import buzz from './modules/buzz'
+import zoomScheduler from './modules/zoomScheduler'
 
 export default createStore({
   modules: {
@@ -16,5 +17,6 @@ export default createStore({
     people,
     admin,
     buzz,
+    zoomScheduler,
   }
 })

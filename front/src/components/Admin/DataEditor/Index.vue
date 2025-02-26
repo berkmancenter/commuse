@@ -7,7 +7,7 @@
     </div>
 
     <form class="form">
-      <admin-table :tableClasses="['admin-data-editor-table']">
+      <cu-table :tableClasses="['admin-data-editor-table']">
         <thead>
           <tr class="no-select">
             <th>Value</th>
@@ -46,7 +46,7 @@
             <td colspan="4">Search to see data to edit.</td>
           </tr>
         </tbody>
-      </admin-table>
+      </cu-table>
     </form>
   </div>
 
@@ -78,7 +78,7 @@
   import editIcon from '@/assets/images/edit.svg'
   import searchIcon from '@/assets/images/search.svg'
   import dropdownIcon from '@/assets/images/dropdown.svg'
-  import AdminTable from '@/components/Admin/AdminTable.vue'
+  import CuTable from '@/components/Shared/Table.vue'
   import VueMultiselect from 'vue-multiselect'
   import Modal from '@/components/Shared/Modal.vue'
   import SearchInput from '@/components/Shared/SearchInput.vue'
@@ -87,7 +87,7 @@
     name: 'AdminDataEditor',
     components: {
       Icon,
-      AdminTable,
+      CuTable: CuTable,
       Booler,
       VueMultiselect,
       Modal,

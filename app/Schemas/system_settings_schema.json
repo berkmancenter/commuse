@@ -157,6 +157,33 @@
         "title": { "type": "string" }
       },
       "required": ["type", "options", "value", "title"]
+    },
+    "ZoomSchedulerAccountId": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["string", "long_text_rich", "multi_select"] },
+        "value": { "type": "string" },
+        "title": { "type": "string" }
+      },
+      "required": ["type", "value", "title"]
+    },
+    "ZoomSchedulerClientId": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["string", "long_text_rich", "multi_select"] },
+        "value": { "type": "string" },
+        "title": { "type": "string" }
+      },
+      "required": ["type", "value", "title"]
+    },
+    "ZoomSchedulerClientSecret": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["string", "long_text_rich", "multi_select"] },
+        "value": { "type": "string" },
+        "title": { "type": "string" }
+      },
+      "required": ["type", "value", "title"]
     }
   },
   "additionalProperties": false

@@ -89,6 +89,25 @@ const router = createRouter({
       },
     },
     {
+      path: '/zoom_scheduler',
+      component: () => import('@/components/ZoomScheduler/Index.vue'),
+      name: 'zoom_scheduler.index',
+      meta: {
+        title: 'Zoom scheduler',
+      },
+      beforeEnter: async (to, from, next) => {
+        await waitUntil(() => {
+          return store?.state?.systemSettings?.publicSystemSettings?.SystemEnabledModules
+        })
+
+        if (!store.state.systemSettings.publicSystemSettings.SystemEnabledModules.value.some(module => module.id === 'zoom_scheduler')) {
+          next('/404')
+        } else {
+          next()
+        }
+      },
+    },
+    {
       path: '/admin/users',
       component: () => import('@/components/Admin/Users/Index.vue'),
       name: 'admin-users.index',
