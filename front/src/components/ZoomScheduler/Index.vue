@@ -69,6 +69,7 @@
                   <tr class="no-select">
                     <th>Topic</th>
                     <th>Link</th>
+                    <th>Start time</th>
                     <th data-sort-method="none" class="no-sort commuse-table-row-cell-narrow">Actions</th>
                   </tr>
                 </thead>
@@ -76,8 +77,9 @@
                   <tr v-for="meeting in $store.state.zoomScheduler.meetings" :key="meeting.id">
                     <td>{{ meeting.topic }}</td>
                     <td>
-                      <copy-paster :text="meeting.join_url"></copy-paster>
+                      <copy-paster :text="meeting.join_url" :showText="false"></copy-paster>
                     </td>
+                    <td>{{ meeting.start_time }} {{ meeting.timezone }}</td>
                     <td>
                       <VDropdown>
                         <div>

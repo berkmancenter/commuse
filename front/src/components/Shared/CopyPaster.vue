@@ -4,7 +4,7 @@
       class="copy-paster-button"
       title="Click to copy"
     >
-      <span class="copy-paster-text">{{ text }}</span>
+      <span class="copy-paster-text" v-if="showText">{{ text }}</span>
       <Icon class="copy-paster-icon" :src="clipboardIcon" />
     </div>
   </div>
@@ -23,6 +23,11 @@ export default {
     text: {
       type: String,
       required: true,
+    },
+    showText: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
   data() {
@@ -62,6 +67,7 @@ export default {
       width: 100%;
     }
 
+    &-text +
     &-icon {
       margin-left: 0.5rem;
     }
