@@ -14,35 +14,38 @@
                 <div class="field">
                   <label class="label" for="zoom-scheduler-host-title">Title</label>
                   <div class="control">
-                    <div class="control">
-                      <input class="input" type="text" id="zoom-scheduler-host-title" v-model="meeting.title" required>
-                    </div>
+                    <input class="input" type="text" id="zoom-scheduler-host-title" v-model="meeting.title" required>
                   </div>
                 </div>
 
                 <div class="field">
                   <label class="label" for="zoom-scheduler-host-email">Host email address</label>
                   <div class="control">
-                    <div class="control">
-                      <input class="input" type="email" id="zoom-scheduler-host-email" v-model="currentUserEmail" required>
-                    </div>
+                    <input class="input" type="email" id="zoom-scheduler-host-email" v-model="currentUserEmail" required>
                   </div>
                 </div>
 
                 <div class="field">
                   <label class="label" for="zoom-scheduler-date-start">Start time</label>
                   <div class="control">
-                    <div class="control">
-                      <date-picker id="zoom-scheduler-date-start" :input-attr="{ required: true }" v-model:value="meeting.dateStart" type="datetime" value-type="format" input-class="input" :clearable="false" :showSecond="false" :minuteOptions="minuteOptions"></date-picker>
-                    </div>
+                    <date-picker :input-attr="{ required: true, id: 'zoom-scheduler-date-start' }" v-model:value="meeting.dateStart" type="datetime" value-type="format" input-class="input" :clearable="false" :showSecond="false" :minuteOptions="minuteOptions"></date-picker>
                   </div>
                 </div>
 
                 <div class="field">
                   <label class="label" for="zoom-scheduler-date-end">End time</label>
                   <div class="control">
-                    <div class="control">
-                      <date-picker id="zoom-scheduler-date-end" :input-attr="{ required: true }" v-model:value="meeting.dateEnd" type="datetime" value-type="format" input-class="input" :clearable="false" :showSecond="false" :minuteOptions="minuteOptions"></date-picker>
+                    <date-picker :input-attr="{ required: true, id: 'zoom-scheduler-date-end' }" v-model:value="meeting.dateEnd" type="datetime" value-type="format" input-class="input" :clearable="false" :showSecond="false" :minuteOptions="minuteOptions"></date-picker>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label" for="zoom-scheduler-date-timezone">Timezone</label>
+                  <div class="control">
+                    <div class="select">
+                      <select id="zoom-scheduler-date-timezone" v-model="meeting.timezone" required>
+                        <option v-for="timezone in timezones" :key="timezone" :value="timezone">{{ timezone }}</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -123,24 +126,25 @@
   import saveIcon from '@/assets/images/save.svg'
   import CuTable from '@/components/Shared/Table.vue'
 
+  const defaultMeeting = {
+    title: '',
+    email: '',
+    dateStart: '',
+    dateEnd: '',
+    timezone: 'America/New_York',
+  }
+
   export default {
-    name: 'UserProfile',
+    name: 'ZoomScheduler',
     data() {
       return {
         apiUrl: import.meta.env.VITE_API_URL,
         saveIcon,
         loading: true,
         savingMeeting: false,
-        defaultMeeting: {
-          title: '',
-          email: '',
-          dateStart: '',
-          dateEnd: '',
-        },
-        meeting: {
-          ...this.defaultMeeting,
-        },
+        meeting: JSON.parse(JSON.stringify(defaultMeeting)),
         minuteOptions: [0, 15, 30, 45],
+        timezones: Intl.supportedValuesOf('timeZone'),
       }
     },
     components: {
@@ -181,7 +185,7 @@
           await this.$store.dispatch('zoomScheduler/createMeeting', this.meeting)
           this.awn.success('Meeting created successfully.')
           this.loadListOfMeetings()
-          this.meeting = { ...this.defaultMeeting }
+          this.meeting = JSON.parse(JSON.stringify(defaultMeeting))
         } catch (error) {
           this.awn.warning(error.messages.error)
         } finally {

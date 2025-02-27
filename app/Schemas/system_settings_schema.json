@@ -6,7 +6,7 @@
       "type": "object",
       "properties": {
         "type": { "type": "string", "enum": ["string", "long_text_rich", "multi_select"] },
-        "value": { "type": "string", "format": "email" },
+        "value": { "type": "string" },
         "title": { "type": "string" }
       },
       "required": ["type", "value", "title"]
@@ -60,7 +60,7 @@
       "type": "object",
       "properties": {
         "type": { "type": "string", "enum": ["string", "long_text_rich", "multi_select"] },
-        "value": { "type": "string", "format": "email" },
+        "value": { "type": "string" },
         "title": { "type": "string" }
       },
       "required": ["type", "value", "title"]

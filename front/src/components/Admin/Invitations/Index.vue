@@ -122,7 +122,6 @@
         deleteInvitationModalStatus: false,
         deleteInvitationCurrent: null,
         createInvitationModalStatus: false,
-        createInvitationCurrent: {},
         createInvitationCurrent: {
           type: 'single',
           expire: '',

@@ -43,7 +43,7 @@ class ZoomSchedulerController extends BaseController {
     }
 
     // Validate required fields (title, email, dateStart, dateEnd).
-    if (!isset($request->title) || !isset($request->email) || !isset($request->dateStart) || !isset($request->dateEnd)) {
+    if (!isset($request->title) || !isset($request->email) || !isset($request->dateStart) || !isset($request->dateEnd) || !isset($request->timezone)) {
       return $this->fail('Missing required fields.');
     }
 
@@ -68,8 +68,9 @@ class ZoomSchedulerController extends BaseController {
     $meetingData = [
       'topic'        => $request->title,
       'start_time'   => $dateStart->format('Y-m-d\TH:i:s'),
-      //'schedule_for' => $request->email,
+      'schedule_for' => $request->email,
       'duration'     => $duration,
+      'timezone'     => $request->timezone,
     ];
 
     // Create a new instance of the Zoom API service.

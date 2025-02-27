@@ -16,9 +16,7 @@ class AddZoomSchedulerModuleOptionToSettings extends Migration
       'title' => 'Zoom scheduler',
     ];
 
-    if (!in_array($newModule, $settings['SystemEnabledModules']['options'])) {
-      $settings['SystemEnabledModules']['options'][] = $newModule;
-    }
+    $settings['SystemEnabledModules']['options'][] = $newModule;
 
     service('settings')->set('SystemSettings.settings', json_encode($settings));
   }
