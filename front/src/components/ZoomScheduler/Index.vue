@@ -69,12 +69,29 @@
                   <tr class="no-select">
                     <th>Topic</th>
                     <th>Link</th>
+                    <th data-sort-method="none" class="no-sort commuse-table-row-cell-narrow">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="meeting in $store.state.zoomScheduler.meetings" :key="meeting.id">
                     <td>{{ meeting.topic }}</td>
                     <td>{{ meeting.join_url }}</td>
+                    <td>
+                      <VDropdown>
+                        <div>
+                          <a class="button">
+                            <Icon :src="dropdownIcon" />
+                          </a>
+                        </div>
+
+                        <template #popper>
+                          <a class="dropdown-item" @click.prevent="deleteMeetingConfirm(meeting)">
+                            <Icon :src="minusIcon" />
+                            Delete meeting
+                          </a>
+                        </template>
+                      </VDropdown>
+                    </td>
                   </tr>
                   <tr v-if="$store.state.zoomScheduler.meetings.length === 0">
                     <td colspan="2">No existing meetings found.</td>
@@ -117,14 +134,29 @@
       </SkeletonPatternLoader>
     </div>
   </div>
+
+  <Modal
+    v-model="deleteMeetingModalStatus"
+    title="Delete meeting"
+    @confirm="deleteMeeting()"
+    @cancel="deleteMeetingModalStatus = false"
+    :working="defaultMeetingModalWorking"
+  >
+    Are you sure you delete the <span class="has-text-weight-bold">{{ deleteMeetingCurrent.topic }}</span> meeting?
+  </Modal>
 </template>
 
 <script>
+  import minusIcon from '@/assets/images/minus.svg'
+  import saveIcon from '@/assets/images/save.svg'
+
+  import dropdownIcon from '@/assets/images/dropdown.svg'
   import CustomField from '@/components/CustomFields/CustomField.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import SkeletonPatternLoader from '@/components/Shared/SkeletonPatternLoader.vue'
-  import saveIcon from '@/assets/images/save.svg'
   import CuTable from '@/components/Shared/Table.vue'
+  import Modal from '@/components/Shared/Modal.vue'
+  import Icon from '@/components/Shared/Icon.vue'
 
   const defaultMeeting = {
     title: '',
@@ -145,6 +177,13 @@
         meeting: JSON.parse(JSON.stringify(defaultMeeting)),
         minuteOptions: [0, 15, 30, 45],
         timezones: Intl.supportedValuesOf('timeZone'),
+
+        deleteMeetingModalStatus: false,
+        deleteMeetingCurrent: null,
+        defaultMeetingModalWorking: false,
+
+        minusIcon,
+        dropdownIcon,
       }
     },
     components: {
@@ -152,6 +191,8 @@
       ActionButton,
       SkeletonPatternLoader,
       CuTable,
+      Modal,
+      Icon,
     },
     created() {
       this.initialDataLoad()
@@ -190,6 +231,25 @@
           this.awn.warning(error.messages.error)
         } finally {
           this.savingMeeting = false
+        }
+      },
+      deleteMeetingConfirm(meeting) {
+        this.deleteMeetingCurrent = meeting
+        this.deleteMeetingModalStatus = true
+      },
+      async deleteMeeting() {
+        this.defaultMeetingModalWorking = true
+
+        try {
+          await this.$store.dispatch('zoomScheduler/deleteMeeting', this.deleteMeetingCurrent.id)
+          this.awn.success('Meeting deleted successfully.')
+          this.loadListOfMeetings()
+          this.deleteMeetingModalStatus = false
+          this.deleteMeetingCurrent = null
+        } catch (error) {
+          this.awn.warning(error.messages.error)
+        } finally {
+          this.defaultMeetingModalWorking = false
         }
       },
     },

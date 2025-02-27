@@ -191,4 +191,35 @@ class ZoomApiService {
 
     return $response['data'];
   }
+
+  /**
+   * Deletes a meeting by its ID.
+   *
+   * @param string $meetingId The ID of the meeting to delete.
+   * @return array The API response or an error array on failure.
+   */
+  public function deleteMeeting(string $meetingId) {
+    $accessToken = $this->getAccessToken();
+    if (!$accessToken) {
+      return [
+        'error' => 'Unable to obtain Zoom access token.'
+      ];
+    }
+
+    $zoomEndpoint = "https://api.zoom.us/v2/meetings/$meetingId";
+    $headers = [
+      'Authorization: Bearer ' . $accessToken,
+      'Content-Type: application/json',
+      'Accept: application/json',
+    ];
+
+    $response = $this->executeCurlRequest($zoomEndpoint, 'DELETE', $headers);
+    if (isset($response['error'])) {
+      return [
+        'error' => 'Zoom API error: ' . $response['error']
+      ];
+    }
+
+    return $response['data'];
+  }
 }

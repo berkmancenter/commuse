@@ -27,6 +27,13 @@ const actions = {
 
     return response
   },
+  async deleteMeeting(context, id) {
+    const response = await fetchIt(`${apiUrl}/api/zoom_scheduler/${id}`, {
+      method: 'POST',
+    })
+
+    return response
+  },
   setMeetings(context, value) {
     context.commit('setMeetings', value)
   }

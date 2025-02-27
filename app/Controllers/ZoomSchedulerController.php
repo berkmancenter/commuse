@@ -89,4 +89,28 @@ class ZoomSchedulerController extends BaseController {
     // Return a success response with the Zoom meeting details.
     return $this->respondCreated($result);
   }
+
+  /**
+   * Deletes a meeting by its ID.
+   *
+   * @param int $meetingId The ID of the meeting to delete.
+   *
+   * @return \CodeIgniter\HTTP\Response
+   */
+  public function deleteMeeting(int $meetingId) {
+    // Create a new instance of the Zoom API service.
+    $zoomApi = new ZoomApiService();
+    $result  = $zoomApi->deleteMeeting($meetingId);
+
+    // Check if an error was returned.
+    if (isset($result['error'])) {
+      return $this->failServerError($result['error']);
+    }
+
+    // Return a success response.
+    return $this->respond([
+      'message' => 'The meeting has been successfully deleted.',
+      'status'  => 'ok',
+    ]);
+  }
 }

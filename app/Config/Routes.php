@@ -110,6 +110,7 @@ if (php_sapi_name() == 'cli' || SystemSettingsWrapper::getInstance()->isValueInA
 if (php_sapi_name() == 'cli' || SystemSettingsWrapper::getInstance()->isValueInArray('zoom_scheduler', 'SystemEnabledModules')) {
   $routes->get('api/zoom_scheduler', 'ZoomSchedulerController::index');
   $routes->post('api/zoom_scheduler', 'ZoomSchedulerController::createMeeting');
+  $routes->post('api/zoom_scheduler/(:num)', 'ZoomSchedulerController::deleteMeeting/$1');
 }
 
 // Front-end application routes
