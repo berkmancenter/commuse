@@ -42,32 +42,48 @@ class ZoomSchedulerController extends BaseController {
       return $this->fail('Invalid JSON payload provided.');
     }
 
-    // Validate required fields (title, email, dateStart, dateEnd).
-    if (!isset($request->title) || !isset($request->email) || !isset($request->dateStart) || !isset($request->dateEnd) || !isset($request->timezone)) {
+    // Validate required fields (title, email, dateStart, dateEnd, timezone).
+    if (!isset($request->title) ||
+        !isset($request->email) ||
+        !isset($request->dateStart) ||
+        !isset($request->dateEnd) ||
+        !isset($request->timezone)) {
       return $this->fail('Missing required fields.');
     }
 
+    try {
+      // Use the provided timezone from the request.
+      $timezone = new \DateTimeZone($request->timezone);
+
+      // Create dateStart and dateEnd using the client timezone.
+      $dateStartWithoutTimezone = new \DateTime($request->dateStart);
+      $dateStart = new \DateTime($request->dateStart, $timezone);
+      $dateEnd = new \DateTime($request->dateEnd, $timezone);
+
+      // For consistency, the current time is set in the same timezone.
+      $now = new \DateTime('now', $timezone);
+    } catch (\Exception $e) {
+      return $this->fail('Invalid date or timezone provided: ' . $e->getMessage());
+    }
+
     // Check if the meeting start date is in the past.
-    $dateStart = new \DateTime($request->dateStart);
-    $now       = new \DateTime();
     if ($dateStart < $now) {
       return $this->fail('The meeting start date cannot be in the past.');
     }
 
     // Check if the meeting end date is before the start date.
-    $dateEnd = new \DateTime($request->dateEnd);
     if ($dateEnd < $dateStart) {
       return $this->fail('The meeting end date cannot be before the start date.');
     }
 
     // Calculate the duration of the meeting in minutes.
-    $duration  = $dateEnd->getTimestamp() - $dateStart->getTimestamp();
-    $duration  = round($duration / 60);
+    $durationInSeconds = $dateEnd->getTimestamp() - $dateStart->getTimestamp();
+    $duration = round($durationInSeconds / 60);
 
     // Prepare meeting data according to Zoom API requirements.
     $meetingData = [
       'topic'        => $request->title,
-      'start_time'   => $dateStart->format('Y-m-d\TH:i:s'),
+      'start_time'   => $dateStartWithoutTimezone->format('Y-m-d\TH:i:s'),
       'schedule_for' => $request->email,
       'duration'     => $duration,
       'timezone'     => $request->timezone,
@@ -82,7 +98,6 @@ class ZoomSchedulerController extends BaseController {
       if (strstr($result['error'], 'schedule_for')) {
         return $this->fail("Most likely there is no Zoom user created for this email address or the user is not a member of the workspace.");
       }
-
       return $this->failServerError($result['error']);
     }
 

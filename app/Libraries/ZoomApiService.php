@@ -155,7 +155,7 @@ class ZoomApiService {
     $response = $this->executeCurlRequest($zoomEndpoint, 'POST', $headers, $payload);
     if (isset($response['error'])) {
       return [
-        'error' => 'Zoom API error: ' . $response['error']
+        'error' => $response['error']
       ];
     }
 
@@ -185,7 +185,7 @@ class ZoomApiService {
     $response = $this->executeCurlRequest($zoomEndpoint, 'GET', $headers);
     if (isset($response['error'])) {
       return [
-        'error' => 'Zoom API error: ' . $response['error']
+        'error' => $response['error']
       ];
     }
 
@@ -216,7 +216,7 @@ class ZoomApiService {
     $response = $this->executeCurlRequest($zoomEndpoint, 'DELETE', $headers);
     if (isset($response['error'])) {
       return [
-        'error' => 'Zoom API error: ' . $response['error']
+        'error' => $response['error']
       ];
     }
 

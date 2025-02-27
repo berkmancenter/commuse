@@ -75,7 +75,9 @@
                 <tbody>
                   <tr v-for="meeting in $store.state.zoomScheduler.meetings" :key="meeting.id">
                     <td>{{ meeting.topic }}</td>
-                    <td>{{ meeting.join_url }}</td>
+                    <td>
+                      <copy-paster :text="meeting.join_url"></copy-paster>
+                    </td>
                     <td>
                       <VDropdown>
                         <div>
@@ -149,14 +151,15 @@
 <script>
   import minusIcon from '@/assets/images/minus.svg'
   import saveIcon from '@/assets/images/save.svg'
-
   import dropdownIcon from '@/assets/images/dropdown.svg'
+
   import CustomField from '@/components/CustomFields/CustomField.vue'
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import SkeletonPatternLoader from '@/components/Shared/SkeletonPatternLoader.vue'
   import CuTable from '@/components/Shared/Table.vue'
   import Modal from '@/components/Shared/Modal.vue'
   import Icon from '@/components/Shared/Icon.vue'
+  import CopyPaster from '@/components/Shared/CopyPaster.vue'
 
   const defaultMeeting = {
     title: '',
@@ -193,6 +196,7 @@
       CuTable,
       Modal,
       Icon,
+      CopyPaster,
     },
     created() {
       this.initialDataLoad()
@@ -224,8 +228,8 @@
 
         try {
           await this.$store.dispatch('zoomScheduler/createMeeting', this.meeting)
+          await this.loadListOfMeetings()
           this.awn.success('Meeting created successfully.')
-          this.loadListOfMeetings()
           this.meeting = JSON.parse(JSON.stringify(defaultMeeting))
         } catch (error) {
           this.awn.warning(error.messages.error)
@@ -242,8 +246,8 @@
 
         try {
           await this.$store.dispatch('zoomScheduler/deleteMeeting', this.deleteMeetingCurrent.id)
+          await this.loadListOfMeetings()
           this.awn.success('Meeting deleted successfully.')
-          this.loadListOfMeetings()
           this.deleteMeetingModalStatus = false
           this.deleteMeetingCurrent = null
         } catch (error) {
@@ -257,5 +261,11 @@
 </script>
 
 <style lang="scss">
-  .zoom-scheduler {}
+  $cl: '.zoom-scheduler';
+
+  #{$cl} {
+    &-meetings-table {
+      width: 100%;
+    }
+  }
 </style>

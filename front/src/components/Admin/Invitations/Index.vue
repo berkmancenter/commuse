@@ -98,6 +98,7 @@
   import dropdownIcon from '@/assets/images/dropdown.svg'
   import CuTable from '@/components/Shared/Table.vue'
   import { formattedTimestamp } from '@/lib/time_stuff'
+
   import ActionButton from '@/components/Shared/ActionButton.vue'
   import Modal from '@/components/Shared/Modal.vue'
 
