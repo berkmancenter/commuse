@@ -57,7 +57,7 @@ class ZoomSchedulerController extends BaseController {
 
     try {
       // Use the provided timezone from the request.
-      $timezone = new \DateTimeZone($request->timezone);
+      $timezone = new \DateTimeZone($request->timezone->key);
 
       // Create dateStart and dateEnd using the client timezone.
       $dateStartWithoutTimezone = new \DateTime($request->dateStart);
@@ -90,7 +90,7 @@ class ZoomSchedulerController extends BaseController {
       'start_time'   => $dateStartWithoutTimezone->format('Y-m-d\TH:i:s'),
       'schedule_for' => $request->email,
       'duration'     => $duration,
-      'timezone'     => $request->timezone,
+      'timezone'     => $request->timezone->key,
     ];
 
     // Create a new instance of the Zoom API service.

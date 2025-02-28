@@ -42,11 +42,19 @@
                 <div class="field">
                   <label class="label" for="zoom-scheduler-date-timezone">Timezone</label>
                   <div class="control">
-                    <div class="select">
-                      <select id="zoom-scheduler-date-timezone" v-model="meeting.timezone" required>
-                        <option v-for="timezone in timezones" :key="timezone" :value="timezone">{{ timezone }}</option>
-                      </select>
-                    </div>
+                    <VueMultiselect
+                      id="zoom-scheduler-date-timezone"
+                      v-model="meeting.timezone"
+                      :multiple="false"
+                      :taggable="false"
+                      :options="formattedTimezones()"
+                      track-by="key"
+                      label="label"
+                      placeholder="Select timezone"
+                      :required="true"
+                      :allow-empty="false"
+                    >
+                    </VueMultiselect>
                   </div>
                 </div>
 
@@ -162,15 +170,16 @@
   import Modal from '@/components/Shared/Modal.vue'
   import Icon from '@/components/Shared/Icon.vue'
   import CopyPaster from '@/components/Shared/CopyPaster.vue'
+  import VueMultiselect from 'vue-multiselect'
 
-  import { formattedTimestamp } from '@/lib/time_stuff'
+  import { formattedTimestamp, formattedTimezones } from '@/lib/time_stuff'
 
   const defaultMeeting = {
     title: '',
     email: '',
     dateStart: '',
     dateEnd: '',
-    timezone: 'America/New_York',
+    timezone: formattedTimezones().find((timezone) => timezone.key === 'America/New_York'),
   }
 
   export default {
@@ -178,18 +187,18 @@
     data() {
       return {
         apiUrl: import.meta.env.VITE_API_URL,
-        saveIcon,
         loading: true,
         savingMeeting: false,
         meeting: JSON.parse(JSON.stringify(defaultMeeting)),
         minuteOptions: [0, 15, 30, 45],
-        timezones: Intl.supportedValuesOf('timeZone'),
         formattedTimestamp,
+        formattedTimezones,
 
         deleteMeetingModalStatus: false,
         deleteMeetingCurrent: null,
         defaultMeetingModalWorking: false,
 
+        saveIcon,
         minusIcon,
         dropdownIcon,
       }
@@ -202,6 +211,7 @@
       Modal,
       Icon,
       CopyPaster,
+      VueMultiselect,
     },
     created() {
       this.initialDataLoad()
@@ -270,6 +280,10 @@
 
   #{$cl} {
     &-meetings-table {
+      width: 100%;
+    }
+
+    &-date-timezone {
       width: 100%;
     }
   }

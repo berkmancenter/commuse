@@ -79,7 +79,6 @@
   import searchIcon from '@/assets/images/search.svg'
   import dropdownIcon from '@/assets/images/dropdown.svg'
   import CuTable from '@/components/Shared/Table.vue'
-  import VueMultiselect from 'vue-multiselect'
   import Modal from '@/components/Shared/Modal.vue'
   import SearchInput from '@/components/Shared/SearchInput.vue'
 
@@ -89,7 +88,6 @@
       Icon,
       CuTable: CuTable,
       Booler,
-      VueMultiselect,
       Modal,
       SearchInput,
     },

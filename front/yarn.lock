@@ -1049,6 +1049,11 @@
   dependencies:
     vue-demi ">=0.14.8"
 
+"@vvo/tzdb@^6.161.0":
+  version "6.161.0"
+  resolved "https://registry.yarnpkg.com/@vvo/tzdb/-/tzdb-6.161.0.tgz#f946707d956620a1b3e05e3fc81df0515f53c3be"
+  integrity sha512-rvk2x77vnY87Tu1d8QuJk300WWzk8OP9/cDw2KgxEdjlYpLarJx82j2sPUpiy1wnjSuTTnYwpjBgZnNS5Iyb+w==
+
 animejs@^3.2.1:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/animejs/-/animejs-3.2.2.tgz#59be98c58834339d5847f4a70ddba74ac75b6afc"
@@ -1493,7 +1498,7 @@ vue-final-modal@^4.5.4:
     "@vueuse/integrations" "^10.5.0"
     focus-trap "^7.5.4"
 
-vue-multiselect@^3.0.0-beta.2:
+vue-multiselect@^3.0.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/vue-multiselect/-/vue-multiselect-3.2.0.tgz#810077710ee7bf98e86534c31eebf22a0ab054d7"
   integrity sha512-ExI+IPvSbILbtaHrU0CgbBmfbD6yBpIWJKsGLPmuQMC7VWK8Nj1XSAI9eIt3n9/e+LSFYdt8VgfHxeS1O1OeVA==

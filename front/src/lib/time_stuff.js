@@ -1,8 +1,9 @@
 import moment from 'moment'
+import { getTimeZones } from '@vvo/tzdb'
 
 function formattedTimestamp(timestamp, format = 'yyyy-MM-DD hh:mm:ss') {
   if (!timestamp) {
-    return '';
+    return ''
   }
 
   if (timestamp.toString().length === 10) {
@@ -16,4 +17,17 @@ function calendarDateFormat(timestamp) {
   return formattedTimestamp(timestamp, 'MMMM D, YYYY')
 }
 
-export { formattedTimestamp, calendarDateFormat }
+function formattedTimezones() {
+  return getTimeZones().map((tz) => {
+    return {
+      key: tz.name,
+      label: tz.currentTimeFormat,
+    }
+  })
+}
+
+export {
+  formattedTimestamp,
+  calendarDateFormat,
+  formattedTimezones,
+}
