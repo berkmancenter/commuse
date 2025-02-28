@@ -67,7 +67,7 @@
               <cu-table :tableClasses="['zoom-scheduler-meetings-table']">
                 <thead>
                   <tr class="no-select">
-                    <th>Topic</th>
+                    <th>Title</th>
                     <th>Link</th>
                     <th>Start time</th>
                     <th data-sort-method="none" class="no-sort commuse-table-row-cell-narrow">Actions</th>
@@ -79,7 +79,7 @@
                     <td>
                       <copy-paster :text="meeting.join_url" :showText="false"></copy-paster>
                     </td>
-                    <td>{{ meeting.start_time }} {{ meeting.timezone }}</td>
+                    <td>{{ formattedTimestamp(meeting.start_time, 'yyyy-MM-DD hh:mm') }} {{ meeting.timezone }}</td>
                     <td>
                       <VDropdown>
                         <div>
@@ -163,6 +163,8 @@
   import Icon from '@/components/Shared/Icon.vue'
   import CopyPaster from '@/components/Shared/CopyPaster.vue'
 
+  import { formattedTimestamp } from '@/lib/time_stuff'
+
   const defaultMeeting = {
     title: '',
     email: '',
@@ -182,6 +184,7 @@
         meeting: JSON.parse(JSON.stringify(defaultMeeting)),
         minuteOptions: [0, 15, 30, 45],
         timezones: Intl.supportedValuesOf('timeZone'),
+        formattedTimestamp,
 
         deleteMeetingModalStatus: false,
         deleteMeetingCurrent: null,

@@ -1,14 +1,6 @@
 import moment from 'moment'
 
-function formattedTimestamp(timestamp) {
-  if (!timestamp) {
-    return '';
-  }
-
-  return moment(timestamp).format('yyyy-MM-DD hh:mm:ss')
-}
-
-function calendarDateFormat(timestamp) {
+function formattedTimestamp(timestamp, format = 'yyyy-MM-DD hh:mm:ss') {
   if (!timestamp) {
     return '';
   }
@@ -17,7 +9,11 @@ function calendarDateFormat(timestamp) {
     timestamp = timestamp * 1000
   }
 
-  return moment.utc(timestamp).format('MMMM D, YYYY')
+  return moment.utc(timestamp).format(format)
+}
+
+function calendarDateFormat(timestamp) {
+  return formattedTimestamp(timestamp, 'MMMM D, YYYY')
 }
 
 export { formattedTimestamp, calendarDateFormat }

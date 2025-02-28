@@ -21,6 +21,10 @@ class ZoomSchedulerController extends BaseController {
     $zoomApi = new ZoomApiService();
     $result  = $zoomApi->getMeetings();
 
+    foreach ($result['meetings'] as &$value) {
+      $value['start_time'] = strtotime($value['start_time']);
+    }
+
     // Check if an error was returned.
     if (isset($result['error'])) {
       return $this->failServerError($result['error']);
