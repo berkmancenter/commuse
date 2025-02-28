@@ -284,16 +284,18 @@
         return [this.person.current_city, this.person.current_state, this.person.current_country].filter(n => n).join(', ')
       },
       myInformationGroup() {
-        let group = this.profileStructure?.filter((group) => { return group['machine_name'] == 'my_information' })[0]
+        const group = this.profileStructure?.find(
+          group => group.machine_name === 'my_information'
+        )
 
         if (!group) {
           return {}
         }
 
-        let groupCustomFields = group.custom_fields.filter(item => item.title !== 'Bio')
-        group.custom_fields = groupCustomFields
-
-        return group
+        return {
+          ...group,
+          custom_fields: group.custom_fields.filter(field => field.title !== 'Bio'),
+        }
       },
       customGroups() {
         return this.profileStructure
