@@ -4,6 +4,30 @@ namespace Config;
 
 use App\Libraries\SystemSettingsWrapper;
 
+/**
+ * Summary of Config\addConditionalroutes
+ * @param array $modules
+ * @param callable $callback
+ * @return void
+ */
+function addConditionalroutes(array $modules, callable $callback) {
+  $enabled = false;
+  if (php_sapi_name() === 'cli') {
+    $enabled = true;
+  } else {
+    $settings = SystemSettingsWrapper::getInstance();
+    foreach ($modules as $module) {
+      if ($settings->isValueInArray($module, 'SystemEnabledModules')) {
+        $enabled = true;
+        break;
+      }
+    }
+  }
+  if ($enabled) {
+    $callback();
+  }
+}
+
 // Create a new instance of our RouteCollection class.
 $routes = Services::routes();
 
@@ -20,7 +44,7 @@ $routes->set404Override();
 // The Auto Routing (Legacy) is very dangerous. It is easy to create vulnerable apps
 // where controller filters or CSRF protection are bypassed.
 // If you don't want to define all routes, please use the Auto Routing (Improved).
-// Set `$autoRoutesImproved` to true in `app/Config/Feature.php` and set the following to true.
+// Set `$autoroutesImproved` to true in `app/Config/Feature.php` and set the following to true.
 // $routes->setAutoRoute(false);
 
 /*
@@ -29,19 +53,7 @@ $routes->set404Override();
  * --------------------------------------------------------------------
  */
 
-// News controller routes
-$routes->get('api/news', 'NewsController::index');
-
-// People controller routes
-$routes->post('api/people', 'PeopleController::index');
-$routes->get('api/people/interests', 'PeopleController::interests');
-$routes->get('api/people/(:num)', 'PeopleController::person/$1');
-$routes->get('api/people/filters', 'PeopleController::filters');
-$routes->get('api/people/export', 'PeopleController::export');
-$routes->get('api/people/exportAllData', 'PeopleController::exportAllData');
-$routes->get('api/people/indexRemote', 'PeopleController::indexRemote');
-
-// Users controller routes
+// Users routes
 $routes->get('api/users/current', 'UsersController::current');
 $routes->get('api/users/profileStatus', 'UsersController::profileStatus');
 $routes->get('api/users/profile/(:any)', 'UsersController::profile/$1');
@@ -64,57 +76,80 @@ $routes->get('changePassword', 'UsersController::changePasswordView');
 $routes->get('reintake', 'UsersController::reintakeView');
 $routes->get('reintakeAccept', 'UsersController::reintakeAccept');
 $routes->get('reintakeDeny', 'UsersController::reintakeDeny');
-$routes->get('reintake', 'UsersController::reintakeView');
 $routes->post('changePassword', 'UsersController::changePassword');
 
-// Register controller routes
+// Register routes
 $routes->get('register', 'RegisterController::registerView');
 $routes->post('register', 'RegisterController::registerAction');
 
-// Files controller routes
+// Files routes
 $routes->get('api/files/get/(.+)', 'FilesController::get/$1');
 
-// Invitations controller routes
-$routes->get('api/admin/invitations', 'InvitationsController::index');
-$routes->post('api/admin/invitations/upsert', 'InvitationsController::upsert');
-$routes->post('api/admin/invitations/delete', 'InvitationsController::delete');
-
-// Custom fields controller routes
-$routes->get('api/admin/customFields', 'CustomFieldsController::index');
-$routes->post('api/admin/customFields/upsert', 'CustomFieldsController::upsert');
-
-// Data editor controller routes
-$routes->post('api/admin/dataEditor', 'DataEditorController::index');
-$routes->post('api/admin/dataEditor/saveItem', 'DataEditorController::saveItem');
-
-// Data audit controller routes
-$routes->get('api/admin/profileDataAudit', 'DataAuditController::profileDataAudit');
-$routes->post('api/admin/profileDataAudit/process', 'DataAuditController::auditRecordProcess');
-$routes->get('api/admin/profileDataAudit/getChangesFields', 'DataAuditController::getChangesFields');
-
-// System settings controller routes
+// System settings routes
 $routes->get('api/admin/systemSettings', 'SystemSettingsController::index');
 $routes->post('api/admin/systemSettings', 'SystemSettingsController::saveSettings');
 $routes->get('api/admin/publicSystemSettings', 'SystemSettingsController::getPublicSettings');
 
-// Buzz controller routes
-if (php_sapi_name() == 'cli' || SystemSettingsWrapper::getInstance()->isValueInArray('buzz', 'SystemEnabledModules')) {
+// News routes
+addConditionalroutes(['news'], function () use ($routes) {
+  $routes->get('api/news', 'NewsController::index');
+});
+
+// People routes
+addConditionalroutes(['people'], function () use ($routes) {
+  $routes->post('api/people', 'PeopleController::index');
+  $routes->get('api/people/interests', 'PeopleController::interests');
+  $routes->get('api/people/(:num)', 'PeopleController::person/$1');
+  $routes->get('api/people/filters', 'PeopleController::filters');
+  $routes->get('api/people/export', 'PeopleController::export');
+  $routes->get('api/people/exportAllData', 'PeopleController::exportAllData');
+  $routes->get('api/people/indexRemote', 'PeopleController::indexRemote');
+});
+
+// Data Audit routes
+addConditionalroutes(['data_audit'], function () use ($routes) {
+  $routes->get('api/admin/profileDataAudit', 'DataAuditController::profileDataAudit');
+  $routes->post('api/admin/profileDataAudit/process', 'DataAuditController::auditRecordProcess');
+  $routes->get('api/admin/profileDataAudit/getChangesFields', 'DataAuditController::getChangesFields');
+});
+
+// Invitations routes
+addConditionalroutes(['invitations'], function () use ($routes) {
+  $routes->get('api/admin/invitations', 'InvitationsController::index');
+  $routes->post('api/admin/invitations/upsert', 'InvitationsController::upsert');
+  $routes->post('api/admin/invitations/delete', 'InvitationsController::delete');
+});
+
+// Custom fields routes
+addConditionalroutes(['custom_fields'], function () use ($routes) {
+  $routes->get('api/admin/customFields', 'CustomFieldsController::index');
+  $routes->post('api/admin/customFields/upsert', 'CustomFieldsController::upsert');
+});
+
+// Data editor routes
+addConditionalroutes(['data_editor'], function () use ($routes) {
+  $routes->post('api/admin/dataEditor', 'DataEditorController::index');
+  $routes->post('api/admin/dataEditor/saveItem', 'DataEditorController::saveItem');
+});
+
+// Buzz routes
+addConditionalroutes(['buzz'], function () use ($routes) {
   $routes->get('api/buzz', 'BuzzController::index');
   $routes->get('api/buzz/(:num)', 'BuzzController::show/$1');
   $routes->post('api/buzz/upsert', 'BuzzController::upsert');
   $routes->post('api/buzz/like/(:num)', 'BuzzController::like/$1');
   $routes->post('api/buzz/delete/(:num)', 'BuzzController::delete/$1');
-}
+});
 
-// Zoom scheduler controller routes
-if (php_sapi_name() == 'cli' || SystemSettingsWrapper::getInstance()->isValueInArray('zoom_scheduler', 'SystemEnabledModules')) {
+// Zoom scheduler routes
+addConditionalroutes(['zoom_scheduler'], function () use ($routes) {
   $routes->get('api/zoom_scheduler', 'ZoomSchedulerController::index');
   $routes->post('api/zoom_scheduler', 'ZoomSchedulerController::createMeeting');
   $routes->post('api/zoom_scheduler/(:num)', 'ZoomSchedulerController::deleteMeeting/$1');
-}
+});
 
-// Front-end application routes
-$frontRoutes = [
+// Front-end Application routes
+$frontroutes = [
   '/',
   'people',
   'profile',
@@ -133,7 +168,7 @@ $frontRoutes = [
   'admin/settings',
 ];
 
-foreach ($frontRoutes as $route) {
+foreach ($frontroutes as $route) {
   $routes->get($route, 'FrontController::index');
 }
 
@@ -152,6 +187,6 @@ service('auth')->routes($routes);
  * You will have access to the $routes object within that file without
  * needing to reload it.
  */
-if (is_file(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php')) {
-    require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
+if (is_file(APPPATH . 'Config/' . ENVIRONMENT . '/routes.php')) {
+    require APPPATH . 'Config/' . ENVIRONMENT . '/routes.php';
 }

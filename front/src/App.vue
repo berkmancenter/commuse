@@ -247,17 +247,27 @@
           return this.$store.state.systemSettings.publicSystemSettings?.SystemEnabledModules
         })
 
-        if (!this.$store.state.systemSettings.publicSystemSettings?.SystemEnabledModules?.value.some(module => module.id === 'buzz')) {
-          this.menu = this.menu.filter((item) => item.href !== '/buzz');
+        const enabledModules = this.$store.state.systemSettings.publicSystemSettings?.SystemEnabledModules?.value || []
+
+        // @TODO: This should be fetched from the backend
+        const routeMap = {
+          buzz: '/buzz',
+          people_map: '/people_map',
+          zoom_scheduler: '/zoom_scheduler',
+          people: '/people',
+          data_editor: '/admin/data_editor',
+          custom_fields: '/admin/custom_fields',
+          data_audit: '/admin/profile_data_audit',
+          news: '/',
+          invitations: '/admin/invitations',
         }
 
-        if (!this.$store.state.systemSettings.publicSystemSettings?.SystemEnabledModules?.value.some(module => module.id === 'people_map')) {
-          this.menu = this.menu.filter((item) => item.href !== '/people_map');
-        }
-
-        if (!this.$store.state.systemSettings.publicSystemSettings?.SystemEnabledModules?.value.some(module => module.id === 'zoom_scheduler')) {
-          this.menu = this.menu.filter((item) => item.href !== '/zoom_scheduler');
-        }
+        Object.keys(routeMap).forEach(module => {
+          if (!enabledModules.some(enabledModule => enabledModule.id === module)) {
+            this.menu = this.menu.filter(item => item.href !== routeMap[module])
+            this.adminMenu = this.adminMenu.filter(item => item.href !== routeMap[module])
+          }
+        });
 
         this.menuActive = true
         this.adminMenuActive = true
