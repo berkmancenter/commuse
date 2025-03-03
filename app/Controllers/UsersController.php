@@ -28,11 +28,13 @@ class UsersController extends BaseController
    */
   public function current()
   {
+    $peopleModel = new PeopleModel();
     $user = auth()->user();
     $userData = [
       'id' => $user->id,
       'email' => $user->email,
       'admin' => $user->inGroup('admin'),
+      'image_url' => $peopleModel->getUserImageUrl($user->id),
     ];
 
     return $this->respond($userData);
@@ -61,10 +63,7 @@ class UsersController extends BaseController
     }
 
     $userData['public_profile'] = $userData['public_profile'] == 't';
-
-    if (isset($userData['image_url']) && $userData['image_url']) {
-      $userData['image_url'] = "profile_images/{$userData['image_url']}";
-    }
+    $userData['image_url'] = $userData['image_url'] ? site_url("api/files/get/profile_images/{$userData['image_url']}") : null;
 
     return $this->respond($userData);
   }

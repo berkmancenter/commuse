@@ -371,7 +371,6 @@ class PeopleModel extends Model
 
       unset($personData['custom_fields']);
       $personData['image_url'] = $personData['image_url'] ? "{$_ENV['app.baseURL']}/api/files/get/profile_images/{$personData['image_url']}" : '';
-
       $personData['active'] = $personData['active'] !== 'banned';
 
       // Filter out future active affiliation for non-admin users
@@ -1125,5 +1124,24 @@ class PeopleModel extends Model
     } else {
       return false;
     }
+  }
+
+  /**
+   * Retrieves the image URL of a user.
+   *
+   * @param int $userId The ID of the user.
+   * @return string|null The image URL of the user or null if not found.
+   */
+  public function getUserImageUrl($userId) {
+    $builder = $this->db->table('people');
+    $userData = $builder
+      ->select('image_url')
+      ->where('user_id', $userId)
+      ->get()
+      ->getRowArray();
+
+    $userData['image_url'] = $userData['image_url'] ? site_url("api/files/get/profile_images/{$userData['image_url']}") : null;
+
+    return $userData['image_url'];
   }
 }

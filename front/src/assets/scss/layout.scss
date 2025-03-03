@@ -53,6 +53,10 @@
   &-user-menu {
     &-toggler {
       display: flex;
+
+      img {
+        border-radius: 50%;
+      }
     }
   }
 

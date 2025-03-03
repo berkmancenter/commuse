@@ -60,7 +60,7 @@
         <div class="top-nav-user-menu">
           <VDropdown>
             <div class="top-nav-user-menu-toggler top-nav-button no-select">
-              <Icon :src="userIcon" />
+              <Icon :src="userAvatar" />
             </div>
 
             <template #popper>
@@ -214,6 +214,11 @@
         menuIcon,
         userIcon,
       }
+    },
+    computed: {
+      userAvatar() {
+        return this.$store.state.user.currentUser.image_url || this.userIcon
+      },
     },
     methods: {
       hideMenuMobile() {

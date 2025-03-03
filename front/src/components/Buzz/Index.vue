@@ -29,7 +29,7 @@
             <div class="media-left buzz-section-item-media">
               <figure class="image is-64x64">
                 <router-link :to="'/people/' + item.person_id">
-                  <img :data-src="`${apiUrl}/api/files/get/${item.image_url}`" class="lazy" />
+                  <img :data-src="item.image_url" class="lazy" />
                 </router-link>
               </figure>
             </div>

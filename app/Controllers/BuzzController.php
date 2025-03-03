@@ -82,7 +82,7 @@ class BuzzController extends BaseController
         'tags'     => json_decode($doc['tags']),
         'person_id'  => (int) $doc['person_id'],
         'user_id'  => (int) $doc['user_id'],
-        'image_url'=> $doc['image_url'] ? "profile_images/{$doc['image_url']}" : '',
+        'image_url'=> $doc['image_url'] ? site_url("api/files/get/profile_images/{$doc['image_url']}") : null,
         'name'     => $doc['author_name'],
         'created_at' => $doc['created_at'],
       ];
