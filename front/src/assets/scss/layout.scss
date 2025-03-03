@@ -1,7 +1,7 @@
 // Top Navigation
 .top-nav {
   height: 4rem;
-  border-bottom: 5px solid var(--main-color);
+  border-bottom: 0.2rem solid var(--main-color);
   display: flex;
   position: fixed;
   top: 0;
@@ -56,6 +56,11 @@
 
       img {
         border-radius: 50%;
+        height: 2.5rem !important;
+        width: 2.5rem !important;
+        padding: 0rem !important;
+        margin: 0.65rem;
+        border: 2px solid var(--main-color);
       }
     }
   }
