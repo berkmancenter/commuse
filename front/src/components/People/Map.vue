@@ -23,6 +23,10 @@
     methods: {
       async initMap() {
         if (this.$store.state.people.people.length === 0) {
+          // This will tell the people index component to reload the data.
+          // It's needed because the components share the same store value.
+          this.$store.state.people.peopleMarkReload = true
+
           let people = null
           try {
             people = await this.$store.dispatch('people/fetchPeople')
