@@ -60,7 +60,13 @@
 
                 <div class="field is-grouped">
                   <div class="control">
-                    <ActionButton buttonText="Create" :button="true" :working="savingMeeting"></ActionButton>
+                    <ActionButton
+                      buttonText="Create"
+                      :button="true"
+                      :working="savingMeeting"
+                      :disabled="savingMeeting"
+                    >
+                    </ActionButton>
                   </div>
                 </div>
               </div>

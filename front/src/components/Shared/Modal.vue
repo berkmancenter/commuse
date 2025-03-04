@@ -21,7 +21,15 @@
       </div>
 
       <div class="commuse-modal-buttons pt-5 mt-5">
-        <button class="commuse-modal-buttons-confirm button is-success ld-ext-right" :class="{ running: working }" v-if="showConfirmButton" accesskey="s" @click="$emit('confirm')" ref="confirmButton">
+        <button
+          class="commuse-modal-buttons-confirm button is-success ld-ext-right"
+          :class="{ running: working }"
+          v-if="showConfirmButton"
+          :disabled="working"
+          accesskey="s"
+          @click="$emit('confirm')"
+          ref="confirmButton"
+        >
           {{ confirmButtonTitle }}
           <div class="ld ld-ring ld-spin"></div>
         </button>
