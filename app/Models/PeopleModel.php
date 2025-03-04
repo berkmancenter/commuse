@@ -1084,7 +1084,7 @@ class PeopleModel extends Model
         ];
 
         // Fallback to home location if no current location details are available
-        if (count($geoQueryArray) === 0) {
+        if (empty(array_filter($geoQueryArray))) {
           $geoQueryArray = [
             $requestData['home_city'] ?? '',
             $requestData['home_state'] ?? '',

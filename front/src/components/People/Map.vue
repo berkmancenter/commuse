@@ -56,7 +56,7 @@
                 lon: person['current_location_lon'],
                 first_name: person['first_name'],
                 last_name: person['last_name'],
-                city: person['current_city'],
+                city: person['current_city'] || person['home_city'],
                 id: person['id'],
               }
             )
