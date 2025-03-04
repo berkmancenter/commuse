@@ -1127,21 +1127,35 @@ class PeopleModel extends Model
   }
 
   /**
-   * Retrieves the image URL of a user.
+   * Retrieves the image URLs of users.
    *
-   * @param int $userId The ID of the user.
-   * @return string|null The image URL of the user or null if not found.
+   * @param int|array $userIds Single user ID or array of user IDs.
+   * @return array|string|null Array of user IDs and their image URLs, single URL for single ID, or null if not found.
    */
-  public function getUserImageUrl($userId) {
+  public function getUserImageUrl($userIds) {
+    // Handle empty input
+    if (empty($userIds)) {
+      return [];
+    }
+
     $builder = $this->db->table('people');
+
+    // If single ID is passed, convert to array for consistent processing
+    $isSingleId = !is_array($userIds);
+    $userIds = $isSingleId ? [$userIds] : $userIds;
+
     $userData = $builder
-      ->select('image_url')
-      ->where('user_id', $userId)
+      ->select('user_id, image_url')
+      ->whereIn('user_id', $userIds)
       ->get()
-      ->getRowArray();
+      ->getResultArray();
 
-    $userData['image_url'] = $userData['image_url'] ? site_url("api/files/get/profile_images/{$userData['image_url']}") : null;
+    // Process the results
+    $result = [];
+    foreach ($userData as $user) {
+      $result[$user['user_id']] = $user['image_url'] ? site_url("api/files/get/profile_images/{$user['image_url']}") : null;
+    }
 
-    return $userData['image_url'];
+    return $result;
   }
 }

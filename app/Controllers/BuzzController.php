@@ -17,6 +17,7 @@ class BuzzController extends BaseController
   public function index()
   {
     $buzzModel = new BuzzModel();
+    $peopleModel = new \App\Models\PeopleModel();
 
     // Retrieve optional search query from request
     $query = $this->request->getGet('query');
@@ -73,7 +74,14 @@ class BuzzController extends BaseController
 
     // Extract and format the results
     $hits = $results['hits']['hits'];
-    $buzzItems = array_map(function ($hit) {
+
+    // Receive images from the poeple model function
+    $userIds = array_map(function ($hit) {
+      return $hit['_source']['user_id'];
+    }, $hits);
+    $userImages = $peopleModel->getUserImageUrl($userIds);
+
+    $buzzItems = array_map(function ($hit) use ($userImages) {
       $doc = $hit['_source'];
 
       return [
@@ -82,7 +90,7 @@ class BuzzController extends BaseController
         'tags'     => json_decode($doc['tags']),
         'person_id'  => (int) $doc['person_id'],
         'user_id'  => (int) $doc['user_id'],
-        'image_url'=> $doc['image_url'] ? site_url("api/files/get/profile_images/{$doc['image_url']}") : null,
+        'image_url'=> $userImages[$doc['user_id']],
         'name'     => $doc['author_name'],
         'created_at' => $doc['created_at'],
       ];

@@ -30,11 +30,13 @@ class UsersController extends BaseController
   {
     $peopleModel = new PeopleModel();
     $user = auth()->user();
+    $userImage = $peopleModel->getUserImageUrl($user->id);
+    $userImage = reset($userImage);
     $userData = [
       'id' => $user->id,
       'email' => $user->email,
       'admin' => $user->inGroup('admin'),
-      'image_url' => $peopleModel->getUserImageUrl($user->id),
+      'image_url' => $userImage,
     ];
 
     return $this->respond($userData);
